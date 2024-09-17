@@ -1,8 +1,8 @@
-import type { CleanState } from "./state";
+import type { CleanState } from "@/base/state";
 
 import { useMemo } from "react";
 
-import { useCleanState } from "./state";
+import { useCleanState } from "@/base/state";
 
 
 export class ComponentLogic<TState extends object, TProps extends object, THooks extends object> {
@@ -29,11 +29,11 @@ export const useLogic: UseLogic = (Methods, props) => {
 	// When ComponentLogicConstructor is extended with <{}, {}, {}>, Typescript fails to determine that LogicClass['getInitialState'] is a function,
 	// but gets it right with `typeof Methods.getInitialState;`
 	// Changing to <any, any, any> also seems to fix this.
-	type LogicClass = typeof Methods;
+	type TLogicClass = typeof Methods;
 
 	// type InitState = CleanStateValues<InstanceType<LogicClass>['state']>;
-	type InitState = LogicClass['getInitialState'];
-	const state = useCleanState<InitState>(Methods.getInitialState, props);
+	type TInitState = TLogicClass['getInitialState'];
+	const state = useCleanState<TInitState>(Methods.getInitialState, props);
 
 	// There's apparently a bug? with Typescript that pegs the return type of "new Methods()" to "ComponentLogic<{}, {}, {}>",
 	// completely ignoring the type specified for Methods in the function's type definition.

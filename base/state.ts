@@ -120,5 +120,3 @@ export const useMountState = () => {
 	}, []);
 	return mounted.current;
 };
-
-// npm publish --access public

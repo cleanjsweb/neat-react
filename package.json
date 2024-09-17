@@ -5,14 +5,28 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "index.js",
-	"files": [
-		"build"
-	],
+  "files": ["build", ".npmrc"],
+  "main": "build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./base": "./build/base/index.js",
+    "./classy": "./build/classy/index.js",
+    "./state": "./build/base/state.js",
+    "./methods": "./build/base/methods.js",
+    "./logic": "./build/classy/logic",
+    "./instance": "./build/classy/instance",
+    "./class-component": "./build/classy/class",
+    "./full-class": "./build/classy/class"
+  },
   "scripts": {
-    "build": "tsc && copyfiles README.md package.json .npmrc build",
+    "prebuild": "rimraf ./build",
+    "build": "tsc && tsc-alias",
+    "postbuild": "copyfiles globals.d.ts tsconfig.json build",
+    "_": "",
     "prepublishOnly": "npm run build",
-    "postpublish": "cd ./mirror-pkg && npm publish && cd ..",
+    "publish:patch": "npm version patch && npm publish",
+    "//postpublish": "cd ./mirror-pkg && npm publish && cd ..",
+    "__": "",
     "test": "echo \"No tests ATM\""
   },
   "keywords": [
@@ -20,21 +34,26 @@
     "function components",
     "hooks",
     "react hooks",
+    "react state",
     "state",
     "clean state",
-    "group state"
+    "group state",
+    "grouped state"
   ],
   "author": {
-		"name": "Feranmi Akinlade",
-		"url": "https://feranmi.dev"
-	},
-  "license": "MIT",
-	"devDependencies": {
-		"@types/node": "20.14.10",
-		"@types/react": "^16",
-		"copyfiles": "^2.4.1"
+    "name": "Feranmi Akinlade",
+    "url": "https://feranmi.dev"
   },
-	"peerDependencies": {
-		"react": ">=16"
-	}
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "@types/react": "^16",
+    "copyfiles": "^2.4.1",
+    "rimraf": "^6.0.1",
+    "tsc-alias": "1.8.10",
+    "typescript": "^5.6.2"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  }
 }

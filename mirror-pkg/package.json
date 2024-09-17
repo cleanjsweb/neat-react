@@ -7,13 +7,13 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf ./build && tsc && copyfiles globals.d.ts tsconfig.json build",
     "prepublishOnly": "npm run match-version && npm run build",
     "postinstall": "node index.js && npm rm clean-react",
-    "match-version": "npx ts-node match-version.ts",
+    "match-version": "npx tsx match-version.ts",
     "test": "echo \"No tests ATM\""
   },
-  "files": ["build"],
+  "files": ["build", ".npmrc"],
   "keywords": [
     "react",
     "function-components",
@@ -26,10 +26,6 @@
   "author": "Feranmi Akinlade <hello@feranmi.dev>",
   "license": "MIT",
 	"devDependencies": {
-		"@types/node": "20.14.10",
-		"@types/react": "^16"
-  },
-	"peerDependencies": {
-		"react": ">=16"
-	}
+    "tsx": "4.19.1"
+  }
 }

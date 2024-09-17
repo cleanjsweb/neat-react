@@ -1,31 +1,34 @@
 import { useEffect } from "react";
 
-import { useMountState } from "./state";
+import { useMountState } from "@/base/state";
 import { ComponentLogic, ComponentLogicConstructor, useLogic } from "./logic";
+
 
 type Obj = Record<string, any>;
 
+type AsyncAllowedEffectCallback = () => IVoidFunction | Promise<IVoidFunction>;
+
+export const noOp = () => {};
+
 export class ComponentInstance<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends ComponentLogic<TState, TProps, THooks> {
-	beforeMount: VoidFunction = () => {};
-	onMount: () => Function | Promise<Function> = () => {
-		return () => {};
-	};
+	beforeMount: IVoidFunction = () => {};
+	onMount: AsyncAllowedEffectCallback = () => noOp;
 
-	beforeRender: VoidFunction = () => {};
-	onRender: VoidFunction = () => {};
+	beforeRender: IVoidFunction = () => {};
+	onRender: AsyncAllowedEffectCallback = () => noOp;
 
-	cleanUp: VoidFunction = () => {};
+	cleanUp: IVoidFunction = () => {};
 };
 
 
-type T<
+type ComponentClassBaseType<
 	TState extends Obj = {},
 	TProps extends Obj = {},
 	THooks extends Obj = {}
 > = ComponentLogicConstructor<TState, TProps, THooks> & Constructor<ComponentInstance<TState, TProps, THooks>>
 
 // export interface ComponentInstanceConstructor<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends Constructor<ComponentInstance<TState, TProps, THooks>> {
-export interface ComponentInstanceConstructor<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends T<TState, TProps, THooks> {
+export interface ComponentInstanceConstructor<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends ComponentClassBaseType<TState, TProps, THooks> {
 	// getInitialState: (props: TProps) => TState;
 }
 
@@ -52,10 +55,10 @@ export const useMountCallbacks = <TInstance extends ComponentInstance<any, any, 
 		const mountHandlerCleanUp = instance.onMount?.();
 
 		return () => {
-			const doCleanUp = (runMountCleaners) => {
+			const doCleanUp = (runMountCleaners: IVoidFunction) => {
 				runMountCleaners?.();
 
-				instance.cleanUp();
+				instance.cleanUp?.();
 			};
 
 			if (typeof mountHandlerCleanUp === 'function') {
@@ -74,8 +77,22 @@ export const useInstance: UseInstance = (Component, props) => {
 	// beforeMount, onMount, cleanUp.
 	useMountCallbacks(instance);
 
-	instance.beforeRender()
-	useEffect(instance.onRender);
+	instance.beforeRender?.();
+	useEffect(() => {
+		const cleanupAfterRerender = instance.onRender?.();
+
+		return () => {
+			const doCleanUp = (runRenderCleanup: IVoidFunction) => {
+				runRenderCleanup?.();
+			};
+
+			if (typeof cleanupAfterRerender === 'function') {
+				doCleanUp(cleanupAfterRerender);
+			} else {
+				cleanupAfterRerender?.then(doCleanUp);
+			}
+		};
+	});
 
 	return instance;
 };

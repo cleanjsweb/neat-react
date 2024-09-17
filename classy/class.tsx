@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
-import type { ComponentInstanceConstructor } from '@/clean-react/instance';
+// import type { ReactNode } from "react";
+import type { ComponentInstanceConstructor } from './instance';
 
-import { useMemo } from "react";
-import { ComponentInstance, useInstance } from '@/clean-react/instance';
+import { FunctionComponent, useMemo } from "react";
+import { ComponentInstance, useInstance } from './instance';
 
 type Obj = Record<string, any>;
 
@@ -23,7 +23,7 @@ const setFunctionName = (func: Function, newName: string) => {
 
 
 export class ClassComponent<TState extends Obj, TProps extends Obj, THooks extends Obj> extends ComponentInstance<TState, TProps, THooks> {
-	Render: () => ReactNode;
+	Render: FunctionComponent<TProps>;
 
 	static FC = function FC <IComponentType extends IComponentConstructor>(this: IComponentType, _Component?: IComponentType) {
 		const Component = _Component || this;
