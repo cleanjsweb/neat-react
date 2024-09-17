@@ -98,17 +98,10 @@ export const useCleanState: UseCleanState = (_initialState, props) => {
 	}
 
 	// @todo Refactor to return consistent state instance each render.
-	// Though useState gives us consistent references,
+	// Though useState gives us persistent references for values and setters,
 	// so keeping the CleanState wrapper persistent may be unnecessary.
 	return new _CleanState<TState>(stateAndSetters);
 };
-
-/* 
-interface CleanComponent {
-	state: CleanState<object>,
-	props: Record<string, any>,
-}
-*/
 
 /**
  * Returns a value that is false before the component has been mounted,
@@ -127,3 +120,5 @@ export const useMountState = () => {
 	}, []);
 	return mounted.current;
 };
+
+// npm publish --access public

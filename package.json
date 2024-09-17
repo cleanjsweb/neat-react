@@ -1,0 +1,40 @@
+{
+  "name": "@cleanweb/react",
+  "version": "1.0.0",
+  "description": "A suite of helpers for writing cleaner React function components.",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "index.js",
+	"files": [
+		"build"
+	],
+  "scripts": {
+    "build": "tsc && copyfiles README.md package.json .npmrc build",
+    "prepublishOnly": "npm run build",
+    "postpublish": "cd ./mirror-pkg && npm publish && cd ..",
+    "test": "echo \"No tests ATM\""
+  },
+  "keywords": [
+    "react",
+    "function components",
+    "hooks",
+    "react hooks",
+    "state",
+    "clean state",
+    "group state"
+  ],
+  "author": {
+		"name": "Feranmi Akinlade",
+		"url": "https://feranmi.dev"
+	},
+  "license": "MIT",
+	"devDependencies": {
+		"@types/node": "20.14.10",
+		"@types/react": "^16",
+		"copyfiles": "^2.4.1"
+  },
+	"peerDependencies": {
+		"react": ">=16"
+	}
+}
