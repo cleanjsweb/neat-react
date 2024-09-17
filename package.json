@@ -1,11 +1,14 @@
 {
   "name": "@cleanweb/react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A suite of helpers for writing cleaner React function components.",
   "engines": {
     "node": ">=18"
   },
-  "files": ["build", ".npmrc"],
+  "files": [
+    "build",
+    ".npmrc"
+  ],
   "main": "build/index.js",
   "exports": {
     ".": "./build/index.js",
