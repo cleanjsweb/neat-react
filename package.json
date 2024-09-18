@@ -16,10 +16,10 @@
     "./classy": "./build/classy/index.js",
     "./state": "./build/base/state.js",
     "./methods": "./build/base/methods.js",
-    "./logic": "./build/classy/logic",
-    "./instance": "./build/classy/instance",
-    "./class-component": "./build/classy/class",
-    "./full-class": "./build/classy/class"
+    "./logic": "./build/classy/logic.js",
+    "./instance": "./build/classy/instance.js",
+    "./class-component": "./build/classy/class.js",
+    "./full-class": "./build/classy/class.js"
   },
   "scripts": {
     "prebuild": "rimraf ./build",
