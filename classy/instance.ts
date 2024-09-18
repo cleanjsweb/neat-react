@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import type { ComponentLogicConstructor } from './logic';
 
-import { useMountState } from "@/base/state";
-import { ComponentLogic, ComponentLogicConstructor, useLogic } from "./logic";
+import { useEffect } from 'react';
+import { useMountState } from '@/base/state';
+import { ComponentLogic,  useLogic } from './logic';
 
 
 type Obj = Record<string, any>;

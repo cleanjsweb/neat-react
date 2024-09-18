@@ -1,11 +1,10 @@
-// import type { ReactNode } from "react";
+import type { FunctionComponent } from 'react';
 import type { ComponentInstanceConstructor } from './instance';
 
-import { FunctionComponent, useMemo } from "react";
+import { useMemo } from 'react';
 import { ComponentInstance, useInstance } from './instance';
 
 type Obj = Record<string, any>;
-
 type IComponentConstructor = ComponentInstanceConstructor<any, any, any> & typeof ClassComponent<any, any, any>;
 
 /** Provide more useful stack traces for otherwise non-specific function names. */

@@ -1,8 +1,7 @@
-import type { CleanState } from "@/base/state";
+import type { CleanState } from '@/base/state';
 
-import { useMemo } from "react";
-
-import { useCleanState } from "@/base/state";
+import { useMemo } from 'react';
+import { useCleanState } from '@/base/state';
 
 
 export class ComponentLogic<TState extends object, TProps extends object, THooks extends object> {

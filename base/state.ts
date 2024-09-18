@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 
 type TUseStateArray<TState extends object> = [
@@ -27,7 +27,7 @@ class _CleanState_<TState extends object> {
 			if (reservedKeys.includes(key)) throw new Error(`The name "${key}" is reserved by CleanState and cannot be used to index state variables. Please use a different key.`);
 
 			[this._values_[key], this._setters_[key]] = responseFromUseState;
-			this.put[key] = this._setters_[key];
+			// this.put[key] = this._setters_[key];
 
 			const self = this;
 			Object.defineProperty(this, key, {
