@@ -1,11 +1,11 @@
-import type { CleanState } from '@/base/state';
+import type { TCleanState } from '@/base/state';
 
 import { useMemo } from 'react';
 import { useCleanState } from '@/base/state';
 
 
 export class ComponentLogic<TState extends object, TProps extends object, THooks extends object> {
-	declare state: CleanState<TState>;
+	declare state: TCleanState<TState>;
 
 	declare props: TProps;
 	declare hooks: THooks;
@@ -32,7 +32,7 @@ export const useLogic: UseLogic = (Methods, props) => {
 
 	// type InitState = CleanStateValues<InstanceType<LogicClass>['state']>;
 	type TInitState = TLogicClass['getInitialState'];
-	const state = useCleanState<TInitState>(Methods.getInitialState, props);
+	const state = useCleanState(Methods.getInitialState, props);
 
 	// There's apparently a bug? with Typescript that pegs the return type of "new Methods()" to "ComponentLogic<{}, {}, {}>",
 	// completely ignoring the type specified for Methods in the function's type definition.

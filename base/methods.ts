@@ -1,9 +1,9 @@
-import type { CleanState } from './state';
+import type { TCleanState } from './state';
 import { useMemo } from 'react';
 
 
 export class ComponentMethods<TState extends object, TProps extends object> {
-	declare state: CleanState<TState>;
+	declare state: TCleanState<TState>;
 	declare props: TProps;
 };
 

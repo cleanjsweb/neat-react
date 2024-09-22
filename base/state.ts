@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 
 type TUseStateArray<TState extends object> = [
@@ -11,23 +11,13 @@ type TUseStateResponses<TState extends object> = {
 };
 
 
-class _CleanState_<TState extends object> {
-	private _values_ = {} as TState;
-	private _setters_ = {} as {
-		[Key in keyof TState]: (value: TState[Key]) => void;
-	};
-
-	put = this._setters_;
-
-	constructor(stateAndSetters: TUseStateResponses<TState>) {
-		/** Must be extracted before the loop begins to avoid including keys from the consumers state object. */
-		const reservedKeys = Object.keys(this);
-
+class CleanStateBase<TState extends object> {
+	static update <TState extends object>(this: CleanStateBase<TState>, stateAndSetters: TUseStateResponses<TState>) {
 		Object.entries<TUseStateArray<TState>>(stateAndSetters).forEach(([key, responseFromUseState]) => {
-			if (reservedKeys.includes(key)) throw new Error(`The name "${key}" is reserved by CleanState and cannot be used to index state variables. Please use a different key.`);
+			if (this.reservedKeys.includes(key)) throw new Error(`The name "${key}" is reserved by CleanState and cannot be used to index state variables. Please use a different key.`);
 
+			this.valueKeys.push(key);
 			[this._values_[key], this._setters_[key]] = responseFromUseState;
-			// this.put[key] = this._setters_[key];
 
 			const self = this;
 			Object.defineProperty(this, key, {
@@ -40,6 +30,23 @@ class _CleanState_<TState extends object> {
 				enumerable: true,
 			});
 		});
+
+		// return this;
+	}
+
+	reservedKeys: string[];
+	valueKeys: string[] = [];
+	private _values_ = {} as TState;
+	private _setters_ = {} as {
+		[Key in keyof TState]: (value: TState[Key]) => void;
+	};
+
+	get put() {
+		return { ...this._setters_ };
+	}
+
+	constructor() {
+		this.reservedKeys = Object.keys(this);
 	}
 
 	putMany = (newValues: Partial<TState>) => {
@@ -51,12 +58,31 @@ class _CleanState_<TState extends object> {
 };
 
 
-type TCleanStateInstance<TState extends object> = TState & _CleanState_<TState>;
-const _CleanState = _CleanState_ as unknown as new <TState extends object>(
-	...args: ConstructorParameters<typeof _CleanState_>
-) => TCleanStateInstance<TState>;
+type TCleanStateInstance<TState extends object> = TState & CleanStateBase<TState>;
+type TCleanStateBase = typeof CleanStateBase;
+let a: InstanceType<TCleanStateBase>;
 
-export type CleanState<TState extends object> = InstanceType<typeof _CleanState<TState>>;
+interface ICleanStateConstructor {
+	new <TState extends object>(
+		...args: ConstructorParameters<typeof CleanStateBase>
+	): TCleanStateInstance<TState>;
+
+	// update: typeof CleanStateBase.update;
+	/* <TState extends object>(
+		this: CleanStateBase<TState>,
+		stateAndSetters: TUseStateResponses<TState>
+	) => void; // TCleanStateInstance<TState>; */
+}
+interface ICleanStateClass {
+	update: <TState extends object>(
+		this: CleanStateBase<TState>,
+		stateAndSetters: TUseStateResponses<TState>
+	) => void;
+}
+const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;
+let na = new CleanState<{a: string}>();
+
+export type TCleanState<TState extends object> = TCleanStateInstance<TState>; // InstanceType<typeof CleanState<TState>>;
 
 /**
  * Linters complain about the use of a React hook within a loop because:
@@ -72,17 +98,20 @@ const retrieveState = useState;
 type Func = (...params: any[]) => any;
 
 type UseCleanState = <
-	// TState extends object,
-	TStateObjOrFactory extends ((props?: TProps) => object) | object,
+	TState extends object,
+	// TStateObjOrFactory extends ((props?: TProps) => Record<'a' | 'b', number>) | Record<'a' | 'b', number>,
 	TProps extends object = object
 >(
-	_initialState: TStateObjOrFactory,
-	props?: TStateObjOrFactory extends Func ? TProps : undefined
-) => CleanState<TStateObjOrFactory extends Func ? ReturnType<TStateObjOrFactory> : TStateObjOrFactory>;
+	_initialState: ((props?: TProps) => TState) | TState, // TStateObjOrFactory,
+	props?: typeof _initialState extends Func ? TProps : undefined // TProps
+) => TCleanState<TState>; // <TStateObjOrFactory extends Func ? ReturnType<TStateObjOrFactory> : TStateObjOrFactory>;
 
 export const useCleanState: UseCleanState = (_initialState, props) => {
 	const initialState = typeof _initialState === 'function' ? _initialState(props) : _initialState;
 	type TState = typeof initialState;
+
+	// props?.s
+	const cleanState = useMemo(() => new CleanState<TState>(), []);
 
 	const stateKeys = Object.keys(initialState);
 	const [initialCount] = useState(stateKeys.length);
@@ -97,10 +126,8 @@ export const useCleanState: UseCleanState = (_initialState, props) => {
 		stateAndSetters[key] = retrieveState(initialState[key]);
 	}
 
-	// @todo Refactor to return consistent state instance each render.
-	// Though useState gives us persistent references for values and setters,
-	// so keeping the CleanState wrapper persistent may be unnecessary.
-	return new _CleanState<TState>(stateAndSetters);
+	CleanState.update.call(cleanState, stateAndSetters);
+	return cleanState;
 };
 
 /**
