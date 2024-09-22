@@ -10,7 +10,7 @@ export class ComponentLogic<TState extends object, TProps extends object, THooks
 	declare props: TProps;
 	declare hooks: THooks;
 
-	useCustomHooks?: () => THooks;
+	useHooks?: () => THooks;
 };
 
 export interface ComponentLogicConstructor<TState extends object, TProps extends object, THooks extends object> extends Constructor<ComponentLogic<TState, TProps, THooks>> {
@@ -46,7 +46,8 @@ export const useLogic: UseLogic = (Methods, props) => {
 
 	methods.state = state;
 	methods.props = props;
-	methods.hooks = methods.useCustomHooks?.() || {};
+
+	methods.hooks = methods.useHooks?.() || {};
 
 	return methods;
 };

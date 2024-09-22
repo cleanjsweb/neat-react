@@ -7,17 +7,56 @@ import { ComponentLogic,  useLogic } from './logic';
 
 type Obj = Record<string, any>;
 
-type AsyncAllowedEffectCallback = () => IVoidFunction | Promise<IVoidFunction>;
+type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
 
 export const noOp = () => {};
 
 export class ComponentInstance<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends ComponentLogic<TState, TProps, THooks> {
+
+	/**
+	 * Runs only _before_ first render, i.e before the component instance is mounted.
+	 * Useful for logic that is involved in determining what to render.
+	 * 
+	 * Updating local state from in here will abort the render cycle early, before changes are committed to the DOM,
+	 * and prompt React to immediately rerender the component with the updated state value(s).
+	 * 
+	 * Ignored on subsequent rerenders.
+	 */
 	beforeMount: IVoidFunction = () => {};
+	/**
+	 * Runs only **_after_** first render, i.e after the component instance is mounted.
+	 * 
+	 * Should usually only be used for logic that does not directly take part in determining what to render, like
+	 * synchronize your component with some external system.
+	 * 
+	 * Ignored on subsequent rerenders.
+	 * 
+	 * Returns a cleanup function.
+	 */
 	onMount: AsyncAllowedEffectCallback = () => noOp;
 
+	/**
+	 * Runs _before_ every render cycle, including the first.
+	 * Useful for logic that is involved in determining what to render.
+	 * 
+	 * Updating local state from in here will abort the render cycle early, before changes are committed to the DOM,
+	 * and prompt React to immediately rerender the component with the updated state value(s).
+	 */
 	beforeRender: IVoidFunction = () => {};
+	/**
+	 * Runs **_after_** every render cycle, including the first.
+	 * 
+	 * Should usually only be used for logic that does not directly take part in determining what to render, like
+	 * synchronize your component with some external system.
+	 * 
+	 * Returns a cleanup function.
+	 */
 	onRender: AsyncAllowedEffectCallback = () => noOp;
 
+	/**
+	 * Runs when the component is unmounted.
+	 * It is called _after_ the cleanup function returned by onMount.
+	 */
 	cleanUp: IVoidFunction = () => {};
 };
 
@@ -59,6 +98,7 @@ export const useMountCallbacks = <TInstance extends ComponentInstance<any, any, 
 			const doCleanUp = (runMountCleaners: IVoidFunction) => {
 				runMountCleaners?.();
 
+				// onDismount? willUnmount?
 				instance.cleanUp?.();
 			};
 
@@ -72,7 +112,7 @@ export const useMountCallbacks = <TInstance extends ComponentInstance<any, any, 
 };
 
 export const useInstance: UseInstance = (Component, props) => {
-	// useCustomHooks.
+	// useHooks.
 	const instance = useLogic(Component, props);
 
 	// beforeMount, onMount, cleanUp.
