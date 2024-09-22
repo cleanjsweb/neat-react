@@ -8,6 +8,8 @@ type Optional<
 		: BaseType | undefined
 )
 
+type Awaitable<Type> = Type | Promise<Type>;
+
 type Constructor<
 	TInstance extends any = any,
 	TParams extends any[] = never[]
