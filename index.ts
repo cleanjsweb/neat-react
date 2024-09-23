@@ -4,19 +4,21 @@ export * from "@/classy";
 
 
 // PS: Document component inheritance pattern with lifecycle callback arrays and namespaces.
-
 // Due to react's remounting behaviour, components must externally track when some logic has run, if it really really must only ever run once per mounted instance. Tricky to get right for components that may have multiple instance rendered simultaneously at different parts of a page.
 
-// Note: There is an alternative clean-state implementation that uses a single useState call and passes the clean state instance.
-// Then when a state setter is used, it mutates the cleanstate object, then calls setState on the updated cleanstate.
-// But setState might ignore calls with the same object ref as the existing state value, so perhaps create a new cleanstate
-// instance instead, spreading existing values with the changed values, and call setState with that.
-// It could be more performant as it would remove the need for looping over Object.keys in useCleanState.
-// Investigate this for a potential minor version update.
 
-
-// useCleanState => useState
+// useCleanState => useState, separate call for each key
+// useMergedState => useState, same call for all keys
 // useMethods => useCallback
 // useLogic => useCallback + all other hook calls.
 // useInstance => useLogic + lifecycle methods.
 
+
+/* 
+withFetchApi(baseUrl); To mimic axios.get and axios.post type calls.
+@cleanweb/mem-store - Release global-store package here.
+Use mem-store to cache requests in createApi(); Use md5 hashed url as key.
+@todo Add simple persistence layer with indexed db.
+@cleanweb/subscribable - To publish changes in the data to subscribers.
+@cleanweb/reactive-data - To combine all 4.
+*/

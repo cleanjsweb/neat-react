@@ -20,6 +20,7 @@
     "./base": "./build/base/index.js",
     "./classy": "./build/classy/index.js",
     "./state": "./build/base/state.js",
+    "./state/merged": "./build/base/merged-state.js",
     "./methods": "./build/base/methods.js",
     "./logic": "./build/classy/logic.js",
     "./instance": "./build/classy/instance.js",
