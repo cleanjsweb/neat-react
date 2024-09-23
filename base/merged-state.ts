@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 
 class MergedState<TState extends object> {
-	static refresh<TState extends object>(this: MergedState<TState>,) {
-		this.useRetrieveState();
+	static useRefresh<TState extends object>(this: MergedState<TState>,) {
+		[this._values_, this.setState] = useState(this.initialState);
 	}
 
 	reservedKeys: string[];
@@ -14,9 +14,6 @@ class MergedState<TState extends object> {
 	private setState: (value: TState) => void;
 	private _setters_ = {} as {
 		[Key in keyof TState]: (value: TState[Key]) => void;
-	};
-	private useRetrieveState = () => {
-		[this._values_, this.setState] = useState(this.initialState);
 	};
 
 	get put() {
@@ -71,6 +68,6 @@ class MergedState<TState extends object> {
 
 export const useMergedState = <TState extends object>(initialState: TState) => {
 	const cleanState = useMemo(() => new MergedState(initialState), []) as MergedState<TState> & TState;
-	MergedState.refresh.call(cleanState);
+	MergedState.useRefresh.call(cleanState);
 	return cleanState;
 };

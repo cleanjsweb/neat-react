@@ -13,6 +13,13 @@ export * from "@/classy";
 // useLogic => useCallback + all other hook calls.
 // useInstance => useLogic + lifecycle methods.
 
+/* 
+- Write usage doc
+- Push to git and publish to site
+	- Follow-up personal post on class component inheritance can be published on GH Pages from profile repo.
+- Publish to NPM
+- Finalize package and repo names, then post to Twitter.
+*/
 
 /* 
 withFetchApi(baseUrl); To mimic axios.get and axios.post type calls.

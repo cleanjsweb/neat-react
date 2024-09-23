@@ -12,12 +12,32 @@ type TUseStateResponses<TState extends object> = {
 
 
 class CleanStateBase<TState extends object> {
-	static update: ICleanStateClass['update'] = function update<TState extends object>(this: CleanStateBase<TState>, stateAndSetters: TUseStateResponses<TState>) {
-		Object.entries<TUseStateArray<TState>>(stateAndSetters).forEach(([key, responseFromUseState]) => {
-			if (this.reservedKeys.includes(key)) throw new Error(`The name "${key}" is reserved by CleanState and cannot be used to index state variables. Please use a different key.`);
+	reservedKeys: string[];
+	valueKeys: string[];
 
-			this.valueKeys.push(key);
-			[this._values_[key], this._setters_[key]] = responseFromUseState;
+	private _values_ = {} as TState;
+	private _initialValues_: TState;
+	private _setters_ = {} as {
+		[Key in keyof TState]: (value: TState[Key]) => void;
+	};
+
+	constructor(initialState: TState) {
+		this.reservedKeys = Object.keys(this);
+
+		/**
+		 * The keys from the initial state object.
+		 * By capturing and storing the value once, we ensure that any potential changes to the object,
+		 * or irregularities in the order of keys returned by Object.keys,
+		 * will not affect the order of subsequent useState calls.
+		 * Only keys provided on the initial call will be recognized,
+		 * since CleanState is instantiated only once with useMemo,
+		 * and they will always be processed in a consistent order during rerenders.
+		 */
+		this.valueKeys = Object.keys(initialState);
+		this._initialValues_ = { ...initialState };
+
+		this.valueKeys.forEach((key) => {
+			if (this.reservedKeys.includes(key)) throw new Error(`The name "${key}" is reserved by CleanState and cannot be used to index state variables. Please use a different key.`);
 
 			const self = this;
 			Object.defineProperty(this, key, {
@@ -30,23 +50,38 @@ class CleanStateBase<TState extends object> {
 				enumerable: true,
 			});
 		});
+	}
+
+	static update = function update<TState extends object>(this: CleanStateBase<TState>) {
+		if (!(this instanceof CleanState)) throw new Error('CleanState.update must be called with `this` value set to a CleanState instance. Did you forget to use `.call` or `.apply`? Example: CleanState.update.call(cleanState);');
+
+		/**
+		 * Linters complain about the use of a React hook within a loop because:
+		 * > By following this rule, you ensure that Hooks are called in the same order each time a component renders.
+		 * > That’s what allows React to correctly preserve the state of Hooks between multiple useState and useEffect calls. 
+		 * To resolve this, we're calling `useState` via an alias `retrieveState`.
+		 * Bypassing this rule is safe here because `useCleanState` is a special case,
+		 * and it guarantees that the same useState calls will be made on every render in the exact same order.
+		 * Therefore, it is safe to silence the linters, and required for this implementation to work smoothly.
+		 */
+		const retrieveState = useState;
+
+		this.valueKeys.forEach((key) => {
+			[this._values_[key], this._setters_[key]] = retrieveState(this.initialState[key]);
+		})
+
+		/* Object.entries<TUseStateArray<TState>>(stateAndSetters).forEach(([key, responseFromUseState]) => {
+			[this._values_[key], this._setters_[key]] = responseFromUseState;
+		}); */
 
 		// return this;
-	};
-
-	reservedKeys: string[];
-	valueKeys: string[] = [];
-	private _values_ = {} as TState;
-	private _setters_ = {} as {
-		[Key in keyof TState]: (value: TState[Key]) => void;
 	};
 
 	get put() {
 		return { ...this._setters_ };
 	}
-
-	constructor() {
-		this.reservedKeys = Object.keys(this);
+	get initialState() {
+		return { ...this._initialValues_ };
 	}
 
 	putMany = (newValues: Partial<TState>) => {
@@ -60,7 +95,7 @@ class CleanStateBase<TState extends object> {
 
 type TCleanStateInstance<TState extends object> = TState & CleanStateBase<TState>;
 type TCleanStateBase = typeof CleanStateBase;
-let a: InstanceType<TCleanStateBase>;
+type TCleanStateBaseKeys = keyof TCleanStateBase;
 
 interface ICleanStateConstructor {
 	new <TState extends object>(
@@ -73,27 +108,22 @@ interface ICleanStateConstructor {
 		stateAndSetters: TUseStateResponses<TState>
 	) => void; // TCleanStateInstance<TState>; */
 }
-interface ICleanStateClass {
-	update: <TState extends object>(
+
+// Typescript said: A mapped type may not declare properties or methods.
+// Instead of simply saying: Mapped type cannot be used in interface. Use type instead.
+
+type ICleanStateClass = {
+	/* update: <TState extends object>(
 		this: CleanStateBase<TState>,
 		stateAndSetters: TUseStateResponses<TState>
-	) => void;
+	) => void; */
+	// update: (typeof CleanStateBase)['update'],
+	[Key in TCleanStateBaseKeys]: (typeof CleanStateBase)[Key];
 }
 const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;
-let na = new CleanState<{a: string}>();
+
 
 export type TCleanState<TState extends object> = TCleanStateInstance<TState>; // InstanceType<typeof CleanState<TState>>;
-
-/**
- * Linters complain about the use of a React hook within a loop because:
- * > By following this rule, you ensure that Hooks are called in the same order each time a component renders.
- * > That’s what allows React to correctly preserve the state of Hooks between multiple useState and useEffect calls. 
- * To resolve this, we're calling `useState` via an alias `retrieveState`.
- * Bypassing this rule is safe here because `useCleanState` is a special case,
- * and it guarantees that the same useState calls will be made on every render in the exact same order.
- * Therefore, it is safe to silence the linters, and required for this implementation to work smoothly.
- */
-const retrieveState = useState;
 
 type Func = (...params: any[]) => any;
 
@@ -107,26 +137,12 @@ type UseCleanState = <
 ) => TCleanState<TState>; // <TStateObjOrFactory extends Func ? ReturnType<TStateObjOrFactory> : TStateObjOrFactory>;
 
 export const useCleanState: UseCleanState = (_initialState, props) => {
-	const initialState = typeof _initialState === 'function' ? _initialState(props) : _initialState;
+	const initialState = typeof _initialState === 'function' ? useMemo(() => _initialState(props), []) : _initialState;
 	type TState = typeof initialState;
 
-	// props?.s
-	const cleanState = useMemo(() => new CleanState<TState>(), []);
+	const cleanState = useMemo(() => new CleanState<TState>(initialState), []);
 
-	const stateKeys = Object.keys(initialState);
-	const [initialCount] = useState(stateKeys.length);
-
-	if (stateKeys.length !== initialCount) {
-		throw new Error('The keys in your state object must be consistent throughout your components lifetime. Look up "rules of hooks" for more context.');
-	}
-
-	const stateAndSetters = {};
-
-	for (let key of stateKeys) {
-		stateAndSetters[key] = retrieveState(initialState[key]);
-	}
-
-	CleanState.update.call(cleanState, stateAndSetters);
+	CleanState.update.call(cleanState);
 	return cleanState;
 };
 
