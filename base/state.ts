@@ -12,7 +12,7 @@ type TUseStateResponses<TState extends object> = {
 
 
 class CleanStateBase<TState extends object> {
-	static update <TState extends object>(this: CleanStateBase<TState>, stateAndSetters: TUseStateResponses<TState>) {
+	static update: ICleanStateClass['update'] = function update<TState extends object>(this: CleanStateBase<TState>, stateAndSetters: TUseStateResponses<TState>) {
 		Object.entries<TUseStateArray<TState>>(stateAndSetters).forEach(([key, responseFromUseState]) => {
 			if (this.reservedKeys.includes(key)) throw new Error(`The name "${key}" is reserved by CleanState and cannot be used to index state variables. Please use a different key.`);
 
@@ -32,7 +32,7 @@ class CleanStateBase<TState extends object> {
 		});
 
 		// return this;
-	}
+	};
 
 	reservedKeys: string[];
 	valueKeys: string[] = [];
