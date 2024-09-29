@@ -16,7 +16,7 @@ Figuring these things out at the point of writing the component is one thing, bu
 
 The imperative approach for working with lifecycle in function components makes for some very unintuitive components, and at the very least adds a notable cognitive overhead to reading and writing larger components. Creating a declarative mechanism for hooking into the lifecycle of function components without having to simply switch to a class component would be a great improvement. And this is what `useInstance` achieves. Here is what it looks like:
 
-```js
+```jsx
 class ButtonComponent extends ComponentInstance {
 	static getInitialState = () => {
 		return {

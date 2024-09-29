@@ -1,7 +1,7 @@
 ## ClassComponent
 This class builds on `useInstance` with one simple addition. It moves the function component template directly into the class. This allows the class to truly be a self contained entity containing everything that makes up the component. When you write a class that extends `ClassComponent`, you no longer need to call `useInstance` in the template function. This is handled for you internally. You template component can instead access the component instance using the `this` keyword, as it is now part of the class, and therefore part of the instance. As far as React is concerned, this template function is the real component, it is all React sees. The rest of the class provides the logic that powers the component, allowing the function component to be just a template. The example below shows how to use it.
 
-```js
+```jsx
 class Button extends ClassComponent {
 	static getInitialState = (props) => {
 		return {
@@ -67,7 +67,7 @@ export default Button.FC();
 Having a class-based way to use function components makes it much easier to migrate older `React.Component` classes to function components, while maintaining much of their existing semantics. If you want to move because class components are increasingly being discouraged, or because you would like to be able to use React hooks, the `ClassComponent` class allows you to do this with significantly less effort. See below for a side-by-side comparison.
 
 **React.Component**
-```js
+```jsx
 class Button extends React.Component {
 	constructor(props) {
 		super(props);
@@ -124,7 +124,7 @@ class Button extends React.Component {
 ```
 
 **ClassComponent**
-```js
+```jsx
 class Button extends ClassComponent {
 	static getInitialState = (props) => {
 		return {
@@ -184,7 +184,7 @@ export default Button.FC();
 ## The `<Use>` Component
 If you simply want to use hooks in your `React.Component` class without having to rewrite anything, this module also exports a `<Use>` component that helps you achieve this easily. The mechanism is simple, and you could easily [write a minimal function component to achieve this](https://feranmi.dev/posts/react-class-hook) yourself. `Use` is exported as a convenience if you would rather not write one yourself. Here's how to use it.
 
-```js
+```jsx
 import { useGlobalStore } from '@/hooks/store';
 
 class Button extends React.Component {

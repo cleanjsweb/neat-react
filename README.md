@@ -5,7 +5,7 @@ This package provides a suite of tools for writing cleaner React function compon
 The `useLogic` allows you to write your component's logic outside the function component's body, and helps you keep them all better organized. Here's what a function component looks like with the `useLogic` hook.
 
 **Before**
-```js
+```jsx
 const Button = (props) => {
 	const { param } = props;
 
@@ -39,7 +39,7 @@ const Button = (props) => {
 ```
 
 **After**
-```js
+```jsx
 class ButtonLogic {
 	static getInitialState = () => {
 		return {
@@ -96,7 +96,7 @@ For a fuller discussion of how `useLogic` works, start at the [clean-state docum
 In addition to having cleaner and more structured component logic, you can also simplify the process of working with your component's lifecycle with the final two exported members. The `useInstance` hook builds on the functionality of `useLogic` and adds lifecyle methods to the class. This means the class can now be thought of as truly representing a single instance of a React component. The `ClassComponent` class extends this to its fullest by allowing you to write the function component itself as a method within the class, and removing the need to explicitly call `useInstance`.
 
 **Before**
-```js
+```jsx
 const Button = (props) => {
 	const [state1, setState1] = useState(props.defaultValue);
 	const [state2, setState2] = useState();
@@ -151,7 +151,7 @@ export default Button;
 ```
 
 **After**
-```js
+```jsx
 class Button extends ClassComponent {
 	static getInitialState = (props) => {
 		return {
@@ -262,7 +262,7 @@ For more details on the lifecycle methods and other API reference, see the [`Cla
 ## The `<Use>` Component
 If you only want to use hooks in your `React.Component` class without having to refactor anything, use the [`Use` component](./docs/class-component/index#the-use-component).
 
-```js
+```jsx
 import { useGlobalStore } from '@/hooks/store';
 
 class Button extends React.Component {

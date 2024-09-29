@@ -16,7 +16,7 @@ type Constructor<
 
 /**
  * @example
- * ```js
+ * ```jsx
  * const getNumber: AsyncFunction<number> = async () => {
  * 	await oneTickDelay();
  * 	return 5;

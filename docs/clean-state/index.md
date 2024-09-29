@@ -1,7 +1,7 @@
 # Cleaner State Management for React Function Components
 Say you have a component with some state like this:
 
-```js
+```jsx
 const Button = (props) => {
 	const [label, setLabel] = useState('Click me');
 	const [clicked, setClicked] = useState(false);
@@ -16,7 +16,7 @@ const Button = (props) => {
 ```
 
 As noted in the [introductory page](../index.md), you may consider writing a custom hook to simplify working with these state values.
-```js
+```jsx
 const useButtonState = (props) => {
 	const [label, setLabel] = useState('Click me');
 	const [clicked, setClicked] = useState(false);
@@ -77,7 +77,7 @@ const Button = () => {
 
 2. Using JavaScript setters, state properties can also be assigned directly, with the same effect as if you called the setter function.
 	1. Note that this only works when referencing the property directly on the state object, as in `state.clicked = true`. It will not have the intended effect if the value if first assigned to a separate local variable. So the example below will simply update the local varibale without actually updating the component's state:
-	```js
+	```jsx
 	let { clicked } = useCleanState({ clicked: false });
 	const onClick = () => clicked = true;
 	```
