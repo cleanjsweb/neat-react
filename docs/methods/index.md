@@ -1,7 +1,7 @@
 ## useMethods
 When thinking about cleaning up function components, something that is definitely more important than state variables, is the closure functions that require up-to-date access to those state variables and props, and thus cannot simply be defined outside the component. Consider the following example.
 
-```js
+```jsx
 const Button = () => {
 	const [state1, setState1] = useState();
 	const [state2, setState2] = useState();
@@ -36,7 +36,7 @@ If you've been writing React for a few years, you may be thinking about Class co
 
 But, let us begin from first principles. We return to our example component, and attempt to leverage custom hooks, with state received through arguments.
 
-```js
+```jsx
 const submit = (state1, state2, setSubmitted) => {
 	sendData(state1, state2);
 	setSubmitted(true);
@@ -55,7 +55,7 @@ const Button = () => {
 }
 ```
 
-Extracted. No hook. This solves most of our concerns. The logic is extracted from the main component, so it's cleaner; the function's reference identity is constant throughout the components lifecycle, so we _could_ avoid unnecessary rerenders in some cases (see below); and there is no risk of executing with stale data since all required values must be explicitly passed in as arguments, and are captured at the moment the function is called.
+This solves most of our concerns. The logic is extracted from the main component, so it's cleaner; the function's reference identity is constant throughout the components lifecycle, so we _could_ avoid unnecessary rerenders in some cases (see below); and there is no risk of executing with stale data since all required values must be explicitly passed in as arguments, and are captured at the moment the function is called.
 
 Unfortunately, a limitation shows up if we need to pass the function as a prop to a child component, and it requires arguments from the parent's context. Unlike with closures and `useCallback`, this standalone function does not encapsulate all of the values it needs to operate successfully. Instead they must be provided at call time. But in this specific example, the child component doesn't and shouldn't have access to, or know about, these values. So to get around this, we must wrap it ourselves.
 
@@ -63,7 +63,7 @@ We could do this with an inline function as shown in the onClick prop above. Now
 
 Alternatively, we could improve that with a 2-line `useCallback` approach like so:
 
-```js
+```jsx
 // Declare arguments separately to ensure that the arguments passed never fall out of sync with the dependency array.
 const args = [state1, state2, setSubmitted];
 const _submit = useCallback(() => submit(...args), args);
@@ -81,7 +81,7 @@ And of course there is the problem of the ever increasing arguments list, which 
 
 So, our attempt at improving the initial example can once again evolve. See the improved version below.
 
-```js
+```jsx
 const _submit = (state, props) => {
 	sendData(state.state1, state.state2);
 	state.submitted = true;
@@ -111,11 +111,7 @@ Regardless, it would be nice to get rid of the boilerplate altogether, and have 
 
 `useMethod` completely simplifies this. It allows you write component logic outside the component's main function body, in any number of separate functions, and guarantees that they will always have access to the latest versions of state and props. You instantiate all of your component's external functions with a single call to the hook, and can then use them throughout the component or pass them as props without any additional concerns. The implementation assumes that it will be used together with `useCleanState`. See the example below.
 
-> Note that if you are using multiple calls to `useCleanState`, you will have to group all the state objects together into a single object to pass to `useMethods`. This is necessary if you want your methods to have access to all individual state objects. The instance returned by each call to `useMethods` only has access to the state object passed in to the `useMethods` call.
-
-> Fun Fact: The above reveals a new avenue for consuming pieces of shared logic between components, and giving them access to a subset of your component's state. You can import multiple `Methods` classes and instantiate each with a separate `clean-state` object. Whether this is something you would want to — or even should — do is another question. But the option is there if you want or need it.
-
-```js
+```jsx
 class ButtonMethods {
 	submit = () => {
 		const { state1, state2 } = this.state;
@@ -150,3 +146,7 @@ const Button = (props) => {
 	);
 }
 ```
+
+> Note that if you are using multiple calls to `useCleanState`, you will have to group all the state objects together into a single object to pass to `useMethods`. This is necessary if you want your methods to have access to all individual state objects. The instance returned by each call to `useMethods` only has access to the state object passed in to the `useMethods` call.
+
+> Fun Fact: The above reveals a new avenue for consuming pieces of shared logic between components, and giving them access to a subset of your component's state. You can import multiple `Methods` classes and instantiate each with a separate `clean-state` object. Whether this is something you would want to — or even should — do is another question. But the option is there if you want or need it.
