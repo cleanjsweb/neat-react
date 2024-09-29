@@ -1,9 +1,8 @@
-import type { FunctionComponent, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import type { ComponentInstanceConstructor } from './instance';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useEffect } from 'react';
 import { ComponentInstance, useInstance } from './instance';
-import { useMountState } from '@/base';
 
 type Obj = Record<string, any>;
 type IComponentConstructor = ComponentInstanceConstructor<any, any, any> & typeof ClassComponent<any, any, any>;
@@ -55,3 +54,28 @@ export class ClassComponent<TState extends Obj, TProps extends Obj, THooks exten
 		return Wrapper;
 	};
 }
+
+
+type AnyFunction = (...args: any) => any;
+
+interface HookWrapperProps<THookFunction extends AnyFunction> {
+	hook: THookFunction,
+	argumentsList: Parameters<THookFunction>,
+	onUpdate: (output: ReturnType<THookFunction>) => void,
+}
+
+type ClassComponentHookWrapper = <Hook extends AnyFunction>(
+	props: HookWrapperProps<Hook>
+) => null;
+
+
+export const Use: ClassComponentHookWrapper = ({ hook: useGenericHook, argumentsList, onUpdate }) => {
+	const output = useGenericHook(...argumentsList);
+
+	useEffect(() => {
+		onUpdate(output);
+	}, [output]);
+
+	return null;
+};
+
