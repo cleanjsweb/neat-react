@@ -118,20 +118,16 @@ export const useInstance: UseInstance = (Component, props) => {
 	// beforeMount, onMount, cleanUp.
 	useMountCallbacks(instance);
 
+	// beforeRender.
 	instance.beforeRender?.();
+	
+	// onRender.
 	useEffect(() => {
 		const cleanupAfterRerender = instance.onRender?.();
 
 		return () => {
-			const doCleanUp = (runRenderCleanup: IVoidFunction) => {
-				runRenderCleanup?.();
-			};
-
-			if (typeof cleanupAfterRerender === 'function') {
-				doCleanUp(cleanupAfterRerender);
-			} else {
-				cleanupAfterRerender?.then(doCleanUp);
-			}
+			if (typeof cleanupAfterRerender === 'function') cleanupAfterRerender();
+			else cleanupAfterRerender?.then((cleanUp) => cleanUp?.());
 		};
 	});
 

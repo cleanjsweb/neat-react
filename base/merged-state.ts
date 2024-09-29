@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 
 class MergedState<TState extends object> {
-	static useRefresh<TState extends object>(this: MergedState<TState>,) {
+	static useRefresh<TState extends object>(this: MergedState<TState>) {
 		[this._values_, this.setState] = useState(this.initialState);
 	}
 
