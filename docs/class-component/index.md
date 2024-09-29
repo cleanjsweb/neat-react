@@ -59,7 +59,7 @@ class Button extends ClassComponent {
 	</>;
 }
 
-// Call FC() to get a function component that you can render like any other function component.
+// Call the static method FC() to get a function component that you can render like any other function component.
 export default Button.FC();
 ```
 
@@ -177,7 +177,7 @@ class Button extends ClassComponent {
 	</>;
 }
 
-// Call FC() to get a function component that you can render like any other function component.
+// Call the static method FC() to get a function component that you can render like any other function component.
 export default Button.FC();
 ```
 

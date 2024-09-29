@@ -1,5 +1,5 @@
 # Introduction
-[Visit the quick start doc.](../README)
+[Visit the quick start doc.](https://github.com/cleanjsweb/neat-react)
 
 # Structured React Function Components
 If you've had to maintain larger React function components, you may relate to the feeling of it feeling cluttered, with logic that can be difficult to follow.

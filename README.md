@@ -1,7 +1,9 @@
-# Structured React Function Components — Quick Start
+# Structured & Cleaner React Function Components
+
+## Quick Start
 This package provides a suite of tools for writing cleaner React function components. It is particularly useful for larger components with lots of state variables and multiple closure functions that need to access those variables. The most likely use cases will use one of the two main exported members.
 
-## Extracting and Structuring Component Logic
+### Extracting and Structuring Component Logic
 The `useLogic` allows you to write your component's logic outside the function component's body, and helps you keep them all better organized. Here's what a function component looks like with the `useLogic` hook.
 
 **Before**
@@ -85,14 +87,14 @@ const Button = (props) => {
 }
 ```
 
-The `useLogic` hook combines the functionality of two base hooks which can also be used directly. They are [`useCleanState`](./docs/clean-state/index.md) and [`useMethods`](./docs/methods/index.md). `useCleanState` can be used independently if you only want a cleaner state management API. `useMethods` is designed to be used together with `useCleanState`, but rather than calling both individually, you may find it more convenient to use `useLogic`, which combines both and also adds additional functionality.
+The `useLogic` hook combines the functionality of two base hooks which can also be used directly. They are [`useCleanState`](https://cleanjsweb.github.io/neat-react/clean-state/index) and [`useMethods`](https://cleanjsweb.github.io/neat-react/methods/index). `useCleanState` can be used independently if you only want a cleaner state management API. `useMethods` is designed to be used together with `useCleanState`, but rather than calling both individually, you may find it more convenient to use `useLogic`, which combines both and also adds additional functionality.
 
 > It is possible to have multiple calls to `useLogic` in the same component. This allows your function component template to consume state and logic from multiple sources, or it can simply be used to group distinct pieces of related logic into separate classes.
 
-For a fuller discussion of how `useLogic` works, start at the [clean-state documentation](./docs/clean-state/index.md). For an API reference, see the [API reference](./docs/logic/api.md).
+For a fuller discussion of how `useLogic` works, start at the [clean-state documentation](https://cleanjsweb.github.io/neat-react/clean-state/index). For an API reference, see the [API reference](https://cleanjsweb.github.io/neat-react/logic/api).
 
 
-## Working With Lifecycle, and Migrating From React.Component to a Function Component
+### Working With Lifecycle, and Migrating From React.Component to a Function Component
 In addition to having cleaner and more structured component logic, you can also simplify the process of working with your component's lifecycle with the final two exported members. The `useInstance` hook builds on the functionality of `useLogic` and adds lifecyle methods to the class. This means the class can now be thought of as truly representing a single instance of a React component. The `ClassComponent` class extends this to its fullest by allowing you to write the function component itself as a method within the class, and removing the need to explicitly call `useInstance`.
 
 **Before**
@@ -248,19 +250,19 @@ class Button extends ClassComponent {
 	}
 }
 
-// Call FC() to get a function component that you can render like any other function component.
+// Call the static method FC() to get a function component that you can render like any other function component.
 export default Button.FC();
 ```
 
-> If you would like to keep the actual function component separate and call `useInstance` directly, see the [`useInstance` docs](./docs/instance/index.md) for more details and examples.
+> If you would like to keep the actual function component separate and call `useInstance` directly, see the [`useInstance` docs](https://cleanjsweb.github.io/neat-react/instance/index) for more details and examples.
 
 At its core, any component you write with `ClassComponent` is still just a React function component. This has the added advantage of making it significantly easier to migrate class components written with `React.Component` to the newer hooks-based function components, while still maintaining the overall structure of a class component, and the advantages that the class component approach provided.
 
-For a fuller discussion of how this works, start at the [`useInstance` documentation](./docs/instance/index.md).
-For more details on the lifecycle methods and other API reference, see the [`ClassComponent` API docs](./docs/class-component/api.md).
+For a fuller discussion of how this works, start at the [`useInstance` documentation](https://cleanjsweb.github.io/neat-react/instance/index).
+For more details on the lifecycle methods and other API reference, see the [`ClassComponent` API docs](https://cleanjsweb.github.io/neat-react/class-component/api).
 
-## The `<Use>` Component
-If you only want to use hooks in your `React.Component` class without having to refactor anything, use the [`Use` component](./docs/class-component/index#the-use-component).
+### The `<Use>` Component
+If you only want to use hooks in your `React.Component` class without having to refactor anything, use the [`Use` component](https://cleanjsweb.github.io/neat-react/class-component/index#the-use-component).
 
 ```jsx
 import { useGlobalStore } from '@/hooks/store';
