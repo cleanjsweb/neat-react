@@ -91,7 +91,8 @@ The `useLogic` hook combines the functionality of two base hooks which can also 
 
 > It is possible to have multiple calls to `useLogic` in the same component. This allows your function component template to consume state and logic from multiple sources, or it can simply be used to group distinct pieces of related logic into separate classes.
 
-For a fuller discussion of how `useLogic` works, start at the [clean-state documentation](https://cleanjsweb.github.io/neat-react/clean-state/index). For an API reference, see the [API reference](https://cleanjsweb.github.io/neat-react/logic/api).
+For a fuller discussion of how `useLogic` works, start at the [clean-state documentation](https://cleanjsweb.github.io/neat-react/clean-state/index).    
+For an API reference, see the [API reference](https://cleanjsweb.github.io/neat-react/logic/api).
 
 
 ### Working With Lifecycle, and Migrating From a React.Component Class to a Function Component
@@ -273,15 +274,13 @@ export default Button.FC();
 
 At its core, any component you write with `ClassComponent` is still just a React function component, with some supporting logic around it. This has the added advantage of making it significantly easier to migrate class components written with `React.Component` to the newer hooks-based function components, while still maintaining the overall structure of a class component, and the advantages that the class component approach provided.
 
-For a fuller discussion of how this works, start at the [`useInstance` documentation](https://cleanjsweb.github.io/neat-react/instance/index).
+For a fuller discussion of how this works, start at the [`useInstance` documentation](https://cleanjsweb.github.io/neat-react/instance/index).    
 For more details on the lifecycle methods and other API reference, see the [`ClassComponent` API docs](https://cleanjsweb.github.io/neat-react/class-component/api).
 
 ### The `<Use>` Component
 If you only want to use hooks in your `React.Component` class without having to refactor anything, use the [`Use` component](https://cleanjsweb.github.io/neat-react/class-component/index#the-use-component).
 
 ```jsx
-import { useGlobalStore } from '@/hooks/store';
-
 class Button extends React.Component {
 	handleGlobalStore = ([store, updateStore]) => {
 		this.setState({ userId: store.userId });
