@@ -181,6 +181,17 @@ class Button extends ClassComponent {
 export default Button.FC();
 ```
 
+## What About `this`?
+This is a non-issue. Simply use arrow functions.
+
+If you're still unsure, it might help to consider that the logic of the `this` value in JavaScript is not as complicated as you might think. The value of `this` can be demystified in 5 sentences.
+1. Only relevant in function-keyword functions. Everything else inherits from parent context. At the root level, it's undefined, or globalThis (i.e `window`) in older browsers.
+2. Refers to the object before the dot when the function is called. It's evaluated at runtime, so if the method is passed around, `this` value changes accordingly. The key here is "before the dot".
+3. If there is no dot...
+4. To decide what `this` will be at the time of writing the code, use an arrow function, or use Function.bind(); `bind` can be called inline with an assignment at the time or declaring the function, so you don't have to declare the function first and bind separately. `foo = (function foo(a, b) {}).bind(this);`.
+
+For more details and examples, the website javascript.info has [a brilliant chapter explaining this]() very well.
+
 ## The `<Use>` Component
 If you simply want to use hooks in your `React.Component` class without having to rewrite anything, this module also exports a `<Use>` component that helps you achieve this easily. The mechanism is simple, and you could easily [write a minimal function component to achieve this](https://feranmi.dev/posts/react-class-hook) yourself. `Use` is exported as a convenience if you would rather not write one yourself. Here's how to use it.
 
