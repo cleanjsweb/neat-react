@@ -23,15 +23,8 @@ const setFunctionName = (func: Function, newName: string) => {
 
 
 export class ClassComponent<TState extends Obj, TProps extends Obj, THooks extends Obj> extends ComponentInstance<TState, TProps, THooks> {
-	Render: FunctionComponent<TProps>;
-	// Render: () => ReactElement<any, any> | null;
-
-	/**
-	 * Use this to let React know whenever you would like all of your instance's state to be reset.
-	 * When the value is changed, React will reset all state variables to their initial value the next time your component re-renders.
-	 * @see https://react.dev/learn/you-might-not-need-an-effect#resetting-all-state-when-a-prop-changes
-	 */
-	instanceId?: string;
+	// Render: FunctionComponent<TProps>;
+	Render: () => ReactElement<any, any> | null;
 
 	static FC = function FC <IComponentType extends IComponentConstructor>(this: IComponentType, _Component?: IComponentType) {
 		const Component = _Component || this;
@@ -41,33 +34,19 @@ export class ClassComponent<TState extends Obj, TProps extends Obj, THooks exten
 			'Attempted to initialize ClassComponent with invalid Class type. Either pass a class that extends ClassComponent to FC (e.g `export FC(MyComponent);`), or ensure it is called as a method on a ClassComponent constructor type (e.g `export MyComponent.FC()`).'
 		);
 
-		// const timestamp = Date.now();
-
 		const Wrapper = (props: InstanceType<IComponentType>['props']) => {
-			const [key, rerender] = useState<any>(/* timestamp */);
+			const { Render } = useInstance(Component, props);
 
-			const GetInstance = () => {
-				const { Render, instanceId } = useInstance(Component, props);
-				const mounted = useMountState();
-	
-				// Add calling component name to Render function name in stack traces.
-				useMemo(() => setFunctionName(Render, `${Component.name} > Render`), [Render]);
+			// Add calling component name to Render function name in stack traces.
+			useMemo(() => setFunctionName(Render, `${Component.name} > Render`), [Render]);
 
-				// Reset state when instanceId changes.
-				useMemo(() => {
-					if (mounted) rerender(instanceId);
-				}, [instanceId]);
-
-				/**
-				 * It may be impossible to set state within the body of Render,
-				 * since technically, the GetInstance component owns the state and not the Render component.
-				 * Consider using this as a function call instead of JSX to avoid that.
-				 */
-				return <Render />;
-				// return Render();
-			}
-
-			return <GetInstance key={key} />;
+			/**
+			 * It may be impossible to set state within the body of Render,
+			 * since technically, the Wrapper component owns the state and not the Render component.
+			 * Consider using this as a function call instead of JSX to avoid that.
+			 */
+			// if (instance.renderAs === 'component') return <Render />;
+			return Render();
 		}
 
 		// Include calling component name in wrapper function name on stack traces.

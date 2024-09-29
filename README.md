@@ -121,8 +121,6 @@ const Button = (props) => {
 			unsubscribe();
 			window.removeEventListener('resize', onWindowResize);
 		};
-	 // The lifecycle timing easily breaks if the logic is updated to use some state value,
-	 // and someone mistakenly adds that variable to the deps array after being prompted by a linter.
 	}, []);
 
 	// Run *after* every render.
@@ -225,13 +223,6 @@ class Button extends ClassComponent {
 		return unsubscribe;
 	}
 
-	/**
-	 * @see https://react.dev/learn/you-might-not-need-an-effect#resetting-all-state-when-a-prop-changes
-	 * This special instance property allows you to use the state reset feature
-	 * without having to refactor and nest your component.
-	 */
-	instanceId = 42;
-
 	/** You can also separate out discreet chunks of your UI template. */
 	Paragraphs = () => {
 		if (!this.memoizedValue) return null;
@@ -257,6 +248,7 @@ class Button extends ClassComponent {
 	}
 }
 
+// Call FC() to get a function component that you can render like any other function component.
 export default Button.FC();
 ```
 
@@ -265,10 +257,39 @@ export default Button.FC();
 At its core, any component you write with `ClassComponent` is still just a React function component. This has the added advantage of making it significantly easier to migrate class components written with `React.Component` to the newer hooks-based function components, while still maintaining the overall structure of a class component, and the advantages that the class component approach provided.
 
 For a fuller discussion of how this works, start at the [`useInstance` documentation](./docs/instance/index.md).
-For a full list of available lifecycle methods, see the [`ClassComponent` API docs](./docs/class-component/api.md).
+For more details on the lifecycle methods and other API reference, see the [`ClassComponent` API docs](./docs/class-component/api.md).
 
 ## The `<Use>` Component
 If you only want to use hooks in your `React.Component` class without having to refactor anything, use the [`Use` component](./docs/class-component/index#the-use-component).
 
 ```js
+import { useGlobalStore } from '@/hooks/store';
+
+class Button extends React.Component {
+	handleGlobalStore = ([store, updateStore]) => {
+		this.setState({ userId: store.userId });
+		this.store = store;
+		this.updateStore = updateStore;
+	}
+
+	UseHooks = () => {
+		return <>
+			<Use hook={useGlobalStore}
+				onUpdate={handleGlobalStore}
+				argumentsList={[]}
+				key="useGlobalStore"
+			/>
+		</>;
+	}
+
+	render() {
+		const { UseHooks } = this;
+
+		return <>
+			<UseHooks />
+
+			<button>Click me</button>
+		</>;
+	}
+}
 ```

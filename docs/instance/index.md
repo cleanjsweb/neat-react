@@ -68,7 +68,7 @@ const Button = (props) => {
 
 	return <>
 		<p>{self.hooks.memoizedValue}</p>
-		<button onClick={self.methods.submit}>
+		<button onClick={self.submit}>
 			{self.state.label}
 		</button>
 	</>;
