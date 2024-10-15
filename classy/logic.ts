@@ -49,9 +49,5 @@ export const useLogic: UseLogic = (Methods, props) => {
 
 	methods.hooks = methods.useHooks?.() || {};
 
-	// Return a gate object to "passthrough" all methods but filter out properties that should be private.
-	return {
-		...methods,
-		useHooks: undefined,
-	};
+	return methods;
 };

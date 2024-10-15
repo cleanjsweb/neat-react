@@ -150,3 +150,12 @@ const Button = (props) => {
 > Note that if you are using multiple calls to `useCleanState`, you will have to group all the state objects together into a single object to pass to `useMethods`. This is necessary if you want your methods to have access to all individual state objects. The instance returned by each call to `useMethods` only has access to the state object passed in to the `useMethods` call.
 
 > Fun Fact: The above reveals a new avenue for consuming pieces of shared logic between components, and giving them access to a subset of your component's state. You can import multiple `Methods` classes and instantiate each with a separate `clean-state` object. Whether this is something you would want to — or even should — do is another question. But the option is there if you want or need it.
+
+<div style="display:flex;justify-content:space-between;align-items:center;">
+	<a href="">
+		Previous (useCleanState)
+	</a>
+	<a href="">
+		Next (useLogic)
+	</a>
+</div>
