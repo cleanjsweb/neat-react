@@ -26,10 +26,5 @@ export const useMethods: UseMethods = (Methods, state, props) => {
 	methods.state = state;
 	methods.props = props;
 
-	// Return a gate object to "passthrough" all methods but filter out properties that should be private.
-	return {
-		...methods,
-		props: undefined, // Since props already exists in the calling scope, we omit it from the returned object to avoid confusion.
-		state: undefined, // Ditto.
-	};
+	return methods;
 };
