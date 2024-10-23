@@ -126,23 +126,24 @@ const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanS
 export type TCleanState<TState extends object> = TCleanStateInstance<TState>; // InstanceType<typeof CleanState<TState>>;
 
 
-type StateInitFunction = (props?: object) => object;
+type TFunctionType = (...args: any) => object;
 
-type TInitialState<StateParamType> = StateParamType extends StateInitFunction
+type TInitialState<StateParamType> = StateParamType extends TFunctionType
 	? ReturnType<StateParamType>
 	: StateParamType;
 
-type StateInitParameters<StateInitializer> = StateInitializer extends StateInitFunction
+type StateInitParameters<StateInitializer> = StateInitializer extends TFunctionType
 	? Parameters<StateInitializer>
 	: [];
 
-type UseCleanState = <StateInitializer extends StateInitFunction | object>(
+type UseCleanState = <StateInitializer extends TFunctionType | object>(
 	_initialState: StateInitializer,
 	...props: StateInitParameters<StateInitializer>
-) => TCleanState<TInitialState<StateInitializer>>;
+) => TCleanStateInstance<TInitialState<StateInitializer>>;
 
-export const useCleanState: UseCleanState = (_initialState, props = {}) => {
-	const initialState = typeof _initialState === 'function' ? useMemo(() => _initialState(props), []) : _initialState;
+export const useCleanState: UseCleanState = (_initialState, ...props) => {
+	type T = typeof _initialState;
+	const initialState: T extends TFunctionType ? ReturnType<T> : T = typeof _initialState === 'function' ? useMemo(() => _initialState(...props), []) : _initialState;
 	type TState = typeof initialState;
 
 	const cleanState = useMemo(() => new CleanState<TState>(initialState), []);
