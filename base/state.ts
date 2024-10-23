@@ -125,18 +125,23 @@ const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanS
 
 export type TCleanState<TState extends object> = TCleanStateInstance<TState>; // InstanceType<typeof CleanState<TState>>;
 
-type Func = (...params: any[]) => any;
 
-type UseCleanState = <
-	TState extends object,
-	// TStateObjOrFactory extends ((props?: TProps) => Record<'a' | 'b', number>) | Record<'a' | 'b', number>,
-	TProps extends object = object
->(
-	_initialState: ((props?: TProps) => TState) | TState, // TStateObjOrFactory,
-	props?: typeof _initialState extends Func ? TProps : undefined // TProps
-) => TCleanState<TState>; // <TStateObjOrFactory extends Func ? ReturnType<TStateObjOrFactory> : TStateObjOrFactory>;
+type StateInitFunction = (props?: object) => object;
 
-export const useCleanState: UseCleanState = (_initialState, props) => {
+type TInitialState<StateParamType> = StateParamType extends StateInitFunction
+	? ReturnType<StateParamType>
+	: StateParamType;
+
+type StateInitParameters<StateInitializer> = StateInitializer extends StateInitFunction
+	? Parameters<StateInitializer>
+	: [];
+
+type UseCleanState = <StateInitializer extends StateInitFunction | object>(
+	_initialState: StateInitializer,
+	...props: StateInitParameters<StateInitializer>
+) => TCleanState<TInitialState<StateInitializer>>;
+
+export const useCleanState: UseCleanState = (_initialState, props = {}) => {
 	const initialState = typeof _initialState === 'function' ? useMemo(() => _initialState(props), []) : _initialState;
 	type TState = typeof initialState;
 

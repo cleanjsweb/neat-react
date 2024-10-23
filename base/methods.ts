@@ -18,6 +18,10 @@ type UseMethods = <MethodsClass extends ComponentMethodsConstructor>(
 ) => InstanceType<MethodsClass>;
 
 export const useMethods: UseMethods = (Methods, state, props) => {
+	// @todo Switch to useRef. Vite HMR seems to sometimes reinitialize useMemo calls after a hot update,
+	// causing the instance to be unexpectedly recreated in the middle of the components lifecycle.
+	// But useRef and useState values appear to always be preserved whenever this happens.
+	// So those two are the only cross-render-persistence methods we can consider safe.
 	const methods = useMemo(() => {
 		// See useLogic implementation for a discussion of this type assertion.
 		return new Methods() as InstanceType<typeof Methods>;

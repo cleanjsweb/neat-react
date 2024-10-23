@@ -18,20 +18,19 @@ export interface ComponentLogicConstructor<TState extends object, TProps extends
 }
 
 
-type UseLogic = <TState extends object, LogicClass extends ComponentLogicConstructor<TState, any, any>>(
+type UseLogic = <LogicClass extends ComponentLogicConstructor<{}, object, any>>(
 	Methods: LogicClass,
-	props: InstanceType<LogicClass>['props']
+	// ...props: Parameters<LogicClass['getInitialState']>
+	props?: InstanceType<LogicClass>['props']
 ) => InstanceType<LogicClass>;
 
 
-export const useLogic: UseLogic = (Methods, props) => {
+export const useLogic: UseLogic = (Methods, props = {}) => {
 	// When ComponentLogicConstructor is extended with <{}, {}, {}>, Typescript fails to determine that LogicClass['getInitialState'] is a function,
 	// but gets it right with `typeof Methods.getInitialState;`
 	// Changing to <any, any, any> also seems to fix this.
 	type TLogicClass = typeof Methods;
 
-	// type InitState = CleanStateValues<InstanceType<LogicClass>['state']>;
-	type TInitState = TLogicClass['getInitialState'];
 	const state = useCleanState(Methods.getInitialState, props);
 
 	// There's apparently a bug? with Typescript that pegs the return type of "new Methods()" to "ComponentLogic<{}, {}, {}>",

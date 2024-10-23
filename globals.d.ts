@@ -39,6 +39,9 @@ declare interface IVoidFunction<AsyncType extends 'async' | 'sync' | 'both' = 'b
 		: Promise<void> | void
 }
 
+declare type FunctionType = (...args: any[]) => any;
+
+
 declare interface Window {
 }
 
