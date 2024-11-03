@@ -1,5 +1,5 @@
 import type { TCleanState } from './state';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 
 export class ComponentMethods<TState extends object, TProps extends object> {
@@ -22,10 +22,10 @@ export const useMethods: UseMethods = (Methods, state, props) => {
 	// causing the instance to be unexpectedly recreated in the middle of the components lifecycle.
 	// But useRef and useState values appear to always be preserved whenever this happens.
 	// So those two are the only cross-render-persistence methods we can consider safe.
-	const methods = useMemo(() => {
+	const methods = useRef(() => {
 		// See useLogic implementation for a discussion of this type assertion.
 		return new Methods() as InstanceType<typeof Methods>;
-	}, []);
+	}).current;
 
 	methods.state = state;
 	methods.props = props;

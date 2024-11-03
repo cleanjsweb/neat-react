@@ -67,7 +67,15 @@ class CleanStateBase<TState extends object> {
 		const retrieveState = useState;
 
 		this.valueKeys.forEach((key) => {
-			[this._values_[key], this._setters_[key]] = retrieveState(this.initialState[key]);
+			let setter: FunctionType;
+			// @todo Make state updates reflect immediately. Use state.staged to access the scheduled updates.
+			// @todo Support SetStateAction callback signature in state.put(...);
+			[this._values_[key], setter] = retrieveState(this.initialState[key]);
+
+			this._setters_[key] = (value) => {
+				// this._staged_[key] = value;
+				setter(value);
+			}
 		})
 
 		/* Object.entries<TUseStateArray<TState>>(stateAndSetters).forEach(([key, responseFromUseState]) => {
@@ -128,29 +136,50 @@ export type TCleanState<TState extends object> = TCleanStateInstance<TState>; //
 
 type TFunctionType = (...args: any) => object;
 
+type StateInitParameters<StateInitializer> = StateInitializer extends (...args: any) => any
+	? Parameters<StateInitializer>
+	: [];
+/*
 type TInitialState<StateParamType> = StateParamType extends TFunctionType
 	? ReturnType<StateParamType>
 	: StateParamType;
-
-type StateInitParameters<StateInitializer> = StateInitializer extends TFunctionType
-	? Parameters<StateInitializer>
-	: [];
 
 type UseCleanState = <StateInitializer extends TFunctionType | object>(
 	_initialState: StateInitializer,
 	...props: StateInitParameters<StateInitializer>
 ) => TCleanStateInstance<TInitialState<StateInitializer>>;
+*/
 
-export const useCleanState: UseCleanState = (_initialState, ...props) => {
-	type T = typeof _initialState;
-	const initialState: T extends TFunctionType ? ReturnType<T> : T = typeof _initialState === 'function' ? useMemo(() => _initialState(...props), []) : _initialState;
+type T<S, P extends any[]> = ((...args: P) => S) | S
+type UseCleanState1 = <TState extends object, TProps extends any[], iT extends T<TState, TProps>>(
+	_initialState: iT, // ((...args: TProps) => TState) | TState,
+	...props: iT extends (...args: TProps) => TState ? TProps : [] // StateInitParameters<iT> // TProps // 
+) => TCleanStateInstance<TState>;
+
+export const useCleanState: UseCleanState1 = (_initialState, ...props) => {
+	const mounted = useMountState();
+
+	// Allow passing a callback to be run after state update is done.
+
+	// type TStateInitializer = typeof _initialState;
+	// type TState = TStateInitializer extends (...args: any) => any ? ReturnType<TStateInitializer> : TStateInitializer;
+
+	// let iSt = {} as TState; // object;
+
+	const initialState = typeof _initialState === 'function' ? useMemo(() => _initialState(...props as Parameters<typeof _initialState>), []) : _initialState;
 	type TState = typeof initialState;
 
-	const cleanState = useMemo(() => new CleanState<TState>(initialState), []);
+
+	let freshInstance = {} as TCleanStateInstance<TState>;
+
+	if (!mounted) freshInstance = new CleanState(initialState);
+	const cleanState = useRef(freshInstance).current;
 
 	CleanState.update.call(cleanState);
 	return cleanState;
 };
+
+useCleanState((a: number) => {a}, 6);
 
 /**
  * Returns a value that is false before the component has been mounted,

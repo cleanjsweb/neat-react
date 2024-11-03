@@ -1,6 +1,6 @@
 import type { TCleanState } from '@/base/state';
 
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
 
 
@@ -39,9 +39,9 @@ export const useLogic: UseLogic = (Methods, props = {}) => {
 	// Ignoring the specified type to gin up something else and then complain about it is quite weird.
 	// Regardless, even when `extends ComponentLogicConstructor<TState, TProps, THooks>` is specified using generics instead of a set type,
 	// the issue persists. Which is absurd since this should ensure that InstanceType<Class> should exactly match ComponentLogic<TState, TProps, THooks>
-	const methods = useMemo(() => {
+	const methods = useRef(() => {
 		return new Methods() as InstanceType<typeof Methods>;
-	}, []);
+	}).current;
 
 	methods.state = state;
 	methods.props = props;
