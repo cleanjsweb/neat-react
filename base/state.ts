@@ -180,12 +180,13 @@ export const useCleanState: TUseCleanState = (_initialState, ...props) => {
 
 	// let iSt = {} as TState; // object;
 
-	const initialState = typeof _initialState === 'function'
+	const initialState = (typeof _initialState === 'function'
 		? useMemo(() => _initialState(...props), [])
-		: _initialState;
+		: _initialState) as TInitialState<typeof _initialState>;
 	;
 
-	type TState = TInitialState<typeof initialState>;
+	// type TState = TInitialState<typeof initialState>;
+	type TState = typeof initialState;
 
 
 	let freshInstance = {} as TCleanStateInstance<TState>;
