@@ -154,7 +154,7 @@ export type TCleanState<TState extends object> = TCleanStateInstance<TState>;
 // InstanceType<typeof CleanState<TState>>;
 
 
-type StateInitFunction = object | ((...args: any[]) => object);
+type StateInitFunction = (...args: any[]) => object;
 type StateInit = object | StateInitFunction;
 
 type TInitialState<
