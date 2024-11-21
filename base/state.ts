@@ -1,6 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 
+/**
+ * Returns a value that is false before the component has been mounted,
+ * then true during all subsequent rerenders.
+ */ 
+export const useMountState = () => {
+	/**
+	 * This must not be a stateful value. It should not be the cause of a rerender.
+	 * It merely provides information about the render count,
+	 * without influencing that count itself.
+	 * So `mounted` should never be set with `useState`.
+	 */
+	let mounted = useRef(false);
+	useEffect(() => {
+		mounted.current = true;
+	}, []);
+	return mounted.current;
+};
+
+
 type TUseStateArray<TState extends object> = [
 	val: TState[keyof TState],
 	setter: (val: TState[keyof TState]) => void,
@@ -131,32 +150,27 @@ type ICleanStateClass = {
 const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;
 
 
-export type TCleanState<TState extends object> = TCleanStateInstance<TState>; // InstanceType<typeof CleanState<TState>>;
+export type TCleanState<TState extends object> = TCleanStateInstance<TState>;
+// InstanceType<typeof CleanState<TState>>;
 
 
-type TFunctionType = (...args: any) => object;
+type StateInitFunction = object | ((...args: any[]) => object);
+type StateInit = object | StateInitFunction;
 
-type StateInitParameters<StateInitializer> = StateInitializer extends (...args: any) => any
-	? Parameters<StateInitializer>
-	: [];
-/*
-type TInitialState<StateParamType> = StateParamType extends TFunctionType
-	? ReturnType<StateParamType>
-	: StateParamType;
+type TInitialState<
+	Initializer extends StateInit
+> = Initializer extends (...args: any[]) => (infer TState extends object)
+	? TState
+	: Initializer;
 
-type UseCleanState = <StateInitializer extends TFunctionType | object>(
-	_initialState: StateInitializer,
-	...props: StateInitParameters<StateInitializer>
-) => TCleanStateInstance<TInitialState<StateInitializer>>;
-*/
 
-type T<S, P extends any[]> = ((...args: P) => S) | S
-type UseCleanState1 = <TState extends object, TProps extends any[], iT extends T<TState, TProps>>(
-	_initialState: iT, // ((...args: TProps) => TState) | TState,
-	...props: iT extends (...args: TProps) => TState ? TProps : [] // StateInitParameters<iT> // TProps // 
-) => TCleanStateInstance<TState>;
 
-export const useCleanState: UseCleanState1 = (_initialState, ...props) => {
+type TUseCleanState = <TInit extends StateInit>(
+	_initialState: TInit,
+	...props: TInit extends (...args: infer TProps) => object ? TProps : []
+) => TCleanStateInstance<TInitialState<TInit>>;
+
+export const useCleanState: TUseCleanState = (_initialState, ...props) => {
 	const mounted = useMountState();
 
 	// Allow passing a callback to be run after state update is done.
@@ -166,8 +180,12 @@ export const useCleanState: UseCleanState1 = (_initialState, ...props) => {
 
 	// let iSt = {} as TState; // object;
 
-	const initialState = typeof _initialState === 'function' ? useMemo(() => _initialState(...props as Parameters<typeof _initialState>), []) : _initialState;
-	type TState = typeof initialState;
+	const initialState = typeof _initialState === 'function'
+		? useMemo(() => _initialState(...props), [])
+		: _initialState;
+	;
+
+	type TState = TInitialState<typeof initialState>;
 
 
 	let freshInstance = {} as TCleanStateInstance<TState>;
@@ -179,22 +197,8 @@ export const useCleanState: UseCleanState1 = (_initialState, ...props) => {
 	return cleanState;
 };
 
-useCleanState((a: number) => {a}, 6);
-
-/**
- * Returns a value that is false before the component has been mounted,
- * then true during all subsequent rerenders.
- */ 
-export const useMountState = () => {
-	/**
-	 * This must not be a stateful value. It should not be the cause of a rerender.
-	 * It merely provides information about the render count,
-	 * without influencing that count itself.
-	 * So `mounted` should never be set with `useState`.
-	 */
-	let mounted = useRef(false);
-	useEffect(() => {
-		mounted.current = true;
-	}, []);
-	return mounted.current;
-};
+useCleanState((a: number) => ({b: a.toString()}), 6);
+useCleanState((a: boolean) => ({b: a.toString()}), true);
+useCleanState((a: number, c?: string) => ({ b: `${a}` }), 6);
+useCleanState((a: number, c: string) => ({ b: a + c }), 6, 'text');
+useCleanState({ b: 'a.toString()' });
