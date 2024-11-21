@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 
@@ -19,25 +20,18 @@ export const useMountState = () => {
 	return mounted.current;
 };
 
+type PutState<TState extends object> = {
+	[Key in keyof TState]: React.Dispatch<React.SetStateAction<TState[Key]>>;
+}
 
-type TUseStateArray<TState extends object> = [
-	val: TState[keyof TState],
-	setter: (val: TState[keyof TState]) => void,
-];
-
-type TUseStateResponses<TState extends object> = {
-	[Key in keyof TState]: TUseStateArray<TState>;
-};
-
-
-class CleanStateBase<TState extends object> {
+class CleanStateBase<TState extends Record<string, any>> {
 	reservedKeys: string[];
 	valueKeys: string[];
 
-	private _values_ = {} as TState;
+	private _values_: Record<string, any> = {} as TState;
 	private _initialValues_: TState;
 	private _setters_ = {} as {
-		[Key in keyof TState]: (value: TState[Key]) => void;
+		[Key in keyof TState]: PutState<TState>[Key];
 	};
 
 	constructor(initialState: TState) {
@@ -64,7 +58,7 @@ class CleanStateBase<TState extends object> {
 					return self._values_[key];
 				},
 				set(value) {
-					self._setters_[key](value);
+					self._setters_[key as keyof TState](value);
 				},
 				enumerable: true,
 			});
@@ -86,15 +80,15 @@ class CleanStateBase<TState extends object> {
 		const retrieveState = useState;
 
 		this.valueKeys.forEach((key) => {
-			let setter: FunctionType;
-			// @todo Make state updates reflect immediately. Use state.staged to access the scheduled updates.
+			// @todo Make state updates accessible immediately. Use state.staged to access the scheduled updates.
+			let setter: Dispatch<SetStateAction<any>>;
 			// @todo Support SetStateAction callback signature in state.put(...);
-			[this._values_[key], setter] = retrieveState(this.initialState[key]);
+			[this._values_[key], setter] = retrieveState(this.initialState[key as keyof TState]);
 
-			this._setters_[key] = (value) => {
+			this._setters_[key as keyof TState] = ((valueOrCallback) => {
 				// this._staged_[key] = value;
-				setter(value);
-			}
+				setter(valueOrCallback);
+			});
 		})
 
 		/* Object.entries<TUseStateArray<TState>>(stateAndSetters).forEach(([key, responseFromUseState]) => {
@@ -104,7 +98,7 @@ class CleanStateBase<TState extends object> {
 		// return this;
 	};
 
-	get put() {
+	get put(): PutState<TState> {
 		return { ...this._setters_ };
 	}
 	get initialState() {
@@ -112,13 +106,11 @@ class CleanStateBase<TState extends object> {
 	}
 
 	putMany = (newValues: Partial<TState>) => {
-		type StateValuesUnion = (typeof newValues)[keyof TState];
-		Object.entries<StateValuesUnion>(newValues).forEach(([key, value]) => {
-			this.put[key](value);
+		Object.entries(newValues).forEach(([key, value]) => {
+			this.put[key as keyof TState](value as TState[string]);
 		});
 	};
 };
-
 
 type TCleanStateInstance<TState extends object> = TState & CleanStateBase<TState>;
 type TCleanStateBase = typeof CleanStateBase;
@@ -128,16 +120,7 @@ interface ICleanStateConstructor {
 	new <TState extends object>(
 		...args: ConstructorParameters<typeof CleanStateBase>
 	): TCleanStateInstance<TState>;
-
-	// update: typeof CleanStateBase.update;
-	/* <TState extends object>(
-		this: CleanStateBase<TState>,
-		stateAndSetters: TUseStateResponses<TState>
-	) => void; // TCleanStateInstance<TState>; */
 }
-
-// Typescript said: A mapped type may not declare properties or methods.
-// Instead of simply saying: Mapped type cannot be used in interface. Use type instead.
 
 type ICleanStateClass = {
 	/* update: <TState extends object>(
@@ -151,7 +134,6 @@ const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanS
 
 
 export type TCleanState<TState extends object> = TCleanStateInstance<TState>;
-// InstanceType<typeof CleanState<TState>>;
 
 
 type StateInitFunction = (...args: any[]) => object;
@@ -175,31 +157,37 @@ export const useCleanState: TUseCleanState = (_initialState, ...props) => {
 
 	// Allow passing a callback to be run after state update is done.
 
-	// type TStateInitializer = typeof _initialState;
-	// type TState = TStateInitializer extends (...args: any) => any ? ReturnType<TStateInitializer> : TStateInitializer;
+	type TState = TInitialState<typeof _initialState>;
 
-	// let iSt = {} as TState; // object;
-
-	const initialState = (typeof _initialState === 'function'
+	const initialState: TState = typeof _initialState === 'function'
 		? useMemo(() => _initialState(...props), [])
-		: _initialState) as TInitialState<typeof _initialState>;
+		: _initialState;
 	;
 
-	// type TState = TInitialState<typeof initialState>;
-	type TState = typeof initialState;
-
-
 	let freshInstance = {} as TCleanStateInstance<TState>;
-
 	if (!mounted) freshInstance = new CleanState(initialState);
+	if (!freshInstance.put) throw new Error('useCleanState failed to initialized a state instance.');
+
 	const cleanState = useRef(freshInstance).current;
 
 	CleanState.update.call(cleanState);
 	return cleanState;
 };
 
-useCleanState((a: number) => ({b: a.toString()}), 6);
-useCleanState((a: boolean) => ({b: a.toString()}), true);
-useCleanState((a: number, c?: string) => ({ b: `${a}` }), 6);
-useCleanState((a: number, c: string) => ({ b: a + c }), 6, 'text');
-useCleanState({ b: 'a.toString()' });
+
+// Should be valid.
+// useCleanState((a: number) => ({b: a.toString(), q: 1}), 6);
+// useCleanState((a: boolean) => ({b: a.toString()}), true);
+// useCleanState((a: number, c?: string) => ({ b: `${a}` }), 6);
+// useCleanState((a: number, c?: string) => ({ b: `${a}` }), 6, 'word');
+// useCleanState((a: number, c: string) => ({ b: a + c, f: true }), 6, 'text');
+// useCleanState({ d: 5000 });
+
+
+// Should fail.
+// useCleanState((a: number) => ({b: a.toString(), q: 1}), 6, false);
+// useCleanState((a: boolean) => ({b: a.toString()}));
+// useCleanState((a: number, c?: string) => ({ b: `${a}` }), '6');
+// useCleanState((a: number, c?: string) => ({ b: `${a}` }));
+// useCleanState((a: number, c: string) => ({ b: a + c, f: true }), 6, 7);
+// useCleanState({ d: 5000 }, true);

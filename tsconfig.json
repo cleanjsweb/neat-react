@@ -28,7 +28,9 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"jsx": "react-jsx",
-		"strictNullChecks": true
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"noUncheckedIndexedAccess": true,
 	},
 	"include": [
 		"next-env.d.ts",
