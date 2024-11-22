@@ -149,7 +149,9 @@ type TInitialState<
 
 type TUseCleanState = <TInit extends StateInit>(
 	_initialState: TInit,
-	...props: TInit extends (...args: infer TProps) => object ? TProps : []
+	...props: TInit extends (...args: infer TProps extends any[]) => (infer TState extends object)
+		? TProps
+		: []
 ) => TCleanStateInstance<TInitialState<TInit>>;
 
 export const useCleanState: TUseCleanState = (_initialState, ...props) => {

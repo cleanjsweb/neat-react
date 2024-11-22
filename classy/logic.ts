@@ -15,42 +15,45 @@ export class ComponentLogic<TState extends object, TProps extends object, THooks
 	useHooks?: () => THooks;
 };
 
-export interface ComponentLogicConstructor<TState extends object, TProps extends object, THooks extends object> extends Constructor<ComponentLogic<TState, TProps, THooks>> {
+export type ComponentLogicConstructor<
+	TState extends object,
+	TProps extends object,
+	THooks extends object
+> = Constructor<ComponentLogic<TState, TProps, THooks>> & {
 	getInitialState: (props?: TProps) => TState;
 }
 
-export interface _ComponentLogicConstructor<TState extends object, TProps extends object, THooks extends object> {
-	new <TState extends object>(
-		...args: ConstructorParameters<typeof ComponentLogic<TState, TProps, THooks>>
-	): ComponentLogic<TState, TProps, THooks>;
-	// ComponentLogic<TState, TProps, THooks>
-
+type ComponentLogicStatics<
+	TState extends object,
+	TProps extends object
+> = {
 	getInitialState: (props?: TProps) => TState;
 }
 
+// export interface _ComponentLogicConstructor<TState extends object, TProps extends object, THooks extends object> {
+// 	new <TState extends object>(
+// 		...args: ConstructorParameters<typeof ComponentLogic<TState, TProps, THooks>>
+// 	): ComponentLogic<TState, TProps, THooks>;
+// 	// ComponentLogic<TState, TProps, THooks>
 
-type UseLogic = <LogicClass extends _ComponentLogicConstructor<{}, object, any>>(
-	Methods: LogicClass,
-	props?: InstanceType<LogicClass>['props']
-) => InstanceType<LogicClass>;
+// 	getInitialState: (props?: TProps) => TState;
+// }
+
+
+type UseLogic = <LogicClass extends ComponentLogic<{}, object, any>>(
+	Methods: Constructor<LogicClass>
+		& ComponentLogicStatics<LogicClass['state'], LogicClass['props']>,
+	props?: LogicClass['props']
+) => LogicClass;
 
 
 export const useLogic: UseLogic = (Methods, props = {}) => {
-	// When ComponentLogicConstructor is extended with <{}, {}, {}>, Typescript fails to determine that LogicClass['getInitialState'] is a function,
-	// but gets it right with `typeof Methods.getInitialState;`
-	// Changing to <any, any, any> also seems to fix this.
 	type TLogicClass = typeof Methods;
 
 	const state = useCleanState(Methods.getInitialState, props);
 
-	// There's apparently a bug(?) with Typescript that pegs the return type of "new Methods()" to "ComponentLogic<{}, {}, {}>",
-	// completely ignoring the type specified for Methods in the function's type definition.
-	// `new Methods()` should return whatever the InstanceType of TClass is, as that is the type explicitly specified for Methods.
-	// Ignoring the specified type to gin up something else and then complain about it is quite weird.
-	// Regardless, even when `extends ComponentLogicConstructor<TState, TProps, THooks>` is specified using generics instead of a set type,
-	// the issue persists. Which is absurd since this should ensure that InstanceType<Class> should exactly match ComponentLogic<TState, TProps, THooks>
-	const methods = useRef(useMemo(() => {
-		return new Methods() //as InstanceType<typeof Methods>;
+	const methods: InstanceType<TLogicClass> = useRef(useMemo(() => {
+		return new Methods();
 	}, [])).current;
 
 	methods.state = state;
