@@ -10,40 +10,45 @@ export class ComponentLogic<TState extends object, TProps extends object, THooks
 	declare props: TProps;
 	declare hooks: THooks;
 
-	// declare static getInitialState: <TState extends object, TProps extends object>(props?: TProps) => TState;
+	declare static getInitialState: <TState extends object, TProps extends object>(props?: TProps) => TState;
 
 	useHooks?: () => THooks;
 };
 
+interface ComponentLogicStatics<TState extends object, TProps extends object> {
+	getInitialState: (props?: TProps) => TState;
+}
+
 export type ComponentLogicConstructor<
-	TState extends object,
-	TProps extends object,
-	THooks extends object
-> = Constructor<ComponentLogic<TState, TProps, THooks>> & {
-	getInitialState: (props?: TProps) => TState;
-}
+		TState extends object,
+		TProps extends object,
+		THooks extends object> = (
+	Constructor<ComponentLogic<TState, TProps, THooks>>
+	& ComponentLogicStatics<TState, TProps>
+);
 
-type ComponentLogicStatics<
-	TState extends object,
-	TProps extends object
-> = {
-	getInitialState: (props?: TProps) => TState;
-}
 
-// export interface _ComponentLogicConstructor<TState extends object, TProps extends object, THooks extends object> {
-// 	new <TState extends object>(
-// 		...args: ConstructorParameters<typeof ComponentLogic<TState, TProps, THooks>>
-// 	): ComponentLogic<TState, TProps, THooks>;
-// 	// ComponentLogic<TState, TProps, THooks>
+const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
+export type Empty = TEmptyObject;
+export interface IEmpty {
+	[UniqueSecretSymbolKey]?: never;
+};
 
-// 	getInitialState: (props?: TProps) => TState;
-// }
+const ggg = {};
+
+let ttd: IEmpty = {[UniqueSecretSymbolKey]: '' as never};
+ttd = ggg;
+
+const aas: Empty = {'': undefined as never};
+aas;
 
 
 type UseLogic = <LogicClass extends ComponentLogic<{}, object, any>>(
 	Methods: Constructor<LogicClass>
 		& ComponentLogicStatics<LogicClass['state'], LogicClass['props']>,
-	props?: LogicClass['props']
+	...props: (keyof LogicClass['props']) extends ('' | never)
+		? ([] | [TEmptyObject])
+		: [LogicClass['props']]
 ) => LogicClass;
 
 
@@ -63,3 +68,6 @@ export const useLogic: UseLogic = (Methods, props = {}) => {
 
 	return methods;
 };
+
+class MyComponentLogic extends ComponentLogic<{}, TEmptyObject, {}> {};
+useLogic(MyComponentLogic);

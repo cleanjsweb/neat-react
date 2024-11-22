@@ -54,3 +54,6 @@ declare namespace NodeJS {
 	interface ProcessEnv {
 	}
 }
+
+type TEmptyObject = {''?: never};
+type TEmptyObject2 = Record<symbol, never>;
