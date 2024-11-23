@@ -18,7 +18,7 @@
 		"checkJs": true,
 		"declaration": true,
 		"noEmit": false,
-		"skipLibCheck": true,
+		"skipLibCheck": false,
 		"strict": false,
 		"forceConsistentCasingInFileNames": true,
 		"incremental": false,

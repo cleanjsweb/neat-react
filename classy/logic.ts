@@ -28,19 +28,20 @@ export type ComponentLogicConstructor<
 );
 
 
-const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
+// const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
 export type Empty = TEmptyObject;
-export interface IEmpty {
-	[UniqueSecretSymbolKey]?: never;
-};
+// export interface IEmpty {
+// 	[UniqueSecretSymbolKey]?: never;
+// };
 
 const ggg = {};
 
-let ttd: IEmpty = {[UniqueSecretSymbolKey]: '' as never};
-ttd = ggg;
+let ttd: IEmptyObject = {[UniqueSecretSymbolKey]: '' as never};
+let gfdhs: IU.IE; gfdhs[IU.us]
 
 const aas: Empty = {'': undefined as never};
 aas;
+
 
 
 type UseLogic = <LogicClass extends ComponentLogic<{}, object, any>>(
