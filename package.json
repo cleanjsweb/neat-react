@@ -35,7 +35,7 @@
     "prepublishOnly": "npm run build",
     "publish:patch": "npm version patch && npm publish",
     "publish:beta": "npm version prepatch --preid beta",
-    "postpublish:beta": "npm pubhxxx --tag beta",
+    "//postpublish:beta": "npm publish --tag beta",
     "//postpublish": "cd ./mirror-pkg && npm publish && cd ..",
     "__": "",
     "test": "echo \"No tests ATM\""
