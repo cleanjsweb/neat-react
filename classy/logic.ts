@@ -27,28 +27,13 @@ export type ComponentLogicConstructor<
 	& ComponentLogicStatics<TState, TProps>
 );
 
-
-// const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
-export type Empty = TEmptyObject;
-// export interface IEmpty {
-// 	[UniqueSecretSymbolKey]?: never;
-// };
-
-const ggg = {};
-
-let ttd: IEmptyObject = {[UniqueSecretSymbolKey]: '' as never};
-let gfdhs: IU.IE; gfdhs[IU.us]
-
-const aas: Empty = {'': undefined as never};
-aas;
-
-
+export interface IEmpty extends EmptyObject {};
 
 type UseLogic = <LogicClass extends ComponentLogic<{}, object, any>>(
 	Methods: Constructor<LogicClass>
 		& ComponentLogicStatics<LogicClass['state'], LogicClass['props']>,
-	...props: (keyof LogicClass['props']) extends ('' | never)
-		? ([] | [TEmptyObject])
+	...props: valueof<LogicClass['props']> extends never
+		? ([] | [EmptyObject])
 		: [LogicClass['props']]
 ) => LogicClass;
 
@@ -70,5 +55,12 @@ export const useLogic: UseLogic = (Methods, props = {}) => {
 	return methods;
 };
 
-class MyComponentLogic extends ComponentLogic<{}, TEmptyObject, {}> {};
-useLogic(MyComponentLogic);
+
+testing: {
+	const a: object = {b: ''};
+
+	type t = keyof typeof a;
+
+	class MyComponentLogic extends ComponentLogic<{}, IEmpty, {}> {};
+	useLogic(MyComponentLogic);
+}

@@ -1,31 +1,26 @@
-////// -------------------------------------------------------------------------------------
-/*//// -------------------------------------------------------------------------------------
 
-This file is an "Ambient declarations file". The types defined here are available globally.
-More info here: https://stackoverflow.com/a/73389225/985454
+/**
+ * @file
+ * This file is an "Ambient declarations file". The types defined here are available globally.
+ * More info here: https://stackoverflow.com/a/73389225/985454
+ *
+ * Don't use `import` and `export` in this file directly! It breaks ambience.
+ * To import external types in an ambient declarations file (this file) use the following:
+ *
+ * @example
+ * declare type React = typeof import('react');
+ *
+ * To contribute ambient declarations from any file, even non-ambient ones, use this:
+ *
+ * @example
+ * declare global {
+ *   interface Window {
+ *     ethereum: any
+ *   }
+ * }
+**/
 
-Don't use `import` and `export` in this file directly! It breaks ambience.
-To import external types in an ambient declarations file (this file) use the following:
-
-*//**
-* @example
-* declare type React = import('react')
-*//*
-
-To contribute ambient declarations from any file, even non-ambient ones, use this:
-
-*//**
-* @example
-* declare global {
-*   interface Window {
-*     ethereum: any
-*   }
-* }
-*//*
-
-/*//// ------------------------------------------------------
-////// ------------------------------------------------------
-
+/** */
 
 type Optional<
 			BaseType,
@@ -83,28 +78,15 @@ declare namespace NodeJS {
 	}
 }
 
-const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
 
-type TEmptyObject = {''?: never};
+type __FromPrivateHelpers = typeof import('globals.private');
+
+type TEmptyObject1 = { ''?: never };
 type TEmptyObject2 = Record<symbol, never>;
-interface IEmptyObject {
-	[UniqueSecretSymbolKey]?: never;
-};
 
-class IObject {
-	private static a: string;
-	private k: number;
-
-}
-
-const b = IObject['a'];
-const c = (new IObject()).k;
+type EmptyObject = __FromPrivateHelpers['EmptyObject'];
+type EmptyObject2 = __FromPrivateHelpers['EmptyObject2'];
+type EmptyObject3 = __FromPrivateHelpers['EmptyObject3'];
 
 
-namespace IU {
-	const us = "Symbol('ff')";
-
-	interface IE {
-		[us]?: never;
-	}
-}
+type valueof<TObject> = TObject[keyof TObject];
