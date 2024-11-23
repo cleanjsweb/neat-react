@@ -34,7 +34,7 @@
     "_": "",
     "prepublishOnly": "npm run build",
     "publish:patch": "npm version patch && npm publish",
-    "publish:beta": "npm version prepatch --preid beta",
+    "publish:beta": "npm version prerelease --preid beta",
     "//postpublish:beta": "npm publish --tag beta",
     "//postpublish": "cd ./mirror-pkg && npm publish && cd ..",
     "__": "",
