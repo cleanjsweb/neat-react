@@ -7,8 +7,6 @@ export class ComponentMethods<TState extends object, TProps extends object> {
 	declare props: TProps;
 };
 
-type ComponentMethodsConstructor = typeof ComponentMethods<any, any>;
-
 type UseMethods = <TMethods extends ComponentMethods<any, any>>(
 	// Using `typeof Class` instead of `Constructor<ClassInstanceType>` ensures
 	// that Methods will carry all properties of ComponentMethods, including any potential static properties.

@@ -23,7 +23,7 @@ const setFunctionName = (func: Function, newName: string) => {
 type Extractor = <TComponent extends ClassComponent<object, object, object>>(
 	this: TComponentClass<TComponent, typeof ClassComponent>,
 	_Component?: TComponentClass<TComponent, typeof ClassComponent>
-) => VoidFunctionComponent;
+) => VoidFunctionComponent<TComponent['props']>;
 // eslint-enable no-use-before-define
 
 export class ClassComponent<
