@@ -32,10 +32,12 @@ export interface IComponentLogicClass<
 	// new (...params: CnstPrm): Instance;
 }
 
-export type TBaseComponentLogic = IComponentLogicClass<ComponentLogic<o, o, o>>;
+export type TBaseComponentLogic = IComponentLogicClass<ComponentLogic<any, any, any>>;
 
-type UseLogic = <Class extends typeof ComponentLogic<o, o, o>>(
-	Methods: Class & IComponentLogicClass<InstanceType<Class>>,
+type UseLogic = <
+		Class extends TypeofClass & IComponentLogicClass<InstanceType<TypeofClass>>,
+		TypeofClass extends typeof ComponentLogic<o, o, o>>(
+	Methods: Class,
 
 	...props: valueof<InstanceType<Class>['props']> extends never
 		? ([] | [EmptyObject] | [InstanceType<Class>['props']])

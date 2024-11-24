@@ -7,11 +7,16 @@ export class ComponentMethods<TState extends object, TProps extends object> {
 	declare props: TProps;
 };
 
-type UseMethods = <TMethods extends typeof ComponentMethods<any, any>>(
-	Methods: TMethods & Constructor<InstanceType<TMethods>>,
-	state: InstanceType<TMethods>['state'],
-	props: InstanceType<TMethods>['props']
-) => InstanceType<TMethods>;
+type UseMethods = <
+		Class extends TypeofClass & Constructor<InstanceType<TypeofClass>>, // = TMethods & Cons,
+		TypeofClass extends typeof ComponentMethods<object, object>,
+		// Cons extends Constructor<InstanceType<TMethods>> = Constructor<InstanceType<TMethods>>,
+		// Instance extends InstanceType<TMethods> =  InstanceType<TMethods>,
+		>(
+	Methods: Class,
+	state: InstanceType<Class>['state'],
+	props: InstanceType<Class>['props']
+) => InstanceType<Class>;
 
 export const useMethods: UseMethods = (Methods, state, props) => {
 	// @todo Switch to useRef. Vite HMR seems to sometimes reinitialize useMemo calls after a hot update,
