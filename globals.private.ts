@@ -11,7 +11,10 @@ const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
 
 class CEmptyObject {
 	[key: keyof any]: never;
+	// [UniqueSecretSymbolKey]?: never;
 }
+
+type t = CEmptyObject[keyof CEmptyObject]
 
 class CEmptyObject2 {
 	[UniqueSecretSymbolKey]?: never;

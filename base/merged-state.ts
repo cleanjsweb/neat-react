@@ -30,7 +30,9 @@ class MergedState<TState extends object> {
 		this._initialValues_ = { ...initialState };
 		this._values_ = { ...initialState };
 
-		Object.keys(initialState).forEach((key) => {
+		Object.keys(initialState).forEach((_key) => {
+			const key = _key as Extract<keyof TState, string>;
+
 			if (this.reservedKeys.includes(key)) {
 				throw new Error(`The name "${key}" is reserved by CleanState and cannot be used to index state variables. Please use a different key.`);
 			}
@@ -67,7 +69,10 @@ class MergedState<TState extends object> {
 }
 
 export const useMergedState = <TState extends object>(initialState: TState) => {
-	const cleanState = useMemo(() => new MergedState(initialState), []) as MergedState<TState> & TState;
+	const cleanState = useMemo(
+		() => new MergedState(initialState),
+		[]
+	) as MergedState<TState> & TState;
 	MergedState.useRefresh.call(cleanState);
 	return cleanState;
 };

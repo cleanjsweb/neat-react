@@ -18,7 +18,7 @@
 		"checkJs": true,
 		"declaration": true,
 		"noEmit": false,
-		"skipLibCheck": false,
+		"skipLibCheck": true,
 		"strict": false,
 		"forceConsistentCasingInFileNames": true,
 		"incremental": false,
@@ -31,10 +31,10 @@
 		"strictNullChecks": true,
 		"noImplicitAny": true,
 		"noUncheckedIndexedAccess": true,
-		"exactOptionalPropertyTypes": true,
+		"strictBindCallApply": true,
+		// "exactOptionalPropertyTypes": true
 	},
 	"include": [
-		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx"
 	],

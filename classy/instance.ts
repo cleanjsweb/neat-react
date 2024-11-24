@@ -1,18 +1,17 @@
-import type { ComponentLogicConstructor } from './logic';
+import type { TComponentClass } from './logic';
 
 import { useEffect } from 'react';
 import { useMountState } from '@/base/state';
 import { ComponentLogic,  useLogic } from './logic';
 
-
-type Obj = Record<string, any>;
-
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
 
 export const noOp = () => {};
 
-export class ComponentInstance<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends ComponentLogic<TState, TProps, THooks> {
-
+export class ComponentInstance<
+		TState extends object = EmptyObject,
+		TProps extends object = EmptyObject,
+		THooks extends object = EmptyObject> extends ComponentLogic<TState, TProps, THooks> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.
@@ -61,17 +60,6 @@ export class ComponentInstance<TState extends Obj = {}, TProps extends Obj = {},
 };
 
 
-type ComponentClassBaseType<
-	TState extends Obj = {},
-	TProps extends Obj = {},
-	THooks extends Obj = {}
-> = ComponentLogicConstructor<TState, TProps, THooks> & Constructor<ComponentInstance<TState, TProps, THooks>>
-
-// export interface ComponentInstanceConstructor<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends Constructor<ComponentInstance<TState, TProps, THooks>> {
-export interface ComponentInstanceConstructor<TState extends Obj = {}, TProps extends Obj = {}, THooks extends Obj = {}> extends ComponentClassBaseType<TState, TProps, THooks> {
-	// getInitialState: (props: TProps) => TState;
-}
-
 /* 
 type UseInstance = <TState extends Obj = {}, TProps extends Obj = {}>(
 	Class: ComponentInstanceConstructor<TState, TProps>,
@@ -79,14 +67,67 @@ type UseInstance = <TState extends Obj = {}, TProps extends Obj = {}>(
 ) => ComponentInstance<TState, TProps>;
 */
 
-type UseInstance = <TClass extends ComponentInstanceConstructor>(
-	Class: TClass,
-	props: InstanceType<TClass>['props']
-) => InstanceType<TClass>;
+type UseInstance = <TClass extends ComponentInstance<object, object, object>>(
+	Class: TComponentClass<TClass>,
+	...props: valueof<TClass['props']> extends never
+		? ([] | [EmptyObject])
+		: [TClass['props']]
+) => TClass;
+
+/**
+ * To ensure successful type checking, the second parameter must be written with spread syntax.
+ * Likely because of the `exactOptionalPropertyTypes` config option turned on,
+ * and `UseInstance` using an empty tuple in its rest parameter type, attempting to simply
+ * retrieve the second argument directly causes an error when that argument is passed on to `useLogic`.
+ * But directly working with the rest array bypasses the problem. Also note that the issue persists even when
+ * the second param is given `{}` as a default follow to account for the empty tuple case. TypeScript
+ * just wants us to use the rest parameter explicitly by force.
+ */
+export const useInstance: UseInstance = (Component, ...args) => {
+	// useHooks.
+	const instance = useLogic(Component, ...args); // Must spread rest parameter, rather than passing a single `props` argument directly.
+
+	/**
+	 * Argument of type '
+		* [
+				(valueof<TClass["props"]> extends never 
+					? [] | [CEmptyObject]
+					: [ TClass["props"] ]
+				)[0]
+			]
+		' is not assignable to parameter of type '
+			valueof<TClass["props"]> extends never
+				? [] | [CEmptyObject]       // | [undefined]
+				: [ TClass["props"] ]
+		'
+	 */
+
+	// beforeMount, onMount, cleanUp.
+	// eslint-disable-next-line no-use-before-define
+	useMountCallbacks(instance);
+
+	// beforeRender.
+	instance.beforeRender?.();
+	
+	// onRender.
+	useEffect(() => {
+		const cleanupAfterRerender = instance.onRender?.();
+
+		return () => {
+			if (typeof cleanupAfterRerender === 'function') cleanupAfterRerender();
+			else cleanupAfterRerender?.then((cleanUp) => cleanUp?.());
+		};
+	});
+
+	return instance;
+};
 
 
+type UseMountCallbacks = <
+	TInstance extends ComponentInstance<any, any, any>
+>(instance: TInstance) => void;
 
-export const useMountCallbacks = <TInstance extends ComponentInstance<any, any, any>>(instance: TInstance) => {
+export const useMountCallbacks: UseMountCallbacks = (instance) => {
 	const mounted = useMountState();
 
 	if (!mounted) instance.beforeMount?.();
@@ -109,27 +150,4 @@ export const useMountCallbacks = <TInstance extends ComponentInstance<any, any, 
 			}
 		};
 	}, []);
-};
-
-export const useInstance: UseInstance = (Component, props) => {
-	// useHooks.
-	const instance = useLogic(Component, props);
-
-	// beforeMount, onMount, cleanUp.
-	useMountCallbacks(instance);
-
-	// beforeRender.
-	instance.beforeRender?.();
-	
-	// onRender.
-	useEffect(() => {
-		const cleanupAfterRerender = instance.onRender?.();
-
-		return () => {
-			if (typeof cleanupAfterRerender === 'function') cleanupAfterRerender();
-			else cleanupAfterRerender?.then((cleanUp) => cleanUp?.());
-		};
-	});
-
-	return instance;
 };

@@ -88,7 +88,20 @@ const appConfig = {
 			{
 				code: 100,
 				comments: 200,
-				tabWidth: 0,
+				tabWidth: 1, // Count each tab as 1 character. Use zero to ignore indents completely.
+
+				/** Ignore all comments. */
+				// ignoreComments: true,
+
+				/** Ignore only trailling comments. */
+				ignoreTrailingComments: true,
+
+				/**
+				 * Ignores lines matching a regular expression; can only match a single line and
+				 * needs to be double escaped when written in YAML or JSON
+				 */
+				// ignorePattern: /^\s*\/\//,
+
 				ignoreUrls: true,
 				ignoreStrings: true,
 				ignoreTemplateLiterals: true,

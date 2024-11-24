@@ -134,6 +134,10 @@ const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanS
 
 
 export type TCleanState<TState extends object> = TCleanStateInstance<TState>;
+export type TState<YourCleanState extends CleanStateBase<{}>> = Omit<
+	YourCleanState,
+	keyof CleanStateBase<{}>
+>;
 
 
 type StateInitFunction = (...args: any[]) => object;
