@@ -53,20 +53,23 @@ export class ClassComponent<
 		type TProps2 = valueof<ComponentProps> extends never ? EmptyObject : ComponentProps;
 		type TProps4 = [TProps2];
 
-		const isEmpty = (p: ComponentProps): p is EmptyObject => {
+		const isEmpty = (p: ComponentProps): p is valueof<ComponentProps> extends never
+			? (EmptyObject)
+			: ComponentProps => {
 			if (Reflect.ownKeys(p).length === 0) return true;
 			else return false;
 		};
 
-		const Wrapper: VoidFunctionComponent<ComponentProps> = (props, context) => {
-			const args: valueof<ComponentProps> extends never
+		const Wrapper: VoidFunctionComponent<ComponentProps> = (props = {}, context) => {
+			const args: [ComponentProps] | [{}] = [props];
+			const args2: valueof<ComponentProps> extends never
 				? ([] | [EmptyObject])
-				: [ComponentProps] = isEmpty(props) ? [] : [props];
+				: [ComponentProps] = isEmpty(props) ? [props] : [{}];
 
 			// const P: TProps = [props] as TProps;
 			// const P1: TProps = [];
 
-			const { Render } = useInstance(Component, ...args);
+			const { Render } = useInstance(Component, ...args2);
 
 			// Add calling component name to Render function name in stack traces.
 			useMemo(() => setFunctionName(Render, `${Component.name} > Render`), [Render]);
