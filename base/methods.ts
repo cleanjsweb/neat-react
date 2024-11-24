@@ -7,13 +7,13 @@ export class ComponentMethods<TState extends object, TProps extends object> {
 	declare props: TProps;
 };
 
-type UseMethods = <TMethods extends ComponentMethods<any, any>>(
-	// Using `typeof Class` instead of `Constructor<ClassInstanceType>` ensures
-	// that Methods will carry all properties of ComponentMethods, including any potential static properties.
-	Methods: Constructor<TMethods>,
-	state: TMethods['state'],
-	props: TMethods['props']
-) => TMethods;
+type UseMethods = <
+		TMethods extends typeof ComponentMethods<any, any>,
+		Instance extends InstanceType<TMethods> = InstanceType<TMethods>>(
+	Methods: TMethods & Constructor<InstanceType<TMethods>>,
+	state: InstanceType<TMethods>['state'],
+	props: InstanceType<TMethods>['props']
+) => InstanceType<TMethods>;
 
 export const useMethods: UseMethods = (Methods, state, props) => {
 	// @todo Switch to useRef. Vite HMR seems to sometimes reinitialize useMemo calls after a hot update,
@@ -30,3 +30,21 @@ export const useMethods: UseMethods = (Methods, state, props) => {
 
 	return methods;
 };
+
+
+testing: {
+	let a = async () => { 
+		const a: object = {b: ''};
+
+		type t = keyof typeof a;
+
+		class MyMethods extends ComponentMethods<{}, EmptyObject> {
+			// static getInitialState = () => ({});
+		};
+
+		const { useCleanState } = (await import('./state.js'));
+
+		const self = useMethods(MyMethods, useCleanState({}), {});
+	}
+}
+

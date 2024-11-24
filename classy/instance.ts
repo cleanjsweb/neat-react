@@ -67,12 +67,12 @@ type UseInstance = <TState extends Obj = {}, TProps extends Obj = {}>(
 ) => ComponentInstance<TState, TProps>;
 */
 
-type UseInstance = <TClass extends ComponentInstance<object, object, object>>(
-	Class: TComponentClass<TClass>,
-	...props: valueof<TClass['props']> extends never
-		? ([] | [EmptyObject] | [TClass['props']])
-		: [TClass['props']]
-) => TClass;
+type UseInstance = <TClass extends typeof ComponentInstance<object, object, object>>(
+	Class: TClass & Constructor<InstanceType<TClass>>,
+	...props: valueof<InstanceType<TClass>['props']> extends never
+		? ([] | [EmptyObject] | [InstanceType<TClass>['props']])
+		: [InstanceType<TClass>['props']]
+) => InstanceType<TClass>;
 
 /**
  * To ensure successful type checking, the second parameter must be written with spread syntax.

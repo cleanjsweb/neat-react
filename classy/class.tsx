@@ -30,8 +30,8 @@ type ExtractorOld = <TComponent extends Constructor<ClassComponent<object, objec
 // eslint-disable no-use-before-define
 // eslint-disable-next-line no-use-before-define
 type Extractor = <TComponent extends typeof ClassComponent<object, object, object>>(
-	this: TComponent,
-	_Component?: TComponent
+	this: TComponent & Constructor<InstanceType<TComponent>>,
+	_Component?: TComponent & Constructor<InstanceType<TComponent>>
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 // eslint-enable no-use-before-define
 

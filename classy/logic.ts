@@ -115,9 +115,9 @@ testing: {
 
 	type t = keyof typeof a;
 
-	// class MyComponentLogic extends ComponentLogic<{}, IEmpty, {}> {
-	// 	static getInitialState = () => ({});
-	// };
+	class MyComponentLogic extends ComponentLogic<{}, IEmpty, {}> {
+		static getInitialState = () => ({});
+	};
 
-	// useLogic(MyComponentLogic);
+	const self = useLogic(MyComponentLogic);
 }
