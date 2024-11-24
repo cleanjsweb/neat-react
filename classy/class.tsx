@@ -46,11 +46,9 @@ export class ClassComponent<
 		// Argument of type '[TComponent["props"]]' is not assignable to parameter of type 'valueof<TComponent["props"]> extends never ? [] | [CEmptyObject] : [TComponent["props"]]'
 
 		type ComponentProps = InstanceType<typeof Component>['props'];
-		type TProps = valueof<ComponentProps> extends never ? [EmptyObject] : [ComponentProps];
-		type TProps2 = valueof<ComponentProps> extends never ? EmptyObject : ComponentProps;
 
 
-		const Wrapper: VoidFunctionComponent<TProps2> = (props, context) => {
+		const Wrapper: VoidFunctionComponent<ComponentProps> = (props, context) => {
 			const { Render } = useInstance(Component, props);
 
 			// Add calling component name to Render function name in stack traces.
