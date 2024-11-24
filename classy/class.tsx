@@ -43,9 +43,9 @@ type Extractor = <TComponent extends typeof ClassComponent<o, o, o>>(
 
 
 export class ClassComponent<
-		TState extends object = EmptyObject,
-		TProps extends object = EmptyObject,
-		THooks extends object = EmptyObject> extends ComponentInstance<TState, TProps, THooks> {
+		TProps extends o = EmptyObject,
+		TState extends o = EmptyObject,
+		THooks extends o = EmptyObject> extends ComponentInstance<TState, TProps, THooks> {
 	Render: VoidFunctionComponent<{}>;
 
 	static renderAs: 'component' | 'template' = 'component';

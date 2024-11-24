@@ -69,10 +69,10 @@ class MergedState<TState extends object> {
 }
 
 export const useMergedState = <TState extends object>(initialState: TState) => {
-	const cleanState = useMemo(
-		() => new MergedState(initialState),
-		[]
-	) as MergedState<TState> & TState;
+	const cleanState = useMemo(() => {
+		return new MergedState(initialState);
+	}, []) as MergedState<TState> & TState;
+
 	MergedState.useRefresh.call(cleanState);
 	return cleanState;
 };

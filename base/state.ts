@@ -123,11 +123,6 @@ interface ICleanStateConstructor {
 }
 
 type ICleanStateClass = {
-	/* update: <TState extends object>(
-		this: CleanStateBase<TState>,
-		stateAndSetters: TUseStateResponses<TState>
-	) => void; */
-	// update: (typeof CleanStateBase)['update'],
 	[Key in TCleanStateBaseKeys]: (typeof CleanStateBase)[Key];
 }
 const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;

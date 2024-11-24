@@ -38,9 +38,9 @@ export const useMountCallbacks: UseMountCallbacks = (instance) => {
 export const noOp = () => {};
 
 export class ComponentInstance<
-		TState extends object = EmptyObject,
-		TProps extends object = EmptyObject,
-		THooks extends object = EmptyObject> extends ComponentLogic<TState, TProps, THooks> {
+		TProps extends o = EmptyObject,
+		TState extends o = EmptyObject,
+		THooks extends o = EmptyObject> extends ComponentLogic<TState, TProps, THooks> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.

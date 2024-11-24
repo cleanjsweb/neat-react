@@ -7,10 +7,10 @@ import { useCleanState } from '@/base/state';
 export type Empty = EmptyObject;
 type o = object;
 
-// React.Component
+
 export class ComponentLogic<
-		TState extends o = Empty,
 		TProps extends o = Empty,
+		TState extends o = Empty,
 		THooks extends o = Empty> {
 	declare state: TCleanState<TState>;
 
