@@ -21,8 +21,6 @@ const setFunctionName = (func: Function, newName: string) => {
 // eslint-disable-next-line no-use-before-define
 type ComponentClassParams = ConstructorParameters<typeof ClassComponent>
 type o = object;
-// export type TBaseComponentLogic = IComponentLogicClass<ComponentLogic<any, any, any>>;
-
 
 export interface IComponentClass<
 

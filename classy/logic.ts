@@ -16,8 +16,7 @@ export class ComponentLogic<
 
 	declare props: TProps;
 	declare hooks: THooks;
-
-	declare static getInitialState: TBaseComponentLogic['getInitialState'];
+	static getInitialState = (p?: o) => ({});
 
 	useHooks?: () => THooks;
 };
@@ -32,12 +31,8 @@ export interface IComponentLogicClass<
 	// new (...params: CnstPrm): Instance;
 }
 
-export type TBaseComponentLogic = IComponentLogicClass<ComponentLogic<any, any, any>>;
-
-type UseLogic = <
-		Class extends TypeofClass & IComponentLogicClass<InstanceType<TypeofClass>>,
-		TypeofClass extends typeof ComponentLogic<o, o, o>>(
-	Methods: Class,
+type UseLogic = <Class extends typeof ComponentLogic<o, o, o>>(
+	Methods: Class & IComponentLogicClass<InstanceType<Class>>,
 
 	...props: valueof<InstanceType<Class>['props']> extends never
 		? ([] | [EmptyObject] | [InstanceType<Class>['props']])
@@ -65,22 +60,24 @@ testing: {
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic<{}, Empty, {}> {
-		static getInitialState = () => ({});
+	class MyComponentLogic extends ComponentLogic<{a: ''}, Empty, {}> {
+		static override getInitialState = (p: Empty) => ({a: '' as const});
+		b = this.state.a
 	};
 
-	const self = useLogic(MyComponentLogic);
+	MyComponentLogic.getInitialState
+	const self = useLogic(MyComponentLogic, {});
 }
 
 testing : {
 	const A = class C extends ComponentLogic {
-		static getInitialState = () => ({a: 'l'});
+		// static getInitialState = () => ({a: 'l'});
 		b = this.state.a;
 	}
 
 	A.getInitialState();
 
-	// const self = useLogic(A);
+	const self = useLogic(A);
 }
 
 
