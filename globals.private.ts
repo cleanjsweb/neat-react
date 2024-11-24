@@ -9,13 +9,6 @@
 /** */
 const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
 
-class CEmptyObject {
-	[key: keyof any]: never;
-	// [UniqueSecretSymbolKey]?: never;
-}
-
-type t = CEmptyObject[keyof CEmptyObject]
-
 class CEmptyObject2 {
 	[UniqueSecretSymbolKey]?: never;
 }
@@ -50,7 +43,6 @@ class CEmptyObject3 {
 	[key: symbol]: never;
 }
 
-export const EmptyObject = new CEmptyObject();
 export const EmptyObject2 = new CEmptyObject2();
 export const EmptyObject3 = new CEmptyObject3();
 
@@ -63,6 +55,6 @@ testing: {
 		// '': '',
 	}
 
-	let TT: CEmptyObject = new CEmptyObject();
+	let TT: CEmptyObject2 = new CEmptyObject2();
 	TT = tt;
 }

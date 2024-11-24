@@ -87,7 +87,10 @@ declare global {
 	type TEmptyObject1 = { ''?: never };
 	type TEmptyObject2 = Record<symbol, never>;
 
-	type EmptyObject = __FromPrivateHelpers['EmptyObject'];
+	type EmptyObject = {
+		[key: keyof any]: never;
+		// [UniqueSecretSymbolKey]?: never;
+	}; //__FromPrivateHelpers['EmptyObject'];
 	type EmptyObject2 = __FromPrivateHelpers['EmptyObject2'];
 	type EmptyObject3 = __FromPrivateHelpers['EmptyObject3'];
 

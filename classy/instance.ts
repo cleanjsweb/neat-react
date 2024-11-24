@@ -1,8 +1,39 @@
 import { useEffect } from 'react';
 import { useMountState } from '@/base/state';
-import { ComponentLogic,  useLogic } from './logic';
+import { ComponentLogic,  IComponentLogicClass,  useLogic } from './logic';
+
 
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
+
+type UseMountCallbacks = <
+	// eslint-disable-next-line no-use-before-define
+	TInstance extends ComponentInstance<any, any, any>
+>(instance: TInstance) => void;
+
+export const useMountCallbacks: UseMountCallbacks = (instance) => {
+	const mounted = useMountState();
+
+	if (!mounted) instance.beforeMount?.();
+
+	useEffect(() => {
+		const mountHandlerCleanUp = instance.onMount?.();
+
+		return () => {
+			const doCleanUp = (runMountCleaners: IVoidFunction) => {
+				runMountCleaners?.();
+
+				// onDismount? willUnmount?
+				instance.cleanUp?.();
+			};
+
+			if (typeof mountHandlerCleanUp === 'function') {
+				doCleanUp(mountHandlerCleanUp);
+			} else {
+				mountHandlerCleanUp?.then(doCleanUp);
+			}
+		};
+	}, []);
+};
 
 export const noOp = () => {};
 
@@ -57,22 +88,23 @@ export class ComponentInstance<
 	cleanUp: IVoidFunction = () => {};
 };
 
+type o = object;
+type InstanceClassParams = ConstructorParameters<typeof ComponentInstance<o, o, o>>;
 
-/* 
-type UseInstance = <TState extends Obj = {}, TProps extends Obj = {}>(
-	Class: ComponentInstanceConstructor<TState, TProps>,
-	props: TProps
-) => ComponentInstance<TState, TProps>;
-*/
+export interface IComponentInstanceClass<
+	Instance extends ComponentInstance<o, o, o> = ComponentInstance,
+	Params extends InstanceClassParams = InstanceClassParams
+> extends IComponentLogicClass<Instance, Params> {};
 
 type UseInstance = <TClass extends typeof ComponentInstance<object, object, object>>(
-	Class: TClass & Constructor<InstanceType<TClass>>,
+	Class: TClass & IComponentInstanceClass<InstanceType<TClass>>,
+
 	...props: valueof<InstanceType<TClass>['props']> extends never
 		? ([] | [EmptyObject] | [InstanceType<TClass>['props']])
 		: [InstanceType<TClass>['props']]
 ) => InstanceType<TClass>;
 
-/**
+/*
  * To ensure successful type checking, the second parameter must be written with spread syntax.
  * Likely because of the `exactOptionalPropertyTypes` config option turned on,
  * and `UseInstance` using an empty tuple in its rest parameter type, attempting to simply
@@ -101,7 +133,6 @@ export const useInstance: UseInstance = (Component, ...args) => {
 	 */
 
 	// beforeMount, onMount, cleanUp.
-	// eslint-disable-next-line no-use-before-define
 	useMountCallbacks(instance);
 
 	// beforeRender.
@@ -118,34 +149,4 @@ export const useInstance: UseInstance = (Component, ...args) => {
 	});
 
 	return instance;
-};
-
-
-type UseMountCallbacks = <
-	TInstance extends ComponentInstance<any, any, any>
->(instance: TInstance) => void;
-
-export const useMountCallbacks: UseMountCallbacks = (instance) => {
-	const mounted = useMountState();
-
-	if (!mounted) instance.beforeMount?.();
-
-	useEffect(() => {
-		const mountHandlerCleanUp = instance.onMount?.();
-
-		return () => {
-			const doCleanUp = (runMountCleaners: IVoidFunction) => {
-				runMountCleaners?.();
-
-				// onDismount? willUnmount?
-				instance.cleanUp?.();
-			};
-
-			if (typeof mountHandlerCleanUp === 'function') {
-				doCleanUp(mountHandlerCleanUp);
-			} else {
-				mountHandlerCleanUp?.then(doCleanUp);
-			}
-		};
-	}, []);
 };

@@ -1,5 +1,5 @@
-import type { VoidFunctionComponent/* , ReactElement */ } from 'react';
-import type { IComponentClass } from './logic';
+import type { VoidFunctionComponent } from 'react';
+import type { IComponentInstanceClass } from './instance';
 
 import { useMemo, useEffect } from 'react';
 import { ComponentInstance, useInstance } from './instance';
@@ -18,13 +18,31 @@ const setFunctionName = (func: Function, newName: string) => {
 	}
 }
 
-// eslint-disable no-use-before-define
 // eslint-disable-next-line no-use-before-define
-type Extractor = <TComponent extends typeof ClassComponent<object, object, object>>(
-	this: TComponent & Constructor<InstanceType<TComponent>>,
-	_Component?: TComponent & Constructor<InstanceType<TComponent>>
+type ComponentClassParams = ConstructorParameters<typeof ClassComponent>
+type o = object;
+// export type TBaseComponentLogic = IComponentLogicClass<ComponentLogic<o, o, o>>;
+
+
+export interface IComponentClass<
+
+	// eslint-disable-next-line no-use-before-define
+	Instance extends ClassComponent<o, o, o> = ClassComponent,
+
+	Params extends ComponentClassParams = ComponentClassParams
+
+> extends IComponentInstanceClass<Instance, Params> {};
+
+
+// eslint-disable-next-line no-use-before-define
+type Extractor = <TComponent extends typeof ClassComponent<o, o, o>>(
+
+	this: NonNullable<typeof _Component>,
+
+	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
+
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
-// eslint-enable no-use-before-define
+
 
 export class ClassComponent<
 		TState extends object = EmptyObject,
@@ -34,7 +52,7 @@ export class ClassComponent<
 
 	static renderAs: 'component' | 'template' = 'component';
 
-	static FC: Extractor = function FC (this, _Component) {
+	static readonly FC: Extractor = function FC (this, _Component) {
 		const Component = _Component ?? this;
 		const isClassComponentType = Component.prototype instanceof ClassComponent;
 

@@ -7,9 +7,7 @@ export class ComponentMethods<TState extends object, TProps extends object> {
 	declare props: TProps;
 };
 
-type UseMethods = <
-		TMethods extends typeof ComponentMethods<any, any>,
-		Instance extends InstanceType<TMethods> = InstanceType<TMethods>>(
+type UseMethods = <TMethods extends typeof ComponentMethods<any, any>>(
 	Methods: TMethods & Constructor<InstanceType<TMethods>>,
 	state: InstanceType<TMethods>['state'],
 	props: InstanceType<TMethods>['props']
