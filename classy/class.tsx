@@ -20,10 +20,19 @@ const setFunctionName = (func: Function, newName: string) => {
 
 // eslint-disable no-use-before-define
 // eslint-disable-next-line no-use-before-define
-type Extractor = <TComponent extends ClassComponent<object, object, object>>(
-	this: TComponentClass<TComponent, typeof ClassComponent>,
-	_Component?: TComponentClass<TComponent, typeof ClassComponent>
-) => VoidFunctionComponent<TComponent['props']>;
+type ExtractorOld = <TComponent extends Constructor<ClassComponent<object, object, object>>>(
+	this: TComponentClass<InstanceType<TComponent>, typeof ClassComponent>,
+	_Component?: TComponentClass<InstanceType<TComponent>, typeof ClassComponent>
+) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
+// eslint-enable no-use-before-define
+
+
+// eslint-disable no-use-before-define
+// eslint-disable-next-line no-use-before-define
+type Extractor = <TComponent extends typeof ClassComponent<object, object, object>>(
+	this: TComponent,
+	_Component?: TComponent
+) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 // eslint-enable no-use-before-define
 
 export class ClassComponent<

@@ -3,16 +3,22 @@ import type { TCleanState, TState } from '@/base/state';
 import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
 
+type o = object;
 
 export class ComponentLogic<
-		TState extends object = EmptyObject,
+		TState_ extends object = EmptyObject,
 		TProps extends object = EmptyObject,
 		THooks extends object = EmptyObject> {
-	declare state: TCleanState<TState>;
+	declare state: TCleanState<TState_>;
 
 	declare props: TProps;
 	declare hooks: THooks;
-	declare static getInitialState: IComponentClass['getInitialState'];
+	// declare static getInitialState: IComponentClass['getInitialState'];
+	declare static getInitialState: <ThisT extends typeof ComponentLogic<o, o, o>>(
+		this: ThisT,
+		props?: InstanceType<ThisT>['props']
+	) => TState<InstanceType<ThisT>['state']> & any;
+	// getInitialState: (props?: Instance['props']) => TState<Instance['state']>;
 
 	useHooks?: () => THooks;
 };
@@ -69,13 +75,22 @@ testing : {
 
 export interface IEmpty extends EmptyObject {};
 
-type UseLogic = <CLogic extends ComponentLogic<object, object, object>>(
-	Methods: TComponentClass<CLogic>,
-	...props: valueof<CLogic['props']> extends never
-		? ([] | [EmptyObject] | [CLogic['props']])
-		: [CLogic['props']]
-) => CLogic;
+// type UseLogic = <CLogic extends ComponentLogic<object, object, object>>(
+// 	Methods: TComponentClass<CLogic>,
+// 	...props: valueof<CLogic['props']> extends never
+// 		? ([] | [EmptyObject] | [CLogic['props']])
+// 		: [CLogic['props']]
+// ) => CLogic;
 
+
+type UseLogic = <
+		Class extends typeof ComponentLogic<object, object, object>,
+		Instance extends InstanceType<Class> = InstanceType<Class>>(
+	Methods: Class & Constructor<Instance>,
+	...props: valueof<Instance['props']> extends never
+		? ([] | [EmptyObject] | [Instance['props']])
+		: [Instance['props']]
+) => Instance;
 
 export const useLogic: UseLogic = (Methods, props = {}) => {
 	type TLogicClass = typeof Methods;
@@ -100,9 +115,9 @@ testing: {
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic<{}, IEmpty, {}> {
-		static getInitialState = () => ({});
-	};
+	// class MyComponentLogic extends ComponentLogic<{}, IEmpty, {}> {
+	// 	static getInitialState = () => ({});
+	// };
 
-	useLogic(MyComponentLogic);
+	// useLogic(MyComponentLogic);
 }
