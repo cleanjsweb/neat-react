@@ -1,7 +1,7 @@
 import type { VoidFunctionComponent } from 'react';
 import type { IComponentInstanceClass } from './instance';
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { ComponentInstance, useInstance } from './instance';
 
 
@@ -17,6 +17,17 @@ const setFunctionName = (func: Function, newName: string) => {
 		console.warn(error);
 	}
 }
+
+const useRerender = () => {
+	/*
+	 * Skip the value, we don't need it.
+	 * Grab just the setter function.
+	 */
+	const [ , _forceRerender] = useState(Date.now());
+	const rerender = () => _forceRerender(Date.now());
+
+	return rerender;
+};
 
 // eslint-disable-next-line no-use-before-define
 type ComponentClassParams = ConstructorParameters<typeof ClassComponent>
@@ -47,6 +58,7 @@ export class ClassComponent<
 		TState extends o = EmptyObject,
 		THooks extends o = EmptyObject> extends ComponentInstance<TState, TProps, THooks> {
 	Render: VoidFunctionComponent<{}>;
+	readonly forceUpdate: VoidFunction;
 
 	static renderAs: 'component' | 'template' = 'component';
 
@@ -62,9 +74,15 @@ export class ClassComponent<
 
 		type ComponentProps = InstanceType<typeof Component>['props'];
 
-
 		const Wrapper: VoidFunctionComponent<ComponentProps> = (props, context) => {
-			const { Render } = useInstance(Component, props);
+			const instance = useInstance(Component, props);
+			const { Render } = instance;
+
+			let _forceUpdate: typeof instance.forceUpdate;
+			// @ts-expect-error (Cannot assign to 'forceUpdate' because it is a read-only property.ts(2540))
+			instance.forceUpdate = (
+				_forceUpdate = useRerender() // Moved this to separate line to allow TS errors. Use proxy local variable to regain some type checking for the assignment.
+			);
 
 			// Add calling component name to Render function name in stack traces.
 			useMemo(() => setFunctionName(Render, `${Component.name}.Render`), [Render]);
