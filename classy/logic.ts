@@ -15,35 +15,25 @@ export class ComponentLogic<
 
 	declare props: TProps;
 	declare hooks: THooks;
-	// declare static getInitialState: IComponentClass['getInitialState'];
-	declare static getInitialState: <ThisT extends typeof ComponentLogic<o, o, o>>(
-		this: ThisT,
-		props?: InstanceType<ThisT>['props']
-	) => TState<InstanceType<ThisT>['state']> & any;
-	// getInitialState: (props?: Instance['props']) => TState<Instance['state']>;
+
+	declare static getInitialState: IComponentClass<ComponentLogic<o, o, o>>['getInitialState'];
+	// declare static getInitialState: (props?: object) => object;
 
 	useHooks?: () => THooks;
 };
 
 type CnstPrm = ConstructorParameters<typeof ComponentLogic>;
 
-// type ComponentLogicStatics<TInstance extends ComponentLogic> = {
-// 	[Key in 'getInitialState']: T[Key]<TInstance['state']>;
-// };
-
-//{
-// 	new (
-// 		...params: ConstructorParameters<Constructor<Instance>>
-// 	): Instance;
-//}
-
 // export type ComponentLogicConstructor<
 // 		Instance extends ComponentLogic> = Constructor<Instance, CnstPrm> & {
 // 	getInitialState: (props?: Instance['props']) => Instance['state'];
 // }
 
-export interface IComponentClass<Instance extends ComponentLogic = ComponentLogic> {
-	new (...params: CnstPrm): Instance;
+export interface IComponentClass<
+		Instance extends ComponentLogic<
+			object, object, object
+		> = ComponentLogic> extends Constructor<Instance, CnstPrm> {
+	// new (...params: CnstPrm): Instance;
 
 	getInitialState: (props?: Instance['props']) => TState<Instance['state']>;
 }
@@ -54,18 +44,8 @@ export type ComponentClassStatics<Instance extends ComponentLogic<object, object
 
 export type TComponentClass<
 	Instance extends ComponentLogic<object, object, object>,
-	Statics extends ComponentClassStatics<Instance> =  ComponentClassStatics<Instance>,
 	Params extends CnstPrm = CnstPrm
-> = Statics & Constructor<Instance, Params>;
-
-
-testing : {
-	const A: IComponentClass<ComponentLogic<{}, {}, {}>> = class C extends ComponentLogic<{}, {}, {}> {
-		static getInitialState = () => ({});
-	}
-
-	A.getInitialState();
-}
+> = ComponentClassStatics<Instance> & Constructor<Instance, Params>;
 
 // export type ComponentLogicConstructor<
 // 		TState extends object,
@@ -88,7 +68,7 @@ export interface IEmpty extends EmptyObject {};
 type UseLogic = <
 		Class extends typeof ComponentLogic<object, object, object>,
 		Instance extends InstanceType<Class> = InstanceType<Class>>(
-	Methods: Class & Constructor<Instance>,
+	Methods: Class & IComponentClass<Instance>,
 	...props: valueof<Instance['props']> extends never
 		? ([] | [EmptyObject] | [Instance['props']])
 		: [Instance['props']]
@@ -123,3 +103,15 @@ testing: {
 
 	const self = useLogic(MyComponentLogic);
 }
+
+testing : {
+	const A = class C extends ComponentLogic {
+		static getInitialState = () => ({a: 'l'});
+		b = this.state.a;
+	}
+
+	A.getInitialState();
+
+	// const self = useLogic(A);
+}
+

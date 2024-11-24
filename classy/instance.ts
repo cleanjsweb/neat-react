@@ -1,5 +1,3 @@
-import type { TComponentClass } from './logic';
-
 import { useEffect } from 'react';
 import { useMountState } from '@/base/state';
 import { ComponentLogic,  useLogic } from './logic';

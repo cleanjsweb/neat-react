@@ -32,7 +32,7 @@
 		"noImplicitAny": true,
 		"noUncheckedIndexedAccess": true,
 		"strictBindCallApply": true,
-		// "exactOptionalPropertyTypes": true
+		"exactOptionalPropertyTypes": true,
 	},
 	"include": [
 		"**/*.ts",

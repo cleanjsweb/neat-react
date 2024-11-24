@@ -1,5 +1,5 @@
 import type { VoidFunctionComponent/* , ReactElement */ } from 'react';
-import type { IComponentClass, TComponentClass } from './logic';
+import type { IComponentClass } from './logic';
 
 import { useMemo, useEffect } from 'react';
 import { ComponentInstance, useInstance } from './instance';
@@ -17,15 +17,6 @@ const setFunctionName = (func: Function, newName: string) => {
 		console.warn(error);
 	}
 }
-
-// eslint-disable no-use-before-define
-// eslint-disable-next-line no-use-before-define
-type ExtractorOld = <TComponent extends Constructor<ClassComponent<object, object, object>>>(
-	this: TComponentClass<InstanceType<TComponent>, typeof ClassComponent>,
-	_Component?: TComponentClass<InstanceType<TComponent>, typeof ClassComponent>
-) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
-// eslint-enable no-use-before-define
-
 
 // eslint-disable no-use-before-define
 // eslint-disable-next-line no-use-before-define
