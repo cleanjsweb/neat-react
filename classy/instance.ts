@@ -70,7 +70,7 @@ type UseInstance = <TState extends Obj = {}, TProps extends Obj = {}>(
 type UseInstance = <TClass extends ComponentInstance<object, object, object>>(
 	Class: TComponentClass<TClass>,
 	...props: valueof<TClass['props']> extends never
-		? ([] | [EmptyObject])
+		? ([] | [EmptyObject] | [TClass['props']])
 		: [TClass['props']]
 ) => TClass;
 

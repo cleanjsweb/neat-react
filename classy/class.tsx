@@ -46,30 +46,12 @@ export class ClassComponent<
 		// Argument of type '[TComponent["props"]]' is not assignable to parameter of type 'valueof<TComponent["props"]> extends never ? [] | [CEmptyObject] : [TComponent["props"]]'
 
 		type ComponentProps = InstanceType<typeof Component>['props'];
-		type TProps = valueof<ComponentProps> extends never ? [] | [EmptyObject] : [ComponentProps];
-		type TProps3 = valueof<ComponentProps> extends never
-			? [EmptyObject, any | undefined]
-			: [ComponentProps, any | undefined];
+		type TProps = valueof<ComponentProps> extends never ? [EmptyObject] : [ComponentProps];
 		type TProps2 = valueof<ComponentProps> extends never ? EmptyObject : ComponentProps;
-		type TProps4 = [TProps2];
 
-		const isEmpty = (p: ComponentProps): p is valueof<ComponentProps> extends never
-			? (EmptyObject)
-			: ComponentProps => {
-			if (Reflect.ownKeys(p).length === 0) return true;
-			else return false;
-		};
 
-		const Wrapper: VoidFunctionComponent<ComponentProps> = (props = {}, context) => {
-			const args: [ComponentProps] | [{}] = [props];
-			const args2: valueof<ComponentProps> extends never
-				? ([] | [EmptyObject])
-				: [ComponentProps] = isEmpty(props) ? [props] : [{}];
-
-			// const P: TProps = [props] as TProps;
-			// const P1: TProps = [];
-
-			const { Render } = useInstance(Component, ...args2);
+		const Wrapper: VoidFunctionComponent<TProps2> = (props, context) => {
+			const { Render } = useInstance(Component, props);
 
 			// Add calling component name to Render function name in stack traces.
 			useMemo(() => setFunctionName(Render, `${Component.name} > Render`), [Render]);

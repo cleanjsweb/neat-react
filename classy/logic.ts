@@ -72,7 +72,7 @@ export interface IEmpty extends EmptyObject {};
 type UseLogic = <CLogic extends ComponentLogic<object, object, object>>(
 	Methods: TComponentClass<CLogic>,
 	...props: valueof<CLogic['props']> extends never
-		? ([] | [EmptyObject])
+		? ([] | [EmptyObject] | [CLogic['props']])
 		: [CLogic['props']]
 ) => CLogic;
 
