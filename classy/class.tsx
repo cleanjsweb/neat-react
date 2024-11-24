@@ -119,3 +119,15 @@ export const Use: ClassComponentHookWrapper = (params) => {
 	return null;
 };
 
+
+
+testing: {
+	const a: object = {b: ''};
+
+	type t = keyof typeof a;
+
+	class MyComponentLogic extends ClassComponent<{}, EmptyObject, {}> {
+		static getInitialState = () => ({});
+	};
+
+}

@@ -5,6 +5,8 @@ import { useCleanState } from '@/base/state';
 
 type o = object;
 
+
+// React.Component
 export class ComponentLogic<
 		TState_ extends object = EmptyObject,
 		TProps extends object = EmptyObject,
