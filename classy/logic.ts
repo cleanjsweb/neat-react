@@ -60,7 +60,7 @@ testing: {
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic<{a: ''}, Empty, {}> {
+	class MyComponentLogic extends ComponentLogic<Empty, {a: ''}, {}> {
 		static override getInitialState = (p: Empty) => ({a: '' as const});
 		b = this.state.a
 	};

@@ -36,7 +36,7 @@ testing: {
 
 		type t = keyof typeof a;
 
-		class MyMethods extends ComponentMethods<{}, EmptyObject> {
+		class MyMethods extends ComponentMethods<EmptyObject, {}> {
 			// static getInitialState = () => ({});
 		};
 
