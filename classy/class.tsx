@@ -30,8 +30,7 @@ export class ClassComponent<
 		TState extends object = EmptyObject,
 		TProps extends object = EmptyObject,
 		THooks extends object = EmptyObject> extends ComponentInstance<TState, TProps, THooks> {
-	Render: VoidFunctionComponent<TProps>;
-	// Render: () => ReactElement<any, any> | null;
+	Render: VoidFunctionComponent<{}>;
 
 	static renderAs: 'component' | 'template' = 'component';
 
@@ -52,7 +51,7 @@ export class ClassComponent<
 			const { Render } = useInstance(Component, props);
 
 			// Add calling component name to Render function name in stack traces.
-			useMemo(() => setFunctionName(Render, `${Component.name} > Render`), [Render]);
+			useMemo(() => setFunctionName(Render, `${Component.name}.Render`), [Render]);
 
 			/**
 			 * Normally a component can update it's own state in the "before-render" stage to
@@ -82,14 +81,12 @@ export class ClassComponent<
 		}
 
 		// Include calling component name in wrapper function name on stack traces.
-		setFunctionName(Wrapper, `${Component.name} > ${Wrapper.name}`);
+		setFunctionName(Wrapper, `${Component.name} < Wrapper`); // ${Wrapper.name}
 
 		return Wrapper;
 	};
 }
 
-
-type AnyFunction = (...args: any) => any;
 
 interface HookWrapperProps<THookFunction extends AnyFunction> {
 	hook: THookFunction,
@@ -101,8 +98,9 @@ type ClassComponentHookWrapper = <Hook extends AnyFunction>(
 	props: HookWrapperProps<Hook>
 ) => null;
 
+export const Use: ClassComponentHookWrapper = (params) => {
+	const { hook: useGenericHook, argumentsList, onUpdate } = params;
 
-export const Use: ClassComponentHookWrapper = ({ hook: useGenericHook, argumentsList, onUpdate }) => {
 	const output = useGenericHook(...argumentsList);
 
 	useEffect(() => {

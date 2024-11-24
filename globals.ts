@@ -63,7 +63,9 @@ declare global {
 			: Promise<void> | void
 	}
 
-	type FunctionType = (...args: any) => any;
+	type AnyFunction = (...args: any) => any;
+	type FunctionType = AnyFunction;
+	type TFunction = AnyFunction;
 
 
 	interface Window {
