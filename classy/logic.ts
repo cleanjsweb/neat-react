@@ -106,7 +106,7 @@ testing: {
 testing : {
 	const A = class C extends ComponentLogic<{a: string}> {
 		// static getInitialState = () => ({a: 'l'});
-		a = this.state.h;
+		// a = this.state.yyy;
 	}
 
 	A.getInitialState();
