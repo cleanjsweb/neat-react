@@ -56,7 +56,7 @@ type Extractor = <TComponent extends typeof ClassComponent<o, o, o>>(
 export class ClassComponent<
 		TProps extends o = EmptyObject,
 		TState extends o = EmptyObject,
-		THooks extends o = EmptyObject> extends ComponentInstance<TState, TProps, THooks> {
+		THooks extends o = EmptyObject> extends ComponentInstance<TProps, TState, THooks> {
 	Render: VoidFunctionComponent<{}>;
 	readonly forceUpdate: VoidFunction;
 
