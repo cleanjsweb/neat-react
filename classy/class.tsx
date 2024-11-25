@@ -151,8 +151,9 @@ testing: {
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ClassComponent<{}, EmptyObject, {}> {
-		static getInitialState = () => ({});
+	class MyComponentLogic extends ClassComponent<{}, {a: ''}, {}> {
+		static getInitialState = () => ({a: '' as const});
 	};
 
+	const Template = MyComponentLogic.FC();
 }

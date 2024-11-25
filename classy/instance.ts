@@ -104,6 +104,30 @@ type UseInstance = <TClass extends typeof ComponentInstance<object, object, obje
 		: [InstanceType<TClass>['props']]
 ) => InstanceType<TClass>;
 
+
+type UseInstance2 = {
+	<Class extends typeof ComponentInstance<EmptyObject, o, o>>(
+		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
+		...props: ([] | [EmptyObject])
+	): InstanceType<Class>;
+
+	<Class extends typeof ComponentInstance<o, o, o>>(
+		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
+		...props: [InstanceType<Class>['props']]
+	): InstanceType<Class>;
+}
+
+type UIProps = [
+	Methods:(
+		ComponentInstance<o, o, o>
+		& IComponentInstanceClass<ComponentInstance<o, o, o>>
+	),
+	...props: [] | [object]
+]
+
+type UIReturn = ComponentInstance<o, o, o>;
+
+
 /*
  * To ensure successful type checking, the second parameter must be written with spread syntax.
  * Likely because of the `exactOptionalPropertyTypes` config option turned on,
@@ -113,9 +137,11 @@ type UseInstance = <TClass extends typeof ComponentInstance<object, object, obje
  * the second param is given `{}` as a default follow to account for the empty tuple case. TypeScript
  * just wants us to use the rest parameter explicitly by force.
  */
-export const useInstance: UseInstance = (Component, ...args) => {
+export const useInstance: UseInstance2 = (...args: UIProps): UIReturn => {
+	const [Component, props = {}] = args;
+
 	// useHooks.
-	const instance = useLogic(Component, ...args); // Must spread rest parameter, rather than passing a single `props` argument directly.
+	const instance = useLogic(Component, props); // Must spread rest parameter, rather than passing a single `props` argument directly.
 
 	/**
 	 * Argument of type '

@@ -39,7 +39,39 @@ type UseLogic = <Class extends typeof ComponentLogic<o, o, o>>(
 		: [InstanceType<Class>['props']]
 ) => InstanceType<Class>;
 
-export const useLogic: UseLogic = (Methods, props = {}) => {
+
+/* 
+(
+	Methods: typeof C & IComponentLogicClass<C, []>,
+	props_0: EmptyObject
+): C
+*/
+
+type UseLogic2 = {
+	<Class extends typeof ComponentLogic<Empty, o, o>>(
+		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
+		...props: ([] | [EmptyObject])
+	): InstanceType<Class>;
+
+	<Class extends typeof ComponentLogic<o, o, o>>(
+		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
+		...props: [InstanceType<Class>['props']]
+	): InstanceType<Class>;
+}
+
+type ULProps = [
+	Methods:(
+		ComponentLogic<o, o, o>
+		& IComponentLogicClass<ComponentLogic<o, o, o>>
+	),
+	...props: [] | [object]
+]
+
+type ULReturn = ComponentLogic<o, o, o>;
+
+const useLogic: UseLogic2 = (...args: ULProps): ULReturn => {
+	const [Methods, props = {}] = args;
+
 	const state = useCleanState(Methods.getInitialState, props);
 
 	const methods = useRef(useMemo(() => {
@@ -54,6 +86,8 @@ export const useLogic: UseLogic = (Methods, props = {}) => {
 	return methods;
 };
 
+export { useLogic };
+
 
 testing: {
 	const a: object = {b: ''};
@@ -66,18 +100,18 @@ testing: {
 	};
 
 	MyComponentLogic.getInitialState
-	const self = useLogic(MyComponentLogic, {});
+	const self = useLogic(MyComponentLogic);
 }
 
 testing : {
-	const A = class C extends ComponentLogic {
+	const A = class C extends ComponentLogic<{a: string}> {
 		// static getInitialState = () => ({a: 'l'});
-		b = this.state.a;
+		a = this.state.h;
 	}
 
 	A.getInitialState();
 
-	const self = useLogic(A);
+	const self = useLogic(A, {a: 'boo'});
 }
 
 
