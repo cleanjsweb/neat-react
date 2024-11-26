@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMountState } from '@/base/state';
+import { TStateData, useMountState } from '@/base/state';
 import { ComponentLogic,  IComponentLogicClass,  useLogic } from './logic';
 
 
@@ -39,7 +39,7 @@ export const noOp = () => {};
 
 export class ComponentInstance<
 		TProps extends o = EmptyObject,
-		TState extends o = EmptyObject,
+		TState extends TStateData = EmptyObject,
 		THooks extends o = EmptyObject> extends ComponentLogic<TProps, TState, THooks> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
@@ -163,7 +163,7 @@ export const useInstance: UseInstance2 = (...args: UIProps): UIReturn => {
 
 	// beforeRender.
 	instance.beforeRender?.();
-	
+
 	// onRender.
 	useEffect(() => {
 		const cleanupAfterRerender = instance.onRender?.();
@@ -176,3 +176,12 @@ export const useInstance: UseInstance2 = (...args: UIProps): UIReturn => {
 
 	return instance;
 };
+
+testing: {
+	class A extends ComponentInstance<{a: string}, {putan?: string}> {
+		static getInitialState: (p?: object) => ({kk: ''});
+	}
+	
+	type bbbb = A['state'];
+	type ttt = bbbb['put'];	
+}

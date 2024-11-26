@@ -1,4 +1,4 @@
-import type { TCleanState, TState } from '@/base/state';
+import type { TCleanState, ExtractCleanStateData, TStateData } from '@/base/state';
 
 import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
@@ -10,15 +10,17 @@ type o = object;
 
 export class ComponentLogic<
 		TProps extends o = Empty,
-		TState extends o = Empty,
+		TState extends TStateData = Empty,
 		THooks extends o = Empty> {
 	declare state: TCleanState<TState>;
-
 	declare props: TProps;
 	declare hooks: THooks;
-	static getInitialState = (p?: o) => ({});
 
-	useHooks?: () => THooks;
+	static getInitialState = (p?: object) => ({});
+
+	useHooks: THooks extends Empty
+		? undefined | (() => Empty | undefined)
+		: () => THooks;
 };
 
 type LogicClassParams = ConstructorParameters<typeof ComponentLogic>;
@@ -27,7 +29,7 @@ export interface IComponentLogicClass<
 			Instance extends ComponentLogic<o, o, o> = ComponentLogic,
 			Params extends LogicClassParams = LogicClassParams
 		> extends Constructor<Instance, Params> {
-	getInitialState: (props?: Instance['props']) => TState<Instance['state']>;
+	getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;
 	// new (...params: CnstPrm): Instance;
 }
 
@@ -104,14 +106,16 @@ testing: {
 }
 
 testing : {
-	const A = class C extends ComponentLogic<{a: string}> {
+	const A = class C extends ComponentLogic {
 		// static getInitialState = () => ({a: 'l'});
-		// a = this.state.yyy;
+		// a = () => this.state.yyy = '';
 	}
 
 	A.getInitialState();
 
-	const self = useLogic(A, {a: 'boo'});
+	// const oa = {['a' as unknown as symbol]: 'boo'};
+	const oa = {['a']: 'boo'};
+	// const self = useLogic(A, oa);
 }
 
 

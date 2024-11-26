@@ -25,8 +25,8 @@ type PutState<TState extends object> = {
 }
 
 class CleanStateBase<TState extends Record<string, any>> {
-	reservedKeys: string[];
-	valueKeys: string[];
+	readonly reservedKeys: string[];
+	readonly valueKeys: string[];
 
 	private _values_: Record<string, any> = {} as TState;
 	private _initialValues_: TState;
@@ -105,21 +105,19 @@ class CleanStateBase<TState extends Record<string, any>> {
 		return { ...this._initialValues_ };
 	}
 
-	putMany = (newValues: Partial<TState>) => {
+	readonly putMany = (newValues: Partial<TState>) => {
 		Object.entries(newValues).forEach(([key, value]) => {
 			this.put[key as keyof TState](value as TState[string]);
 		});
 	};
 };
-
-type TCleanStateInstance<TState extends object> = TState & CleanStateBase<TState>;
 type TCleanStateBase = typeof CleanStateBase;
 type TCleanStateBaseKeys = keyof TCleanStateBase;
 
 interface ICleanStateConstructor {
 	new <TState extends object>(
 		...args: ConstructorParameters<typeof CleanStateBase>
-	): TCleanStateInstance<TState>;
+	): TCleanState<TState>;
 }
 
 type ICleanStateClass = {
@@ -128,11 +126,24 @@ type ICleanStateClass = {
 const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;
 
 
-export type TCleanState<TState extends object> = TCleanStateInstance<TState>;
-export type TState<YourCleanState extends CleanStateBase<{}>> = Omit<
-	YourCleanState,
-	keyof CleanStateBase<{}>
->;
+export type TStateData = object & {
+	[Key in keyof CleanStateBase<{}>]?: never;
+};
+
+export type TCleanState<TState extends TStateData> = (
+	CleanStateBase<TState>
+	& Omit<TState, keyof CleanStateBase<{}>>
+	// {
+	// 	[Key in keyof TState]: Key extends keyof CleanStateBase<{}>
+	// 		? CleanStateBase<{}>[Key]
+	// 		: TState[Key]
+	// 	;
+	// }
+);
+
+export type ExtractCleanStateData<
+	YourCleanState extends CleanStateBase<{}>
+> = Omit<YourCleanState, keyof CleanStateBase<{}>>;
 
 
 type StateInitFunction = (...args: any[]) => object;
@@ -151,13 +162,9 @@ type TUseCleanState = <TInit extends StateInit>(
 	...props: TInit extends (...args: infer TProps extends any[]) => (infer TState extends object)
 		? TProps
 		: []
-) => TCleanStateInstance<TInitialState<TInit>>;
+) => TCleanState<TInitialState<TInit>>;
 
 export const useCleanState: TUseCleanState = (_initialState, ...props) => {
-	const mounted = useMountState();
-
-	// Allow passing a callback to be run after state update is done.
-
 	type TState = TInitialState<typeof _initialState>;
 
 	const initialState: TState = typeof _initialState === 'function'
@@ -165,11 +172,9 @@ export const useCleanState: TUseCleanState = (_initialState, ...props) => {
 		: _initialState;
 	;
 
-	let freshInstance = {} as TCleanStateInstance<TState>;
-	if (!mounted) freshInstance = new CleanState(initialState);
-	if (!freshInstance.put) throw new Error('useCleanState failed to initialized a state instance.');
-
-	const cleanState = useRef(freshInstance).current;
+	const cleanState: TCleanState<TState> = useRef(useMemo(() => {
+		return new CleanState<TState>(initialState);
+	}, [])).current;
 
 	CleanState.update.call(cleanState);
 	return cleanState;

@@ -1,12 +1,13 @@
 import type { VoidFunctionComponent } from 'react';
 import type { IComponentInstanceClass } from './instance';
+import type { TStateData } from '@/base';
 
 import { useMemo, useEffect, useState } from 'react';
 import { ComponentInstance, useInstance } from './instance';
 
 
 /** Provide more useful stack traces for otherwise non-specific function names. */
-const setFunctionName = (func: Function, newName: string) => {
+const setFunctionName = (func: FunctionType, newName: string) => {
 	try {
 		// Must use try block, as `name` is not configurable on older browsers, and may yield a TypeError.
 		Object.defineProperty(func, 'name', {
@@ -23,7 +24,7 @@ const useRerender = () => {
 	 * Skip the value, we don't need it.
 	 * Grab just the setter function.
 	 */
-	const [ , _forceRerender] = useState(Date.now());
+	const [, _forceRerender] = useState(Date.now());
 	const rerender = () => _forceRerender(Date.now());
 
 	return rerender;
@@ -52,15 +53,15 @@ type Extractor = <TComponent extends typeof ClassComponent<o, o, o>>(
 
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 
-
+type ReactTemplate = React.JSX.Element | null
 export class ClassComponent<
 		TProps extends o = EmptyObject,
-		TState extends o = EmptyObject,
+		TState extends TStateData = EmptyObject,
 		THooks extends o = EmptyObject> extends ComponentInstance<TProps, TState, THooks> {
-	Render: VoidFunctionComponent<{}>;
-	readonly forceUpdate: VoidFunction;
+	Render?: VoidFunctionComponent<{}>;
+	template?: ReactTemplate | (() => ReactTemplate); // ReturnType<VoidFunctionComponent<{}>>;
 
-	static renderAs: 'component' | 'template' = 'component';
+	readonly forceUpdate: VoidFunction;
 
 	static readonly FC: Extractor = function FC (this, _Component) {
 		const Component = _Component ?? this;
@@ -74,9 +75,9 @@ export class ClassComponent<
 
 		type ComponentProps = InstanceType<typeof Component>['props'];
 
-		const Wrapper: VoidFunctionComponent<ComponentProps> = (props, context) => {
+		const Wrapper: VoidFunctionComponent<ComponentProps> = (props) => {
 			const instance = useInstance(Component, props);
-			const { Render } = instance;
+			const { Render, template } = instance;
 
 			let _forceUpdate: typeof instance.forceUpdate;
 			// @ts-expect-error (Cannot assign to 'forceUpdate' because it is a read-only property.ts(2540))
@@ -85,7 +86,12 @@ export class ClassComponent<
 			);
 
 			// Add calling component name to Render function name in stack traces.
-			useMemo(() => setFunctionName(Render, `${Component.name}.Render`), [Render]);
+			useMemo(() => {
+				if (typeof template === 'function')
+					setFunctionName(template, `${Component.name}.template`);
+				else if (typeof Render === 'function')
+					setFunctionName(Render, `${Component.name}.Render`);
+			}, [Render, template]);
 
 			/**
 			 * Normally a component can update it's own state in the "before-render" stage to
@@ -105,17 +111,25 @@ export class ClassComponent<
 			 * of doing it directly in `Render`. This might mean cleaner Render functions,
 			 * so there's probably no real value lost if we keep the component boundary.
 			**/
-			
-			if (Component.renderAs === 'template') return Render({}, context);
 
-			// With the existence of useContext(),
-			// what exactly does the context argument to FunctionComponent represent?
-			// Do we need to find a way to pass that context value to <Render /> here?
-			return <Render />;
+			switch (typeof template) {
+				case 'undefined':
+					if (typeof Render === 'function') return <Render />;
+					else throw new Error([
+						'A ClassComponent must have either a `template` or a `Render` property. But neither was found.',
+						'Add a `template` member to your class and assign a valid (JSX.Element | null) to it. (or a function that returns that).',
+						'Alternatively, add a `Render` method and assign a FunctionComponent to it.',
+						'\n\n',
+						'Expected `Render` to be a Function Component because `template` was `undefined`.',
+						`Instead got the following '${typeof Render}': $o`,
+					].join(' '), Render);
+				case 'function': return template();
+				default: return template;
+			}
 		}
 
 		// Include calling component name in wrapper function name on stack traces.
-		setFunctionName(Wrapper, `${Component.name} < Wrapper`); // ${Wrapper.name}
+		setFunctionName(Wrapper, `$${Component.name}$`);
 
 		return Wrapper;
 	};
