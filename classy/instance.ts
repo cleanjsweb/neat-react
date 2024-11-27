@@ -3,6 +3,7 @@ import { TStateData, useMountState } from '@/base/state';
 import { ComponentLogic,  IComponentLogicClass,  useLogic } from './logic';
 
 
+// @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
 
 type UseMountCallbacks = <
@@ -170,7 +171,7 @@ export const useInstance: UseInstance = (...args: UIProps): UIReturn => {
 
 testing: {
 	class A extends ComponentInstance<{a: string}, {putan?: string}> {
-		static getInitialState: (p?: object) => ({kk: ''});
+		static getInitialState: (p?: object) => ({putan: ''});
 	}
 
 	// const a = useInstance(A);

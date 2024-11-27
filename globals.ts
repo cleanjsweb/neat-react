@@ -50,6 +50,8 @@ testing: {
 
 
 //////////////
+// @todo Use rollup.
+// Insert globals.ts reference tag to all d.ts output files.
 declare global {
 	type Optional<
 				BaseType,

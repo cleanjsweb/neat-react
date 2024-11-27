@@ -1,3 +1,5 @@
+import '../globals';
+
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 

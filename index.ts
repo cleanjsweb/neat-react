@@ -1,10 +1,11 @@
 
-export * from "@/classy";
+export * from '@/classy';
 
 
 
 // PS: Document component inheritance pattern with lifecycle callback arrays and namespaces.
-// Due to react's remounting behaviour, components must externally track when some logic has run, if it really really must only ever run once per mounted instance. Tricky to get right for components that may have multiple instance rendered simultaneously at different parts of a page.
+// Due to react's remounting behaviour, components must externally track when some logic has run,
+// if it really really must only ever run once per mounted instance. Tricky to get right for components that may have multiple instance rendered simultaneously at different parts of a page.
 
 
 // useCleanState => useState, separate call for each key

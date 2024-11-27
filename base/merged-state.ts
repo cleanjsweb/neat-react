@@ -1,3 +1,5 @@
+import '../globals';
+
 import { useMemo, useState } from 'react';
 
 class MergedState<TState extends object> {

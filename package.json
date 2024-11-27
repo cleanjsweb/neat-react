@@ -30,7 +30,7 @@
   "scripts": {
     "prebuild": "rimraf ./build",
     "build": "tsc && tsc-alias",
-    "postbuild": "copyfiles globals.d.ts tsconfig.json build",
+    "postbuild": "copyfiles tsconfig.json build",
     "_": "",
     "prepublishOnly": "npm run build",
     "publish:patch": "npm version patch && npm publish",
