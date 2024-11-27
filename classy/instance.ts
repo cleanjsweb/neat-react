@@ -99,12 +99,12 @@ export interface IComponentInstanceClass<
 type UseInstance = {
 	<Class extends typeof ComponentInstance<HardEmptyObject, o, o>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
-		...props: ([] | [HardEmptyObject])
+		props?: HardEmptyObject
 	): InstanceType<Class>;
 
 	<Class extends typeof ComponentInstance<o, o, o>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
-		...props: [InstanceType<Class>['props']]
+		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 }
 
@@ -113,7 +113,7 @@ type UIProps = [
 		ComponentInstance<o, o, o>
 		& IComponentInstanceClass<ComponentInstance<o, o, o>>
 	),
-	...props: [] | [object]
+	props?: object
 ]
 
 type UIReturn = ComponentInstance<o, o, o>;
@@ -172,7 +172,9 @@ testing: {
 	class A extends ComponentInstance<{a: string}, {putan?: string}> {
 		static getInitialState: (p?: object) => ({kk: ''});
 	}
-	
+
+	// const a = useInstance(A);
+
 	type bbbb = A['state'];
 	type ttt = bbbb['put'];
 }

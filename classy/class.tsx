@@ -19,7 +19,7 @@ const setFunctionName = (func: FunctionType, newName: string) => {
 	}
 }
 
-const useRerender = () => {
+export const useRerender = () => {
 	/*
 	 * Skip the value, we don't need it.
 	 * Grab just the setter function.
@@ -80,9 +80,10 @@ export class ClassComponent<
 			const { Render, template } = instance;
 
 			let _forceUpdate: typeof instance.forceUpdate;
+
 			// @ts-expect-error (Cannot assign to 'forceUpdate' because it is a read-only property.ts(2540))
 			instance.forceUpdate = (
-				_forceUpdate = useRerender() // Moved this to separate line to allow TS errors. Use proxy local variable to regain some type checking for the assignment.
+				_forceUpdate = useRerender() // Moved this to separate line to allow TS errors. Use proxy local variable to regain some type checking for the assignment to `instance.forceUpdate`.
 			);
 
 			// Add calling component name to Render function name in stack traces.
@@ -103,13 +104,17 @@ export class ClassComponent<
 			 * state in the "before-render" stage of `Render`, since it will be attempting to update it's parent's
 			 * state (i.e `Wrapper` component) rather than it's own state.
 			 * 
-			 * Consider using this as a function call instead of JSX to avoid that. This way, we avoid
+			 * Users should favor using the `template()` method instead. This way, we avoid
 			 * establishing a component boundary between `Wrapper` and `Render`.
 			 * 
 			 * Although, since beforeRender() is called earlier from a hook, this is probably
 			 * a non-issue. It will only force users to move their logic into `beforeRender` instead
-			 * of doing it directly in `Render`. This might mean cleaner Render functions,
-			 * so there's probably no real value lost if we keep the component boundary.
+			 * of doing it directly in `Render`. Even if `template` is being used, the `beforeRender` method
+			 * is the preferred location for such logic to maintain a high level of separation of concerns,
+			 * which is what this library exists to provide.
+			 * 
+			 * So there's probably no real value lost with the component boundary. Users should just use
+			 * `beforeRender` + `template`.
 			**/
 
 			switch (typeof template) {

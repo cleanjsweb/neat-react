@@ -82,7 +82,7 @@ testing: {
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic {
+	class MyComponentLogic extends ComponentLogic<{a: string}> {
 		static getInitialState = () => ({a: '' as const});
 		// b = this.state.put[''] + this.props.b;
 	};
@@ -90,7 +90,7 @@ testing: {
 	type tt = keyof {};
 
 	MyComponentLogic.getInitialState
-	const self = useLogic(MyComponentLogic, {});
+	// const self = useLogic(MyComponentLogic);
 }
 
 testing : {
