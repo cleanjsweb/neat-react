@@ -4,22 +4,24 @@ import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
 
 
-export type Empty = EmptyObject;
+export type HardEmpty = HardEmptyObject;
+export type WeakEmpty = WeakEmptyObject;
+
 type o = object;
 
 
 export class ComponentLogic<
-		TProps extends o = Empty,
-		TState extends TStateData = Empty,
-		THooks extends o = Empty> {
+		TProps extends o = WeakEmpty,
+		TState extends TStateData = WeakEmpty, // WeakEmpty,
+		THooks extends o = WeakEmpty> {
 	declare state: TCleanState<TState>;
 	declare props: TProps;
 	declare hooks: THooks;
 
-	static getInitialState = (p?: object) => ({});
+	static getInitialState = (p?: object): object => ({});
 
-	useHooks: THooks extends Empty
-		? undefined | (() => Empty | undefined)
+	useHooks: THooks extends HardEmptyObject
+		? undefined | (() => HardEmptyObject | undefined)
 		: () => THooks;
 };
 
@@ -33,31 +35,15 @@ export interface IComponentLogicClass<
 	// new (...params: CnstPrm): Instance;
 }
 
-type UseLogic = <Class extends typeof ComponentLogic<o, o, o>>(
-	Methods: Class & IComponentLogicClass<InstanceType<Class>>,
-
-	...props: valueof<InstanceType<Class>['props']> extends never
-		? ([] | [EmptyObject] | [InstanceType<Class>['props']])
-		: [InstanceType<Class>['props']]
-) => InstanceType<Class>;
-
-
-/* 
-(
-	Methods: typeof C & IComponentLogicClass<C, []>,
-	props_0: EmptyObject
-): C
-*/
-
-type UseLogic2 = {
-	<Class extends typeof ComponentLogic<Empty, o, o>>(
+type UseLogic = {
+	<Class extends typeof ComponentLogic<HardEmptyObject, o, o>>(
 		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
-		...props: ([] | [EmptyObject])
+		props?: HardEmptyObject
 	): InstanceType<Class>;
 
 	<Class extends typeof ComponentLogic<o, o, o>>(
 		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
-		...props: [InstanceType<Class>['props']]
+		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 }
 
@@ -66,12 +52,12 @@ type ULProps = [
 		ComponentLogic<o, o, o>
 		& IComponentLogicClass<ComponentLogic<o, o, o>>
 	),
-	...props: [] | [object]
+	props?: object
 ]
 
 type ULReturn = ComponentLogic<o, o, o>;
 
-const useLogic: UseLogic2 = (...args: ULProps): ULReturn => {
+const useLogic: UseLogic = (...args: ULProps): ULReturn => {
 	const [Methods, props = {}] = args;
 
 	const state = useCleanState(Methods.getInitialState, props);
@@ -96,13 +82,15 @@ testing: {
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic<Empty, {a: ''}, {}> {
-		static override getInitialState = (p: Empty) => ({a: '' as const});
-		b = this.state.a
+	class MyComponentLogic extends ComponentLogic {
+		static getInitialState = () => ({a: '' as const});
+		// b = this.state.put[''] + this.props.b;
 	};
 
+	type tt = keyof {};
+
 	MyComponentLogic.getInitialState
-	const self = useLogic(MyComponentLogic);
+	const self = useLogic(MyComponentLogic, {});
 }
 
 testing : {

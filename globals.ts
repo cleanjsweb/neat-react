@@ -1,27 +1,55 @@
-
+interface EmptyObject3 {
 	/**
-	 * @file
-	 * This file is an "Ambient declarations file". The types defined here are available globally.
-	 * More info here: https://stackoverflow.com/a/73389225/985454
-	 *
-	 * Don't use `import` and `export` in this file directly! It breaks ambience.
-	 * To import external types in an ambient declarations file (this file) use the following:
-	 *
+	 * It appears keys of the base `symbol` type are excluded from
+	 * excess property checks. This is likely a bug in TypeScript.
+	 * Even the "has no properties in common" error disappears if the
+	 * value being placed into a variable has a key typed as `symbol`.
+	 * This only applies to the base `symbol` type. Specifc `'unique symbol'`
+	 * types are unaffected.
+	 * 
 	 * @example
-	 * declare type React = typeof import('react');
-	 *
-	 * To contribute ambient declarations from any file, even non-ambient ones, use this:
-	 *
-	 * @example
-	 * declare global {
-	 *   interface Window {
-	 *     ethereum: any
-	 *   }
-	 * }
-	**/
+	 * // Consider the following object:
+	 * const myUniqueSymbol = Symbol('lkjhgfc');
+	 * let myObj = { [myUniqueSymbol]?: 'a string value' };
+	 * 
+	 * // We can attempt to reassign `myObj` with the expectation that TS will
+	 * // warn if any key other than `myUniqueSymbol` is used in the new object.
+	 * // But this breaks in one specific scenario.
+	 * 
+	 * // No excess property check when this is used as a key.
+	 * // Error "no properties in common" also suppressed when this is used as a key.
+	 * const differentBasicSymbol = Symbol('qwertiop[') as symbol;
+	 * myObj = { [differentBasicSymbol]: 5 };
+	 * 
+	 * // Errors emitted as expected when this is used as a key.
+	 * const differentUniqueSymbol = Symbol('zxcvbnm');
+	 * myObj = { [differentUniqueSymbol]: 5 };
+	 */
+	[key: symbol]: never;
+}
 
-	/** */
 
+/////////////
+const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
+
+type TEmptyObject1 = { ''?: never };
+type TEmptyObject2 = Record<keyof any, never>;
+
+testing: {
+	const mySymbol = Symbol('asdfgh') as symbol;
+
+	const tt = {
+		// [mySymbol]: '' as never,
+		// [UniqueSecretSymbolKey]: '',
+		// '': '',
+	}
+
+	let TT: WeakEmptyObject = {};
+	TT = tt;
+}
+
+
+//////////////
 declare global {
 	type Optional<
 				BaseType,
@@ -67,7 +95,21 @@ declare global {
 	type FunctionType = AnyFunction;
 	type TFunction = AnyFunction;
 
+	type NotNullish = {};
+	type NonPrimitive = object;
 
+	interface WeakEmptyObject {
+		[UniqueSecretSymbolKey]?: never;
+	}
+
+	interface HardEmptyObject {
+		[key: keyof any]: never;
+	}
+
+	type valueof<TObject> = TObject[keyof TObject];
+
+
+	//////////////////
 	interface Window {
 	}
 
@@ -80,25 +122,6 @@ declare global {
 		interface ProcessEnv {
 		}
 	}
-
-
-	type __FromPrivateHelpers = typeof import('globals.private');
-
-	type TEmptyObject1 = { ''?: never };
-	type TEmptyObject2 = Record<symbol, never>;
-
-	// type EmptyObject = { //__FromPrivateHelpers['EmptyObject'];
-	// 	[key: keyof any]: never;
-	// 	// [UniqueSecretSymbolKey]?: never;
-	// };
-	type EmptyObject = __FromPrivateHelpers['EmptyObject2'];
-	type EmptyObject2 = __FromPrivateHelpers['EmptyObject2'];
-	type EmptyObject3 = __FromPrivateHelpers['EmptyObject3'];
-
-
-	type valueof<TObject> = TObject[keyof TObject];
-
-	interface T extends __FromPrivateHelpers {}
 }
 
 export {};

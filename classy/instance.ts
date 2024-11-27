@@ -38,9 +38,9 @@ export const useMountCallbacks: UseMountCallbacks = (instance) => {
 export const noOp = () => {};
 
 export class ComponentInstance<
-		TProps extends o = EmptyObject,
-		TState extends TStateData = EmptyObject,
-		THooks extends o = EmptyObject> extends ComponentLogic<TProps, TState, THooks> {
+		TProps extends o = WeakEmptyObject,
+		TState extends TStateData = WeakEmptyObject,
+		THooks extends o = WeakEmptyObject> extends ComponentLogic<TProps, TState, THooks> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.
@@ -96,19 +96,10 @@ export interface IComponentInstanceClass<
 	Params extends InstanceClassParams = InstanceClassParams
 > extends IComponentLogicClass<Instance, Params> {};
 
-type UseInstance = <TClass extends typeof ComponentInstance<object, object, object>>(
-	Class: TClass & IComponentInstanceClass<InstanceType<TClass>>,
-
-	...props: valueof<InstanceType<TClass>['props']> extends never
-		? ([] | [EmptyObject] | [InstanceType<TClass>['props']])
-		: [InstanceType<TClass>['props']]
-) => InstanceType<TClass>;
-
-
-type UseInstance2 = {
-	<Class extends typeof ComponentInstance<EmptyObject, o, o>>(
+type UseInstance = {
+	<Class extends typeof ComponentInstance<HardEmptyObject, o, o>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
-		...props: ([] | [EmptyObject])
+		...props: ([] | [HardEmptyObject])
 	): InstanceType<Class>;
 
 	<Class extends typeof ComponentInstance<o, o, o>>(
@@ -137,7 +128,7 @@ type UIReturn = ComponentInstance<o, o, o>;
  * the second param is given `{}` as a default follow to account for the empty tuple case. TypeScript
  * just wants us to use the rest parameter explicitly by force.
  */
-export const useInstance: UseInstance2 = (...args: UIProps): UIReturn => {
+export const useInstance: UseInstance = (...args: UIProps): UIReturn => {
 	const [Component, props = {}] = args;
 
 	// useHooks.
@@ -183,5 +174,5 @@ testing: {
 	}
 	
 	type bbbb = A['state'];
-	type ttt = bbbb['put'];	
+	type ttt = bbbb['put'];
 }

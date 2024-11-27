@@ -55,9 +55,9 @@ type Extractor = <TComponent extends typeof ClassComponent<o, o, o>>(
 
 type ReactTemplate = React.JSX.Element | null
 export class ClassComponent<
-		TProps extends o = EmptyObject,
-		TState extends TStateData = EmptyObject,
-		THooks extends o = EmptyObject> extends ComponentInstance<TProps, TState, THooks> {
+		TProps extends o = WeakEmptyObject,
+		TState extends TStateData = WeakEmptyObject,
+		THooks extends o = WeakEmptyObject> extends ComponentInstance<TProps, TState, THooks> {
 	Render?: VoidFunctionComponent<{}>;
 	template?: ReactTemplate | (() => ReactTemplate); // ReturnType<VoidFunctionComponent<{}>>;
 
