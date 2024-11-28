@@ -11,17 +11,17 @@ type o = object;
 
 
 export class ComponentLogic<
-		TProps extends o = {},
-		TState extends TStateData = WeakEmpty, // WeakEmpty,
-		THooks extends o = WeakEmpty> {
+		TProps extends object = {},
+		TState extends TStateData = WeakEmpty,
+		THooks extends object = {}> { // @todo Try void/never/null for the empty case.
 	declare state: TCleanState<TState>;
-	declare props: TProps;
-	declare hooks: THooks;
+	declare readonly props: TProps;
+	declare readonly hooks: THooks;
 
 	static getInitialState = (p?: object): object => ({});
 
 	useHooks: THooks extends HardEmptyObject
-		? undefined | (() => HardEmptyObject | undefined)
+		? undefined | (() => THooks | void)
 		: () => THooks;
 };
 
@@ -47,7 +47,7 @@ type UseLogic = {
 }
 
 type ULParams = [
-	Methods: (
+	Class: (
 		ComponentLogic<o, o, o>
 		& IComponentLogicClass<ComponentLogic<o, o, o>>
 	),
@@ -57,20 +57,32 @@ type ULParams = [
 type ULReturn = ComponentLogic<o, o, o>;
 
 const useLogic: UseLogic = (...args: ULParams): ULReturn => {
-	const [Methods, props = {}] = args;
+	const [Logic, props = {}] = args;
 
-	const state = useCleanState(Methods.getInitialState, props);
+	const state = useCleanState(Logic.getInitialState, props);
 
-	const methods = useRef(useMemo(() => {
-		return new Methods();
+	const self = useRef(useMemo(() => {
+		return new Logic();
 	}, [])).current;
 
-	methods.state = state;
-	methods.props = props;
+	/** A proxy variable to allow typechecking of the assignment to `self.props` despite the need for "readonly" error suppression. */
+	let _propsProxy_: typeof self.props;
+	/** A proxy variable to allow typechecking of the assignment to `self.hooks` despite the need for "readonly" error suppression. */
+	let _hooksProxy_: typeof self.hooks;
 
-	methods.hooks = methods.useHooks?.() ?? {};
+	self.state = state;
 
-	return methods;
+	// @ts-expect-error
+	self.props = (
+		_propsProxy_ = props
+	);
+
+	// @ts-expect-error
+	self.hooks = (
+		_hooksProxy_ = self.useHooks?.() ?? {} // @todo Improve UseLogic types to reflect that this may be undefined.
+	);
+
+	return self;
 };
 
 export { useLogic };

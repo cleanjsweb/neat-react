@@ -5,7 +5,7 @@ import { useMemo, useRef } from 'react';
 export class ComponentMethods<
 		TProps extends object = {},
 		TState extends TStateData | null = null> {
-	declare props: TProps;
+	declare readonly props: TProps;
 	declare state: TState extends TStateData ? TCleanState<TState> : null;
 };
 
@@ -51,7 +51,14 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 		return new Methods();
 	}, [])).current;
 
-	methods.props = props;
+	/** A proxy variable to allow typechecking of the assignment to methods.props despite the need for "readonly" error suppression. */
+	let _propsProxy_: typeof methods.props;
+
+	// @ts-expect-error
+	methods.props = (
+		_propsProxy_ = props
+	);
+
 	if (state) methods.state = state;
 
 	return methods;
