@@ -38,7 +38,6 @@ export interface IComponentLogicClass<
 type UseLogic = {
 	<Class extends typeof ComponentLogic<HardEmptyObject, o, o>>(
 		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
-		props?: HardEmptyObject
 	): InstanceType<Class>;
 
 	<Class extends typeof ComponentLogic<o, o, o>>(

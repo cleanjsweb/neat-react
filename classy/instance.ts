@@ -100,7 +100,6 @@ export interface IComponentInstanceClass<
 type UseInstance = {
 	<Class extends typeof ComponentInstance<HardEmptyObject, o, o>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
-		props?: HardEmptyObject
 	): InstanceType<Class>;
 
 	<Class extends typeof ComponentInstance<o, o, o>>(
@@ -133,7 +132,7 @@ export const useInstance: UseInstance = (...args: UIProps): UIReturn => {
 	const [Component, props = {}] = args;
 
 	// useHooks.
-	const instance = useLogic(Component, props); // Must spread rest parameter, rather than passing a single `props` argument directly.
+	const instance = useLogic(Component, props);
 
 	/**
 	 * Argument of type '
@@ -170,11 +169,13 @@ export const useInstance: UseInstance = (...args: UIProps): UIReturn => {
 };
 
 testing: {
-	class A extends ComponentInstance<{a: string}, {putan?: string}> {
+	class A extends ComponentInstance<{a: ''}> {
 		static getInitialState: (p?: object) => ({putan: ''});
+		// k = this.state.o
 	}
 
-	// const a = useInstance(A);
+	const p = {k: ''}
+	const a = useInstance(A);
 
 	type bbbb = A['state'];
 	type ttt = bbbb['put'];
