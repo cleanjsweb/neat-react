@@ -111,8 +111,8 @@ type UseInstance = {
 	): InstanceType<Class>;
 }
 
-type UIProps = [
-	Methods:(
+type UIParams = [
+	Methods: (
 		ComponentInstance<o, o, o>
 		& IComponentInstanceClass<ComponentInstance<o, o, o>>
 	),
@@ -131,7 +131,7 @@ type UIReturn = ComponentInstance<o, o, o>;
  * the second param is given `{}` as a default follow to account for the empty tuple case. TypeScript
  * just wants us to use the rest parameter explicitly by force.
  */
-export const useInstance: UseInstance = (...args: UIProps): UIReturn => {
+export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	const [Component, props = {}] = args;
 
 	// useHooks.

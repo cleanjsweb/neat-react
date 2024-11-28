@@ -2,33 +2,62 @@ import type { TCleanState, TStateData } from './state';
 import { useMemo, useRef } from 'react';
 
 
-export class ComponentMethods<TProps extends object, TState extends TStateData> {
+export class ComponentMethods<
+		TProps extends object = {},
+		TState extends TStateData | null = null> {
 	declare props: TProps;
-	declare state: TCleanState<TState>;
+	declare state: TState extends TStateData ? TCleanState<TState> : null;
 };
 
-type UseMethods = <Class extends typeof ComponentMethods<object, object>>(
-	Methods: Class & Constructor<InstanceType<Class>>,
-	// @todo Use overloads to allow omissions.
-	props: InstanceType<Class>['props'],
-	state: InstanceType<Class>['state'], // Can omit when <Class extends typeof ComponentMethods<object, HardEmpty>>.
-) => InstanceType<Class>;
+type UseMethods = {
+	<Class extends typeof ComponentMethods<object, TStateData>>(
+		Methods: Class & Constructor<InstanceType<Class>>,
+		props: InstanceType<Class>['props'],
+		state: InstanceType<Class>['state'],
+	): InstanceType<Class>;
 
-export const useMethods: UseMethods = (Methods, props, state) => {
-	// @todo Switch to useRef. Vite HMR seems to sometimes reinitialize useMemo calls after a hot update,
-	// causing the instance to be unexpectedly recreated in the middle of the components lifecycle.
+	<Class extends typeof ComponentMethods<object, null>>(
+		Methods: Class & Constructor<InstanceType<Class>>,
+		props: InstanceType<Class>['props'],
+		state?: null // null should be equal to InstanceType<Class>['state'] in this case.
+	): InstanceType<Class>;
+
+	<Class extends typeof ComponentMethods<HardEmptyObject, null>>(
+		Methods: Class & Constructor<InstanceType<Class>>,
+	): InstanceType<Class>;
+}
+
+type UMParams = [
+	Methods: (
+		ComponentMethods<object, object>
+		& Constructor<ComponentMethods<object, object>>
+	),
+	props?: object,
+	state?: TCleanState<object> | null
+]
+
+type UMReturn = ComponentMethods<object, object>;
+
+
+const useMethods: UseMethods = (...args: UMParams): UMReturn => {
+	const [Methods, props = {}, state] = args;
+
+	// Vite HMR seems to sometimes reinitialize useMemo calls after a hot update,
+	// causing the instance to be unexpectedly recreated in the middle of the component's lifecycle.
 	// But useRef and useState values appear to always be preserved whenever this happens.
 	// So those two are the only cross-render-persistence methods we can consider safe.
+	// @todo Provide a way for users to reflect updated methods code on the existing instance after HMR.
 	const methods = useRef(useMemo(() => {
 		return new Methods();
 	}, [])).current;
 
 	methods.props = props;
-	methods.state = state;
+	if (state) methods.state = state;
 
 	return methods;
 };
 
+export  { useMethods };
 
 testing: {
 	let a = async () => { 
@@ -36,13 +65,14 @@ testing: {
 
 		type t = keyof typeof a;
 
-		class MyMethods extends ComponentMethods<WeakEmptyObject, {}> {
+		class MyMethods extends ComponentMethods<WeakEmptyObject, null> {
 			// static getInitialState = () => ({});
 		};
 
 		const { useCleanState } = (await import('./state.js'));
 
-		const self = useMethods(MyMethods, {}, useCleanState({}));
+		const self = useMethods(MyMethods, {});
+		self.state;
 	}
 }
 

@@ -46,8 +46,8 @@ type UseLogic = {
 	): InstanceType<Class>;
 }
 
-type ULProps = [
-	Methods:(
+type ULParams = [
+	Methods: (
 		ComponentLogic<o, o, o>
 		& IComponentLogicClass<ComponentLogic<o, o, o>>
 	),
@@ -56,7 +56,7 @@ type ULProps = [
 
 type ULReturn = ComponentLogic<o, o, o>;
 
-const useLogic: UseLogic = (...args: ULProps): ULReturn => {
+const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Methods, props = {}] = args;
 
 	const state = useCleanState(Methods.getInitialState, props);
