@@ -39,7 +39,7 @@ export const useMountCallbacks: UseMountCallbacks = (instance) => {
 export const noOp = () => {};
 
 export class ComponentInstance<
-		TProps extends o = WeakEmptyObject,
+		TProps extends o = {},
 		TState extends TStateData = WeakEmptyObject,
 		THooks extends o = WeakEmptyObject> extends ComponentLogic<TProps, TState, THooks> {
 	/**
@@ -101,6 +101,9 @@ type UseInstance = {
 	<Class extends typeof ComponentInstance<HardEmptyObject, o, o>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
 	): InstanceType<Class>;
+
+	// "no props in common" error doesn't fire when comparing types in generic argument.
+	// only shown when assigning actual values.
 
 	<Class extends typeof ComponentInstance<o, o, o>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
@@ -169,14 +172,20 @@ export const useInstance: UseInstance = (...args: UIProps): UIReturn => {
 };
 
 testing: {
-	class A extends ComponentInstance<{a: ''}> {
+	class A extends ComponentInstance {
 		static getInitialState: (p?: object) => ({putan: ''});
-		// k = this.state.o
+		// k = this.props.o
+		a = this.state['_initialValues_']
+
+		// hard empty has every key
+		// weak empty has no key
+		// weak empty is not assignable to hard empty
 	}
 
 	const p = {k: ''}
-	const a = useInstance(A);
+	const a = useInstance(A, {o: ''});
 
+	// a.props['o'];
 	type bbbb = A['state'];
 	type ttt = bbbb['put'];
 }
