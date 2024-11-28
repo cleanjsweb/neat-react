@@ -11,7 +11,7 @@ type UseMethods = <Class extends typeof ComponentMethods<object, object>>(
 	Methods: Class & Constructor<InstanceType<Class>>,
 	// @todo Use overloads to allow omissions.
 	props: InstanceType<Class>['props'],
-	state: InstanceType<Class>['state'],
+	state: InstanceType<Class>['state'], // Can omit when <Class extends typeof ComponentMethods<object, HardEmpty>>.
 ) => InstanceType<Class>;
 
 export const useMethods: UseMethods = (Methods, props, state) => {

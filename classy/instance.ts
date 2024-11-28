@@ -102,7 +102,7 @@ type UseInstance = {
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
 	): InstanceType<Class>;
 
-	// "no props in common" error doesn't fire when comparing types in generic argument.
+	// "has no props in common" error doesn't fire when comparing types in generic argument.
 	// only shown when assigning actual values.
 
 	<Class extends typeof ComponentInstance<o, o, o>>(

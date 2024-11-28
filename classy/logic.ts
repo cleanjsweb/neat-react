@@ -11,7 +11,7 @@ type o = object;
 
 
 export class ComponentLogic<
-		TProps extends o = WeakEmpty,
+		TProps extends o = {},
 		TState extends TStateData = WeakEmpty, // WeakEmpty,
 		THooks extends o = WeakEmpty> {
 	declare state: TCleanState<TState>;
