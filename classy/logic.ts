@@ -122,7 +122,7 @@ const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 export { useLogic };
 
 
-testing: {
+/*testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
@@ -136,9 +136,8 @@ testing: {
 
 	MyComponentLogic.getInitialState
 	// const self = useLogic(MyComponentLogic);
-}
 
-testing : {
+
 	const A = class C extends ComponentLogic {
 		// static getInitialState = () => ({a: 'l'});
 		// a = () => this.state.yyy = '';
@@ -149,17 +148,5 @@ testing : {
 	// const oa = {['a' as unknown as symbol]: 'boo'};
 	const oa = {['a']: 'boo'};
 	// const self = useLogic(A, oa);
-}
-
-
-
-
-// export type ComponentClassStatics<Instance extends ComponentLogic<object, object, object>> = {
-// 	getInitialState: (props?: Instance['props']) => TState<Instance['state']>;
-// }
-
-// export type TComponentClass<
-// 	Instance extends ComponentLogic<object, object, object>,
-// 	Params extends CnstPrm = CnstPrm
-// > = ComponentClassStatics<Instance> & Constructor<Instance, Params>;
+}*/
 

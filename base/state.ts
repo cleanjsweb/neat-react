@@ -135,12 +135,6 @@ export type TStateData = object & {
 export type TCleanState<TState extends TStateData> = (
 	CleanStateBase<TState>
 	& Omit<TState, keyof CleanStateBase<{}>>
-	// {
-	// 	[Key in keyof TState]: Key extends keyof CleanStateBase<{}>
-	// 		? CleanStateBase<{}>[Key]
-	// 		: TState[Key]
-	// 	;
-	// }
 );
 
 export type ExtractCleanStateData<

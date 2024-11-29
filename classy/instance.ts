@@ -184,7 +184,7 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	return instance;
 };
 
-testing: {
+/*testing: {
 	class A extends ComponentInstance {
 		static getInitialState: (p?: object) => ({putan: ''});
 		// k = this.props.o
@@ -201,4 +201,4 @@ testing: {
 	// a.props['o'];
 	type bbbb = A['state'];
 	type ttt = bbbb['put'];
-}
+}*/

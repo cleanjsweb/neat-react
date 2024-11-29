@@ -269,7 +269,7 @@ export const Use: ClassComponentHookWrapper = (params) => {
 
 
 
-testing: {
+/*testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
@@ -284,4 +284,4 @@ testing: {
 	};
 
 	const Template = MyComponentLogic.FC();
-}
+}*/
