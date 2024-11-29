@@ -1,9 +1,11 @@
 import type { VoidFunctionComponent } from 'react';
-import type { IComponentInstanceClass } from './instance';
 import type { TStateData } from '@/base';
+import type { IComponentInstanceClass } from './instance';
 
 import { useMemo, useEffect, useState } from 'react';
+
 import { ComponentInstance, useInstance } from './instance';
+import { THooksBase } from './logic';
 
 
 /** Provide more useful stack traces for otherwise non-specific function names. */
@@ -37,7 +39,7 @@ type o = object;
 export interface IComponentClass<
 
 	// eslint-disable-next-line no-use-before-define
-	Instance extends ClassComponent<o, o, o> = ClassComponent,
+	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent,
 
 	Params extends ComponentClassParams = ComponentClassParams
 
@@ -57,7 +59,7 @@ type ReactTemplate = React.JSX.Element | null
 export class ClassComponent<
 		TProps extends o = WeakEmptyObject,
 		TState extends TStateData = WeakEmptyObject,
-		THooks extends o = WeakEmptyObject> extends ComponentInstance<TProps, TState, THooks> {
+		THooks extends THooksBase = void> extends ComponentInstance<TProps, TState, THooks> {
 	Render?: VoidFunctionComponent<{}>;
 	template?: ReactTemplate | (() => ReactTemplate); // ReturnType<VoidFunctionComponent<{}>>;
 
@@ -122,8 +124,8 @@ export class ClassComponent<
 					if (typeof Render === 'function') return <Render />;
 					else throw new Error([
 						'A ClassComponent must have either a `template` or a `Render` property. But neither was found.',
-						'Add a `template` member to your class and assign a valid (JSX.Element | null) to it. (or a function that returns that).',
-						'Alternatively, add a `Render` method and assign a FunctionComponent to it.',
+						'Add a `template: (JSX.Element | null);` member to your class, (or a `template` method that returns the same type).',
+						'Alternatively, add a `Render: FunctionComponent;` method.',
 						'\n\n',
 						'Expected `Render` to be a Function Component because `template` was `undefined`.',
 						`Instead got the following '${typeof Render}': $o`,

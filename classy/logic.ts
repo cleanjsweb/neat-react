@@ -7,28 +7,30 @@ import { useCleanState } from '@/base/state';
 export type HardEmpty = HardEmptyObject;
 export type WeakEmpty = WeakEmptyObject;
 
+export type THooksBase = o | void;
+
 type o = object;
 
 
 export class ComponentLogic<
 		TProps extends object = {},
 		TState extends TStateData = WeakEmpty,
-		THooks extends object = {}> { // @todo Try void/never/null for the empty case.
+		THooks extends THooksBase = void> { // @todo Try void/never/null for the empty case.
 	declare state: TCleanState<TState>;
 	declare readonly props: TProps;
-	declare readonly hooks: THooks;
+	declare readonly hooks: THooks extends object ? THooks : WeakEmptyObject;
 
 	static getInitialState = (p?: object): object => ({});
 
-	useHooks: THooks extends HardEmptyObject
-		? undefined | (() => THooks | void)
+	useHooks: THooks extends void
+		? undefined | (() => void | HardEmptyObject)
 		: () => THooks;
 };
 
 type LogicClassParams = ConstructorParameters<typeof ComponentLogic>;
 
 export interface IComponentLogicClass<
-			Instance extends ComponentLogic<o, o, o> = ComponentLogic,
+			Instance extends ComponentLogic<o, o, THooksBase> = ComponentLogic,
 			Params extends LogicClassParams = LogicClassParams
 		> extends Constructor<Instance, Params> {
 	getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;
@@ -36,11 +38,11 @@ export interface IComponentLogicClass<
 }
 
 type UseLogic = {
-	<Class extends typeof ComponentLogic<HardEmptyObject, o, o>>(
+	<Class extends typeof ComponentLogic<HardEmptyObject, o, THooksBase>>(
 		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
 	): InstanceType<Class>;
 
-	<Class extends typeof ComponentLogic<o, o, o>>(
+	<Class extends typeof ComponentLogic<o, o, THooksBase>>(
 		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
@@ -48,13 +50,13 @@ type UseLogic = {
 
 type ULParams = [
 	Class: (
-		ComponentLogic<o, o, o>
-		& IComponentLogicClass<ComponentLogic<o, o, o>>
+		typeof ComponentLogic<o, o, THooksBase>
+		& IComponentLogicClass<ComponentLogic<o, o, THooksBase>>
 	),
 	props?: object
 ]
 
-type ULReturn = ComponentLogic<o, o, o>;
+type ULReturn = ComponentLogic<o, o, THooksBase>;
 
 const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;

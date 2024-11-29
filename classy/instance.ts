@@ -1,9 +1,12 @@
+import type { TStateData } from '@/base/state';
+import type { THooksBase,  IComponentLogicClass } from './logic';
+
 import { useEffect } from 'react';
-import { TStateData, useMountState } from '@/base/state';
-import { ComponentLogic,  IComponentLogicClass,  useLogic } from './logic';
+
+import { useMountState } from '@/base/state';
+import { ComponentLogic,  useLogic } from './logic';
 
 
-// @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
 
 type UseMountCallbacks = <
@@ -38,10 +41,11 @@ export const useMountCallbacks: UseMountCallbacks = (instance) => {
 
 export const noOp = () => {};
 
+// @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 export class ComponentInstance<
 		TProps extends o = {},
 		TState extends TStateData = WeakEmptyObject,
-		THooks extends o = WeakEmptyObject> extends ComponentLogic<TProps, TState, THooks> {
+		THooks extends THooksBase = void> extends ComponentLogic<TProps, TState, THooks> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.
@@ -93,19 +97,19 @@ type o = object;
 type InstanceClassParams = ConstructorParameters<typeof ComponentInstance<o, o, o>>;
 
 export interface IComponentInstanceClass<
-	Instance extends ComponentInstance<o, o, o> = ComponentInstance,
+	Instance extends ComponentInstance<o, o, THooksBase> = ComponentInstance,
 	Params extends InstanceClassParams = InstanceClassParams
 > extends IComponentLogicClass<Instance, Params> {};
 
 type UseInstance = {
-	<Class extends typeof ComponentInstance<HardEmptyObject, o, o>>(
+	<Class extends typeof ComponentInstance<HardEmptyObject, o, THooksBase>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
 	): InstanceType<Class>;
 
 	// "has no props in common" error doesn't fire when comparing types in generic argument.
 	// only shown when assigning actual values.
 
-	<Class extends typeof ComponentInstance<o, o, o>>(
+	<Class extends typeof ComponentInstance<o, o, THooksBase>>(
 		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
@@ -113,13 +117,13 @@ type UseInstance = {
 
 type UIParams = [
 	Methods: (
-		ComponentInstance<o, o, o>
-		& IComponentInstanceClass<ComponentInstance<o, o, o>>
+		typeof ComponentInstance<o, o, THooksBase>
+		& IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>
 	),
 	props?: object
 ]
 
-type UIReturn = ComponentInstance<o, o, o>;
+type UIReturn = ComponentInstance<o, o, THooksBase>;
 
 
 /*

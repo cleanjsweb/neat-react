@@ -1,4 +1,5 @@
 import type { TCleanState, TStateData } from './state';
+
 import { useMemo, useRef } from 'react';
 
 
@@ -29,7 +30,7 @@ type UseMethods = {
 
 type UMParams = [
 	Methods: (
-		ComponentMethods<object, object>
+		typeof ComponentMethods<object, object>
 		& Constructor<ComponentMethods<object, object>>
 	),
 	props?: object,
