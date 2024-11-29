@@ -1,8 +1,20 @@
+// JSDoc references
+import type { useCleanState } from './state';
+
+// Types
 import type { TCleanState, TStateData } from './state';
 
+// Values
 import { useMemo, useRef } from 'react';
 
 
+/**
+ * Base class for a class that holds methods intended for use in a function component.
+ * These methods will have access to the components state and props via
+ * `this.state` and `this.props` respectively.
+ * 
+ * Call the {@link useMethods} hook inside your function component to instantiate the class.
+ */
 export class ComponentMethods<
 		TProps extends object = {},
 		TState extends TStateData | null = null> {
@@ -40,6 +52,12 @@ type UMParams = [
 type UMReturn = ComponentMethods<object, object>;
 
 
+/**
+ * Returns an instance of the provided class,
+ * with the state and props arguments added as instance members.
+ * 
+ * `state` must be an instance of `CleanState` created with {@link useCleanState}.
+ */
 const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 	const [Methods, props = {}, state] = args;
 

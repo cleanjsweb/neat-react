@@ -12,16 +12,48 @@ export type THooksBase = o | void;
 type o = object;
 
 
+/**
+ * Base class for a class that holds methods intended for use in a function component,
+ * as well as a static method for initializing state.
+ * 
+ * These methods will have access to the components state and props via
+ * `this.state` and `this.props` respectively.
+ * 
+ * The special {@link ComponentLogic.useHooks | useHooks} method allows you to consume
+ * React hooks within this class.
+ * 
+ * Call the {@link useLogic} hook inside your function component to instantiate the class.
+ */
 export class ComponentLogic<
+		/** Describe the values your component expects to be passed as props. */
 		TProps extends object = {},
+		/** An object type that descibes your component's state. */
 		TState extends TStateData = WeakEmpty,
-		THooks extends THooksBase = void> { // @todo Try void/never/null for the empty case.
+		/** The object type returned by your component's {@link useHooks} method. */
+		THooks extends THooksBase = void> {
 	declare state: TCleanState<TState>;
 	declare readonly props: TProps;
 	declare readonly hooks: THooks extends object ? THooks : WeakEmptyObject;
 
+	/**
+	 * Called before each instance of your component is mounted.
+	 * It receives the initial `props` object and should return
+	 * an object with the initial values for your component's state.
+	 */
 	static getInitialState = (p?: object): object => ({});
 
+	/**
+	 * This allows you to seamlessly consume React hooks in
+	 * your class component.
+	 * 
+	 * It is called after state and props are updated on each render.
+	 * Call any hooks (e.g `useEffect`) you which to consume inside this function.
+	 * 
+	 * To expose any returned values from your hooks to the rest of your component,
+	 * return an object that contains all the relevant values.
+	 * 
+	 * This object will be accessible as `this.hooks` to the rest of your class.
+	 */
 	useHooks: THooks extends void
 		? undefined | (() => void | HardEmptyObject)
 		: () => THooks;

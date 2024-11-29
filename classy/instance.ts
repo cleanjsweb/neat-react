@@ -9,12 +9,13 @@ import { ComponentLogic,  useLogic } from './logic';
 
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
 
+
 type UseMountCallbacks = <
 	// eslint-disable-next-line no-use-before-define
 	TInstance extends ComponentInstance<any, any, any>
 >(instance: TInstance) => void;
 
-export const useMountCallbacks: UseMountCallbacks = (instance) => {
+const useMountCallbacks: UseMountCallbacks = (instance) => {
 	const mounted = useMountState();
 
 	if (!mounted) instance.beforeMount?.();
@@ -39,9 +40,17 @@ export const useMountCallbacks: UseMountCallbacks = (instance) => {
 	}, []);
 };
 
+
+/** An empty function. It returns (void) without performing any operations. */
 export const noOp = () => {};
 
 // @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
+
+/**
+ * A superset of {@link ComponentLogic} that adds support for special lifecycle methods.
+ * This provides a declarative API for working with your React function component's lifecycle,
+ * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
+ */
 export class ComponentInstance<
 		TProps extends o = {},
 		TState extends TStateData = WeakEmptyObject,

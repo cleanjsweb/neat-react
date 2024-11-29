@@ -1,4 +1,4 @@
-import type { VoidFunctionComponent } from 'react';
+import type { VoidFunctionComponent, Component } from 'react';
 import type { TStateData } from '@/base';
 import type { IComponentInstanceClass } from './instance';
 
@@ -37,34 +37,106 @@ type ComponentClassParams = ConstructorParameters<typeof ClassComponent>
 type o = object;
 
 export interface IComponentClass<
-
 	// eslint-disable-next-line no-use-before-define
 	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent,
-
 	Params extends ComponentClassParams = ComponentClassParams
-
 > extends IComponentInstanceClass<Instance, Params> {};
 
 
 // eslint-disable-next-line no-use-before-define
-type Extractor = <TComponent extends typeof ClassComponent<o, o, o>>(
-
+type Extractor = <TComponent extends typeof ClassComponent<o, o, THooksBase>>(
 	this: NonNullable<typeof _Component>,
-
 	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
-
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 
+
 type ReactTemplate = React.JSX.Element | null
+
+
+/**
+ * A superset of {@link ComponentInstance} that allows defining your
+ * component's JSX template directly inside the class.
+ * 
+ * This is designed to closely resemble the old {@link React.Component} class,
+ * making it easier to migrate older class components to the newer hooks-based system
+ * with little to no changes to their existing semantics/implementation.
+ */
 export class ClassComponent<
 		TProps extends o = WeakEmptyObject,
 		TState extends TStateData = WeakEmptyObject,
 		THooks extends THooksBase = void> extends ComponentInstance<TProps, TState, THooks> {
+
+	/**
+	 * @deprecated An older alternative to {@link template}.
+	 * 
+	 * Using this will add a component boundary between your JSX template
+	 * and the function component returned from ClassComponent.FC();
+	 * 
+	 * This means that from React's perspective, your template won't "own" the state and props it consumes.
+	 * This could lead to subtle unexpected changes in behaviour.
+	 * 
+	 * In most cases, you should use {@link template} instead, as it allows your class component
+	 * to function more predictably as a single unit.
+	 */
 	Render?: VoidFunctionComponent<{}>;
+
+	/**
+	 * Your components JSX template. This a variable that should represent what you
+	 * would normally return from a regular function component.
+	 * 
+	 * Alternatively, it can be a function that returns the required JSX.
+	 * The function form is useful if your template references many nested instance members
+	 * and you would like to destructure them into more easily accessible local variables.
+	 * 
+	 * Besides that, you should place all other logic in {@link ComponentInstance.beforeRender | `beforeRender`}
+	 * in order to separate concerns and keep the template itself clean.
+	 * 
+	 * @example <caption>Using a simple JSX template</caption>
+	 * template = (
+	 *     <h1>
+	 *         {this.props.title}
+	 *     </h1>
+	 * );
+	 * 
+	 * @example <caption>Using a template function that returns JSX.</caption>
+	 * template = () => {
+	 *     const { title } = this.props;
+	 * 
+	 *     return (
+	 *         <h1>
+	 *             {this.props.title}
+	 *         </h1>
+	 *     );
+	 * }
+	 */
 	template?: ReactTemplate | (() => ReactTemplate); // ReturnType<VoidFunctionComponent<{}>>;
 
-	readonly forceUpdate: VoidFunction;
+	/**
+	 * Manually trigger a rerender of your component.
+	 * You should rarely ever need this. But if you are migrating
+	 * an older React.Component class, this should provide similar functionality
+	 * to the {@link Component.forceUpdate | `forceUpdate`} method provided there.
+	 * 
+	 * Note that the callback argument is currently not supported.
+	 */
+	declare readonly forceUpdate: VoidFunction;
 
+
+	/*************************************
+	 *   Function Component Extractor    *
+	**************************************/
+	// @todo Attempt using implicit `this` value to allow rendering <MyComponent.FC /> directly.
+	// const FC = (props) => { const self = useMemo(() => useInstance(this, props), {}); return self.template(); }
+	/**
+	 * Extract a function component which can be used to render
+	 * your ClassComponent just like any other component.
+	 * 
+	 * Each JSX reference to this returned component will render with
+	 * a separate instance of your class.
+	 * 
+	 * So you only need to call `YourClassComponent.FC()` once, then use the returned
+	 * function component as many times as you need.
+	 */
 	static readonly FC: Extractor = function FC (this, _Component) {
 		const Component = _Component ?? this;
 		const isClassComponentType = Component.prototype instanceof ClassComponent;
@@ -77,6 +149,12 @@ export class ClassComponent<
 
 		type ComponentProps = InstanceType<typeof Component>['props'];
 
+
+
+		/*************************************
+		 *    Begin Function Component       *
+		**************************************/
+		/** A class-based React function component created with (@cleanweb/react).ClassComponent */
 		const Wrapper: VoidFunctionComponent<ComponentProps> = (props) => {
 			const instance = useInstance(Component, props);
 			const { Render, template } = instance;
@@ -134,18 +212,37 @@ export class ClassComponent<
 				default: return template;
 			}
 		}
+		/*************************************
+		 *     End Function Component        *
+		**************************************/
 
-		// Include calling component name in wrapper function name on stack traces.
+
 		setFunctionName(Wrapper, `$${Component.name}$`);
-
 		return Wrapper;
 	};
 }
 
 
 interface HookWrapperProps<THookFunction extends AnyFunction> {
+	/**
+	 * The React hook you which to consume.
+	 * Render a separate instance of the `<Use />` component for each hook.
+	 * You can also create a custom hook that combines multiple hooks,
+	 * then use that wrapper hook with a single `<Use />` instance.
+	 */
 	hook: THookFunction,
+
+	/**
+	 * An array containing the list of arguments
+	 * to be passed to your hook, in the right order.
+	 */
 	argumentsList: Parameters<THookFunction>,
+
+	/**
+	 * A callback that will be called with whatever value your hook returns.
+	 * Use this to update your component's state with the value.
+	 * This will allow your component to rerender whenever the hook returns a new value.
+	 */
 	onUpdate: (output: ReturnType<THookFunction>) => void,
 }
 
@@ -153,6 +250,11 @@ type ClassComponentHookWrapper = <Hook extends AnyFunction>(
 	props: HookWrapperProps<Hook>
 ) => null;
 
+
+/**
+ * A component you can use to consume hooks
+ * in a {@link Component | React.Component} class component.
+ */
 export const Use: ClassComponentHookWrapper = (params) => {
 	const { hook: useGenericHook, argumentsList, onUpdate } = params;
 
@@ -172,8 +274,13 @@ testing: {
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ClassComponent<{}, {a: ''}, {}> {
+	class MyComponentLogic extends ClassComponent<{a: ''}> {
 		static getInitialState = () => ({a: '' as const});
+		// a = () => this.hooks.a = '';
+
+		useHooks = () => {
+
+		};
 	};
 
 	const Template = MyComponentLogic.FC();

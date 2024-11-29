@@ -166,6 +166,10 @@ type TUseCleanState = <TInit extends StateInit>(
 		: []
 ) => TCleanState<TInitialState<TInit>>;
 
+/**
+ * Creates a state object, which includes the provided values, and helper methods for
+ * updating those values and automatically rerendering your component's UI accordingly.
+ */
 export const useCleanState: TUseCleanState = (_initialState, ...props) => {
 	type TState = TInitialState<typeof _initialState>;
 
