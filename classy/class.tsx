@@ -81,24 +81,25 @@ export class ClassComponent<
 	Render?: VoidFunctionComponent<{}>;
 
 	/**
-	 * Your components JSX template. This a variable that should represent what you
-	 * would normally return from a regular function component.
+	 * Analogous to {@link React.Component.render}. A function that returns
+	 * your component's JSX template.
 	 * 
-	 * Alternatively, it can be a function that returns the required JSX.
-	 * The function form is useful if your template references many nested instance members
-	 * and you would like to destructure them into more easily accessible local variables.
+	 * You should place most logic that would usually go here
+	 * in {@link ComponentInstance.beforeRender | `beforeRender`} instead.
+	 * This helps to separate concerns and keep the template itself clean.
 	 * 
-	 * Besides that, you should place all other logic in {@link ComponentInstance.beforeRender | `beforeRender`}
-	 * in order to separate concerns and keep the template itself clean.
+	 * ******
 	 * 
-	 * @example <caption>Using a simple JSX template</caption>
-	 * template = (
-	 *     <h1>
-	 *         {this.props.title}
-	 *     </h1>
-	 * );
+	 * Ideally the template method should only be concerned with defining the HTML/JSX structure of
+	 * your component's UI. This may include destructuring nested instance members
+	 * into more easily accessible local variables, or some simple transformation of data from props/state
+	 * into a more appropriate format for display.
 	 * 
-	 * @example <caption>Using a template function that returns JSX.</caption>
+	 * ******
+	 * 
+	 * @example < caption>Using a template function that returns JSX.</ caption>
+	 * 
+	 * ```tsx
 	 * template = () => {
 	 *     const { title } = this.props;
 	 * 
@@ -108,8 +109,9 @@ export class ClassComponent<
 	 *         </h1>
 	 *     );
 	 * }
+	 * ```
 	 */
-	template?: ReactTemplate | (() => ReactTemplate); // ReturnType<VoidFunctionComponent<{}>>;
+	template?: () => ReactTemplate; // ReturnType<VoidFunctionComponent<{}>>;
 
 	/**
 	 * Manually trigger a rerender of your component.
