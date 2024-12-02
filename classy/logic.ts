@@ -40,7 +40,8 @@ export class ComponentLogic<
 	 * It receives the initial `props` object and should return
 	 * an object with the initial values for your component's state.
 	 */
-	static getInitialState = (p?: object): object => ({});
+	static getInitialState = (p?: any): object => ({});
+	// `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
 
 	/**
 	 * This allows you to seamlessly consume React hooks in
