@@ -23,7 +23,7 @@ export class ComponentMethods<
 };
 
 type UseMethods = {
-	<Class extends typeof ComponentMethods<object, TStateData>>(
+	<Class extends typeof ComponentMethods<object, object>>(
 		Methods: Class & Constructor<InstanceType<Class>>,
 		props: InstanceType<Class>['props'],
 		state: InstanceType<Class>['state'],
