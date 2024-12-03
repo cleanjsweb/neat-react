@@ -51,7 +51,7 @@ export const noOp = () => {};
  * This provides a declarative API for working with your React function component's lifecycle,
  * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
  */
-export class ComponentInstance<
+export abstract class ComponentInstance<
 		TProps extends o = {},
 		TState extends TStateData = WeakEmptyObject,
 		THooks extends THooksBase = void> extends ComponentLogic<TProps, TState, THooks> {
@@ -103,31 +103,32 @@ export class ComponentInstance<
 };
 
 type o = object;
-type InstanceClassParams = ConstructorParameters<typeof ComponentInstance<o, o, o>>;
+
+type ComponentInstanceStatics = {
+	[Key in keyof typeof ComponentInstance]: (typeof ComponentInstance)[Key];
+}
 
 export interface IComponentInstanceClass<
 	Instance extends ComponentInstance<o, o, THooksBase> = ComponentInstance,
-	Params extends InstanceClassParams = InstanceClassParams
-> extends IComponentLogicClass<Instance, Params> {};
+> extends IComponentLogicClass<Instance>, ComponentInstanceStatics {};
 
 type UseInstance = {
-	<Class extends typeof ComponentInstance<HardEmptyObject, o, THooksBase>>(
-		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
+	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
+		Methods: Class,
 	): InstanceType<Class>;
 
 	// "has no props in common" error doesn't fire when comparing types in generic argument.
 	// only shown when assigning actual values.
 
-	<Class extends typeof ComponentInstance<o, o, THooksBase>>(
-		Methods: Class & IComponentInstanceClass<InstanceType<Class>>,
+	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
+		Methods: Class,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 }
 
 type UIParams = [
 	Methods: (
-		typeof ComponentInstance<o, o, THooksBase>
-		& IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>
+		IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>
 	),
 	props?: object
 ]
@@ -184,12 +185,13 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	return instance;
 };
 
-/*testing: {
-	class A extends ComponentInstance {
+/**/testing: {
+	class A extends ComponentInstance<{}, {}, object> {
 		static getInitialState: (p?: object) => ({putan: ''});
 		// k = this.props.o
 		a = this.state['_initialValues_']
 
+		// useHooks: (() => void | HardEmptyObject) | undefined;
 		// hard empty has every key
 		// weak empty has no key
 		// weak empty is not assignable to hard empty
@@ -197,8 +199,9 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 
 	const p = {k: ''}
 	const a = useInstance(A, {o: ''});
+	a.a;
 
 	// a.props['o'];
 	type bbbb = A['state'];
 	type ttt = bbbb['put'];
-}*/
+}/**/

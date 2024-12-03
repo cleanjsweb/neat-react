@@ -36,21 +36,47 @@ export const useRerender = () => {
 type ComponentClassParams = ConstructorParameters<typeof ClassComponent>
 type o = object;
 
+
+
+type ComponentClassIT<
+		TComponent extends ClassComponent<object, object, THooksBase>> = {
+	useHooks$?: () => TComponent['hooks'];
+	template?: () => React.JSX.Element | null;
+} & TComponent;
+
+type T<
+	TProps extends object,
+	TState extends TStateData,
+	THooks extends THooksBase
+> = typeof ClassComponent<TProps, TState, THooks>;
+
+interface ComponentClass<
+		TProps extends object,
+		TState extends TStateData,
+		THooks extends THooksBase> extends T<TProps, TState, THooks> {
+	new (
+		...params: ConstructorParameters<T<TProps, TState, THooks>>
+	): ComponentClassIT<ClassComponent<TProps, TState, THooks>>;
+}
 export interface IComponentClass<
 	// eslint-disable-next-line no-use-before-define
-	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent,
-	Params extends ComponentClassParams = ComponentClassParams
-> extends IComponentInstanceClass<Instance, Params> {};
+	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent
+> extends IComponentInstanceClass<Instance> {};
 
 
-// eslint-disable-next-line no-use-before-define
-type Extractor = <TComponent extends typeof ClassComponent<o, o, THooksBase>>(
+
+type Extractor = <
+		TComponent extends ComponentClass<object, object, THooksBase>>(
 	this: NonNullable<typeof _Component>,
 	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
+// eslint-disable-next-line no-use-before-define
+// type Extractor = <TComponent extends typeof ClassComponent<o, o, THooksBase>>(
+// 	this: NonNullable<typeof _Component>,
+// 	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
+// ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 
 
-type ReactTemplate = React.JSX.Element | null
 
 
 /**
@@ -61,7 +87,7 @@ type ReactTemplate = React.JSX.Element | null
  * making it easier to migrate older class components to the newer hooks-based system
  * with little to no changes to their existing semantics/implementation.
  */
-export class ClassComponent<
+export abstract class ClassComponent<
 		TProps extends o = WeakEmptyObject,
 		TState extends TStateData = WeakEmptyObject,
 		THooks extends THooksBase = void> extends ComponentInstance<TProps, TState, THooks> {
@@ -111,7 +137,7 @@ export class ClassComponent<
 	 * }
 	 * ```
 	 */
-	template?: () => ReactTemplate; // ReturnType<VoidFunctionComponent<{}>>;
+	template?: () => (React.JSX.Element | null); // ReturnType<VoidFunctionComponent<{}>>;
 
 	/**
 	 * Manually trigger a rerender of your component.

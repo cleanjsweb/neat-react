@@ -19,21 +19,24 @@ type o = object;
  * These methods will have access to the components state and props via
  * `this.state` and `this.props` respectively.
  * 
- * The special {@link ComponentLogic.useHooks | useHooks} method allows you to consume
+ * The special {@link ComponentLogic['useHooks'] | useHooks} method allows you to consume
  * React hooks within this class.
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  */
-export class ComponentLogic<
+export abstract class ComponentLogic<
 		/** Describe the values your component expects to be passed as props. */
 		TProps extends object = {},
 		/** An object type that descibes your component's state. */
 		TState extends TStateData = WeakEmpty,
 		/** The object type returned by your component's {@link useHooks} method. */
 		THooks extends THooksBase = void> {
-	declare state: TCleanState<TState>;
+	declare readonly state: TCleanState<TState>;
 	declare readonly props: TProps;
 	declare readonly hooks: THooks extends object ? THooks : WeakEmptyObject;
+
+	/** Do not use. Will be undefined at runtime. */
+	declare readonly _thooks: THooks;
 
 	/**
 	 * Called before each instance of your component is mounted.
@@ -43,39 +46,30 @@ export class ComponentLogic<
 	static getInitialState = (p?: any): object => ({});
 	// `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
 
-	/**
-	 * This allows you to seamlessly consume React hooks in
-	 * your class component.
-	 * 
-	 * It is called after state and props are updated on each render.
-	 * Call any hooks (e.g `useEffect`) you which to consume inside this function.
-	 * 
-	 * To expose any returned values from your hooks to the rest of your component,
-	 * return an object that contains all the relevant values.
-	 * 
-	 * This object will be accessible as `this.hooks` to the rest of your class.
-	 */
-	useHooks: THooks extends void
-		? undefined | (() => void | HardEmptyObject)
-		: () => THooks;
+	// useHooks = (() => ({} as object)) as Optional<FunctionType>;
 };
 
-type LogicClassParams = ConstructorParameters<typeof ComponentLogic>;
+export interface IComponentLogic<C extends ComponentLogic<o, o, THooksBase>> extends ComponentLogic<
+		C['props'], ExtractCleanStateData<C['state']>, C['_thooks']> {
+	useHooks: C['_thooks'] extends void
+		? undefined | (() => void | HardEmptyObject)
+		: () => C['_thooks'];
+}
+
+type ComponentLogicStatics = Omit<typeof ComponentLogic<o, o, THooksBase>, 'prototype'>;
 
 export interface IComponentLogicClass<
-			Instance extends ComponentLogic<o, o, THooksBase> = ComponentLogic,
-			Params extends LogicClassParams = LogicClassParams
-		> extends Constructor<Instance, Params> {
+			Instance extends ComponentLogic<o, o, THooksBase>,
+		> extends ComponentLogicStatics, Constructor<IComponentLogic<Instance>> {
 	getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;
-	// new (...params: CnstPrm): Instance;
 }
 
 type UseLogic = {
-	<Class extends typeof ComponentLogic<HardEmptyObject, o, THooksBase>>(
+	<Class extends IComponentLogicClass<ComponentLogic<o, o, THooksBase>>>(
 		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
 	): InstanceType<Class>;
 
-	<Class extends typeof ComponentLogic<o, o, THooksBase>>(
+	<Class extends IComponentLogicClass<ComponentLogic<o, o, THooksBase>>>(
 		Methods: Class & IComponentLogicClass<InstanceType<Class>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
@@ -83,8 +77,7 @@ type UseLogic = {
 
 type ULParams = [
 	Class: (
-		typeof ComponentLogic<o, o, THooksBase>
-		& IComponentLogicClass<ComponentLogic<o, o, THooksBase>>
+		IComponentLogicClass<ComponentLogic<o, o, THooksBase>>
 	),
 	props?: object
 ]
@@ -102,15 +95,20 @@ const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 
 	/** A proxy variable to allow typechecking of the assignment to `self.props` despite the need for "readonly" error suppression. */
 	let _propsProxy_: typeof self.props;
+	/** A proxy variable to allow typechecking of the assignment to `self.state` despite the need for "readonly" error suppression. */
+	let _stateProxy_: typeof self.state;
 	/** A proxy variable to allow typechecking of the assignment to `self.hooks` despite the need for "readonly" error suppression. */
 	let _hooksProxy_: typeof self.hooks;
-
-	self.state = state;
 
 	// @ts-expect-error
 	self.props = (
 		_propsProxy_ = props
 	);
+
+	// @ts-expect-error
+	self.state = (
+		_stateProxy_ = state
+	);;
 
 	// @ts-expect-error
 	self.hooks = (
@@ -123,20 +121,23 @@ const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 export { useLogic };
 
 
-/*testing: {
+/**/testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic<{a: string}> {
+	class MyComponentLogic extends ComponentLogic<{}, {}, {a: string}> {
 		static getInitialState = () => ({a: '' as const});
 		// b = this.state.put[''] + this.props.b;
+
+		useHooks = () => ({a: 'undefined'});
 	};
 
 	type tt = keyof {};
 
 	MyComponentLogic.getInitialState
-	// const self = useLogic(MyComponentLogic);
+	const self = useLogic(MyComponentLogic);
+	self.useHooks();
 
 
 	const A = class C extends ComponentLogic {
@@ -149,5 +150,5 @@ export { useLogic };
 	// const oa = {['a' as unknown as symbol]: 'boo'};
 	const oa = {['a']: 'boo'};
 	// const self = useLogic(A, oa);
-}*/
+}/**/
 

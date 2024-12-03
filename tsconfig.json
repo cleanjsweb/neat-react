@@ -29,6 +29,7 @@
 		"isolatedModules": true,
 		"jsx": "react-jsx",
 		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
 		"noImplicitAny": true,
 		"noUncheckedIndexedAccess": true,
 		"strictBindCallApply": true,
