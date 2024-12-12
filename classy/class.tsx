@@ -87,7 +87,7 @@ type Extractor = <
  * making it easier to migrate older class components to the newer hooks-based system
  * with little to no changes to their existing semantics/implementation.
  */
-export abstract class ClassComponent<
+export class ClassComponent<
 		TProps extends o = WeakEmptyObject,
 		TState extends TStateData = WeakEmptyObject,
 		THooks extends THooksBase = void> extends ComponentInstance<TProps, TState, THooks> {

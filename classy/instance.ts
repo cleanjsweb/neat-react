@@ -1,5 +1,5 @@
 import type { TStateData } from '@/base/state';
-import type { THooksBase,  IComponentLogicClass } from './logic';
+import type { THooksBase } from './logic';
 
 import { useEffect } from 'react';
 
@@ -51,10 +51,10 @@ export const noOp = () => {};
  * This provides a declarative API for working with your React function component's lifecycle,
  * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
  */
-export abstract class ComponentInstance<
+export class ComponentInstance<
 		TProps extends o = {},
 		TState extends TStateData = WeakEmptyObject,
-		THooks extends THooksBase = void> extends ComponentLogic<TProps, TState, THooks> {
+		THooks extends THooksBase = void> extends ComponentLogic.C<TProps, TState, THooks> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.
@@ -110,7 +110,7 @@ type ComponentInstanceStatics = {
 
 export interface IComponentInstanceClass<
 	Instance extends ComponentInstance<o, o, THooksBase> = ComponentInstance,
-> extends IComponentLogicClass<Instance>, ComponentInstanceStatics {};
+> extends Constructor<Instance>, ComponentInstanceStatics {};
 
 type UseInstance = {
 	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
@@ -185,7 +185,7 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	return instance;
 };
 
-/**/testing: {
+/** /testing: {
 	class A extends ComponentInstance<{}, {}, object> {
 		static getInitialState: (p?: object) => ({putan: ''});
 		// k = this.props.o
