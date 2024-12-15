@@ -54,7 +54,7 @@ export const noOp = () => {};
 export class ComponentInstance<
 		TProps extends o = {},
 		TState extends TStateData = WeakEmptyObject,
-		THooks extends THooksBase = void> extends ComponentLogic.C<TProps, TState, THooks> {
+		THooks extends THooksBase = void> extends ComponentLogic.Class<TProps, TState, THooks> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.

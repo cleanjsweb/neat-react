@@ -17,8 +17,8 @@ export type THooksBase = object | void;
 
 
 type o = object;
-export namespace ComponentLogic {
 
+export namespace ComponentLogic {
 	/**
 	 * Base class for a class that holds methods intended for use in a function component,
 	 * as well as a static method for initializing state.
@@ -26,12 +26,12 @@ export namespace ComponentLogic {
 	 * These methods will have access to the components state and props via
 	 * `this.state` and `this.props` respectively.
 	 * 
-	 * The special {@link C['useHooks'] | useHooks} method allows you to consume
+	 * The special {@link Class['useHooks'] | useHooks} method allows you to consume
 	 * React hooks within this class.
 	 * 
 	 * Call the {@link useLogic} hook inside your function component to instantiate the class.
 	 */
-	export abstract class C<
+	export class Class<
 			/** Describe the values your component expects to be passed as props. */
 			TProps extends object = {},
 			/** An object type that descibes your component's state. */
@@ -41,9 +41,6 @@ export namespace ComponentLogic {
 		declare readonly state: TCleanState<TState>;
 		declare readonly props: TProps;
 		declare readonly hooks: THooks extends object ? THooks : WeakEmptyObject;
-
-		/** Do not use. Will be undefined at runtime. */
-		declare readonly _thooks: THooks;
 
 		/**
 		 * Called before each instance of your component is mounted.
@@ -55,48 +52,55 @@ export namespace ComponentLogic {
 		static getInitialState = (p?: any): object => ({});
 
 
-		// useHooks?: FunctionType;
+		/** Do not use. Will be undefined at runtime. */
+		declare readonly _thooks: THooks;
+		/**
+		 * Call React hooks and expose any values your component
+		 * needs by return an object with said values. The returned
+		 * object will be accessible as `this.hooks`;
+		 */
+		useHooks = () => {};
 	};
 
-	export interface I<Instance extends C<o, o, THooksBase>>
-			extends C<
+	export interface InstanceType<Instance extends Class<o, o, THooksBase>>
+			extends Class<
 				Instance['props'],
 				ExtractCleanStateData<Instance['state']>,
 				Instance['_thooks']
 			> {
 		useHooks: Instance['_thooks'] extends void
-			? undefined | (() => void | HardEmptyObject)
-			: () => Instance['_thooks'];
+			? () => (void | HardEmptyObject)
+			: () => Instance['_thooks'] // (Instance['_thooks'] extends object ? Instance['_thooks'] : {});
 	}
 
-	type TStatics = Omit<typeof C<o, o, THooksBase>, 'prototype'>;
+	type TStatics = Omit<typeof Class<o, o, THooksBase>, 'prototype'>;
 
-	export interface IClass<
-				Instance extends C<o, o, THooksBase>,
-			> extends TStatics, Constructor<I<Instance>> {
+	export interface ClassType<
+				Instance extends Class<o, o, THooksBase>,
+			> extends TStatics, Constructor<InstanceType<Instance>> {
 		getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;
 	}
 }
 
 type UseLogic = {
-	<Class extends ComponentLogic.IClass<ComponentLogic.C<o, o, THooksBase>>>(
-		Methods: Class & ComponentLogic.IClass<InstanceType<Class>>,
+	<Class extends ComponentLogic.ClassType<ComponentLogic.Class<o, o, THooksBase>>>(
+		Methods: Class & ComponentLogic.ClassType<InstanceType<Class>>,
 	): InstanceType<Class>;
 
-	<Class extends ComponentLogic.IClass<ComponentLogic.C<o, o, THooksBase>>>(
-		Methods: Class & ComponentLogic.IClass<InstanceType<Class>>,
+	<Class extends ComponentLogic.ClassType<ComponentLogic.Class<o, o, THooksBase>>>(
+		Methods: Class & ComponentLogic.ClassType<InstanceType<Class>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 }
 
 type ULParams = [
 	Class: (
-		ComponentLogic.IClass<ComponentLogic.C<o, o, THooksBase>>
+		ComponentLogic.ClassType<ComponentLogic.Class<o, o, THooksBase>>
 	),
 	props?: object
 ]
 
-type ULReturn = ComponentLogic.C<o, o, THooksBase>;
+type ULReturn = ComponentLogic.Class<o, o, THooksBase>;
 
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
@@ -126,7 +130,7 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 
 	// @ts-expect-error
 	self.hooks = (
-		_hooksProxy_ = self.useHooks?.() ?? {} // @todo Improve UseLogic types to reflect that this may be undefined.
+		_hooksProxy_ = self.useHooks() ?? {}
 	);
 
 	return self;

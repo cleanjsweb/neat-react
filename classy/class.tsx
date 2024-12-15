@@ -32,51 +32,27 @@ export const useRerender = () => {
 	return rerender;
 };
 
-// eslint-disable-next-line no-use-before-define
-type ComponentClassParams = ConstructorParameters<typeof ClassComponent>
+
 type o = object;
 
 
-
-type ComponentClassIT<
-		TComponent extends ClassComponent<object, object, THooksBase>> = {
-	useHooks$?: () => TComponent['hooks'];
-	template?: () => React.JSX.Element | null;
-} & TComponent;
-
-type T<
-	TProps extends object,
-	TState extends TStateData,
-	THooks extends THooksBase
-> = typeof ClassComponent<TProps, TState, THooks>;
-
-interface ComponentClass<
-		TProps extends object,
-		TState extends TStateData,
-		THooks extends THooksBase> extends T<TProps, TState, THooks> {
-	new (
-		...params: ConstructorParameters<T<TProps, TState, THooks>>
-	): ComponentClassIT<ClassComponent<TProps, TState, THooks>>;
+type ComponentClassStatics = {
+	[Key in keyof typeof ClassComponent]: (typeof ClassComponent)[Key];
 }
+
 export interface IComponentClass<
 	// eslint-disable-next-line no-use-before-define
 	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent
-> extends IComponentInstanceClass<Instance> {};
+> extends Constructor<Instance>, ComponentClassStatics {};
 
 
+type BaseClassComponent = ClassComponent<o, o, THooksBase>;
 
-type Extractor = <
-		TComponent extends ComponentClass<object, object, THooksBase>>(
+
+type Extractor = <TComponent extends IComponentClass<BaseClassComponent>>(
 	this: NonNullable<typeof _Component>,
-	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
+	_Component?: TComponent
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
-// eslint-disable-next-line no-use-before-define
-// type Extractor = <TComponent extends typeof ClassComponent<o, o, THooksBase>>(
-// 	this: NonNullable<typeof _Component>,
-// 	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
-// ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
-
-
 
 
 /**
@@ -137,7 +113,7 @@ export class ClassComponent<
 	 * }
 	 * ```
 	 */
-	template?: () => (React.JSX.Element | null); // ReturnType<VoidFunctionComponent<{}>>;
+	template?: () => (React.JSX.Element | null);
 
 	/**
 	 * Manually trigger a rerender of your component.
@@ -153,17 +129,29 @@ export class ClassComponent<
 	/*************************************
 	 *   Function Component Extractor    *
 	**************************************/
-	// @todo Attempt using implicit `this` value to allow rendering <MyComponent.FC /> directly.
-	// const FC = (props) => { const self = useMemo(() => useInstance(this, props), {}); return self.template(); }
+
 	/**
-	 * Extract a function component which can be used to render
-	 * your ClassComponent just like any other component.
+	 * Extract a Function Component (FC) which can be used to render
+	 * your ClassComponent just like any other React component.
 	 * 
-	 * Each JSX reference to this returned component will render with
+	 * Each JSX reference to the returned component will render with
 	 * a separate instance of your class.
 	 * 
 	 * So you only need to call `YourClassComponent.FC()` once, then use the returned
 	 * function component as many times as you need.
+	 * 
+	 * It is recommended to store this returned value as a static member of
+	 * your ClassComponent. While this value may be given any name, the name
+	 * RC (for "React Component") is the recommended convention.
+	 * 
+	 * @example <caption>Calling FC in your ClassComponent</caption>
+	 * class Button extends ClassComponent {
+	 *     static readonly RC = this.FC();
+	 *     // Because of the static keyword, `this` here refers to the class itself, same as calling `Button.FC()`.
+	 * }
+	 * 
+	 * // Render with `<Button.RC />`, or export RC to use the component in other files.
+	 * export default Button.RC;
 	 */
 	static readonly FC: Extractor = function FC (this, _Component) {
 		const Component = _Component ?? this;
@@ -248,6 +236,9 @@ export class ClassComponent<
 		setFunctionName(Wrapper, `$${Component.name}$`);
 		return Wrapper;
 	};
+
+	/** @see {@link ClassComponent.FC} */
+	static readonly extract = this.FC;
 }
 
 
@@ -297,13 +288,13 @@ export const Use: ClassComponentHookWrapper = (params) => {
 
 
 
-/*testing: {
+/**/testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ClassComponent<{a: ''}> {
-		static getInitialState = () => ({a: '' as const});
+	class MyComponentLogic extends ClassComponent<{}, {a: ''}> {
+		// static getInitialState = () => ({a: '' as const});
 		// a = () => this.hooks.a = '';
 
 		useHooks = () => {
@@ -312,4 +303,4 @@ export const Use: ClassComponentHookWrapper = (params) => {
 	};
 
 	const Template = MyComponentLogic.FC();
-}*/
+}/**/
