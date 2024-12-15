@@ -1,53 +1,25 @@
 import type { ExtractCleanStateData, TStateData } from '@/base/state';
-import type { THooksBase } from './logic';
+import type { THooksBase } from '../logic';
 
 import { useEffect } from 'react';
 
-import { useMountState } from '@/base/state';
-import { ComponentLogic,  useLogic } from './logic';
+import { ComponentLogic,  useLogic } from '../logic';
+import { UIParams, UIReturn, UseInstance } from './hook-types';
+import { useMountCallbacks } from './mount-callbacks';
+
+// @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 
 
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
-
-
-type UseMountCallbacks = <
-	// eslint-disable-next-line no-use-before-define
-	TInstance extends ComponentInstance<any, any, any>
->(instance: TInstance) => void;
-
-const useMountCallbacks: UseMountCallbacks = (instance) => {
-	const mounted = useMountState();
-
-	if (!mounted) instance.beforeMount?.();
-
-	useEffect(() => {
-		const mountHandlerCleanUp = instance.onMount?.();
-
-		return () => {
-			const doCleanUp = (runMountCleaners: IVoidFunction) => {
-				runMountCleaners?.();
-
-				// onDismount? willUnmount?
-				instance.cleanUp?.();
-			};
-
-			if (typeof mountHandlerCleanUp === 'function') {
-				doCleanUp(mountHandlerCleanUp);
-			} else {
-				mountHandlerCleanUp?.then(doCleanUp);
-			}
-		};
-	}, []);
-};
+type o = object;
 
 
 /** An empty function. It returns (void) without performing any operations. */
 export const noOp = () => {};
 
-// @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 
 /**
- * A superset of {@link ComponentLogic} that adds support for special lifecycle methods.
+ * A superset of {@link ComponentLogic} that adds support for lifecycle methods.
  * This provides a declarative API for working with your React function component's lifecycle,
  * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
  */
@@ -102,58 +74,6 @@ export class ComponentInstance<
 	cleanUp: IVoidFunction = () => {};
 };
 
-type o = object;
-
-type ComponentInstanceOwnStaticKeys = Exclude<
-	keyof typeof ComponentInstance,
-	keyof ComponentLogic.ClassType
->;
-
-type ComponentInstanceOwnStatics = {
-	[Key in ComponentInstanceOwnStaticKeys]: (typeof ComponentInstance)[Key];
-}
-
-export interface IComponentInstance<
-	Instance extends ComponentInstance<o, o, THooksBase>
-> extends ComponentLogic.Instance<Instance>, Omit<ComponentInstance<
-	Instance['props'],
-	ExtractCleanStateData<Instance['state']>,
-	Instance['_thooks']>, 'useHooks'>
-{}
-
-
-export interface IComponentInstanceClass<
-	Instance extends ComponentInstance<o, o, THooksBase> = ComponentInstance,
-> extends
-	Constructor<IComponentInstance<Instance>>,
-	ComponentInstanceOwnStatics,
-	ComponentLogic.ClassType<Instance>
-{};
-
-type UseInstance = {
-	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
-		Methods: Class,
-	): InstanceType<Class>;
-
-	// "has no props in common" error doesn't fire when comparing types in generic argument.
-	// only shown when assigning actual values.
-
-	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
-		Methods: Class,
-		props: InstanceType<Class>['props']
-	): InstanceType<Class>;
-}
-
-type UIParams = [
-	Methods: (
-		IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>
-	),
-	props?: object
-]
-
-type UIReturn = ComponentInstance<o, o, THooksBase>;
-
-
 /*
  * To ensure successful type checking, the second parameter must be written with spread syntax.
  * Likely because of the `exactOptionalPropertyTypes` config option turned on,
@@ -196,7 +116,7 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 
 		return () => {
 			if (typeof cleanupAfterRerender === 'function') cleanupAfterRerender();
-			else cleanupAfterRerender?.then((cleanUp) => cleanUp?.());
+			else cleanupAfterRerender?.then((cleanUp?: FunctionType) => cleanUp?.());
 		};
 	});
 

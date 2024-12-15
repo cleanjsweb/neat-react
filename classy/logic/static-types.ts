@@ -14,7 +14,7 @@ type o = object;
  *        # Class Static Side        *
 **************************************/
 
-interface StaticOverrides<
+export interface StaticOverrides<
 			Instance extends CLBaseType = ComponentLogic,
 		> extends Constructor<Instance> {
 	getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;

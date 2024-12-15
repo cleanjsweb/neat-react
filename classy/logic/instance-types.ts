@@ -21,7 +21,7 @@ type CLFromSubType<SubType extends CLBaseType> = ComponentLogic<
 **************************************/
 
 /** */
-interface InstanceOverrides<Instance extends CLBaseType = ComponentLogic> {
+export interface InstanceOverrides<Instance extends CLBaseType = ComponentLogic> {
 	useHooks: Instance['_thooks'] extends void
 		? () => (void | HardEmptyObject)
 		: () => Instance['_thooks'];

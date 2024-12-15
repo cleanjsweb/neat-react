@@ -90,7 +90,7 @@ declare global {
 	interface IVoidFunction<AsyncType extends 'async' | 'sync' | 'both' = 'both'> {
 		(): AsyncType extends 'async' ? Promise<void>
 			: AsyncType extends 'sync' ? void
-			: Promise<void> | void
+			: void | Promise<void>
 	}
 
 	type AnyFunction = (...args: any) => any;
