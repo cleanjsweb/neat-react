@@ -132,7 +132,7 @@ export namespace ComponentInstance {
 		TProps extends object = {},
 		TState extends TStateData = WeakEmptyObject,
 		THooks extends THooksBase = void
-	> extends ComponentInstance<TProps, TState, THooks> {};
+	> extends ComponentInstance<TProps, TState, THooks> {/* Keep empty */};
 
 	export type Instance<
 		Instance extends CIBaseType = Class
