@@ -1,11 +1,11 @@
 import type { VoidFunctionComponent, Component } from 'react';
 import type { TStateData } from '@/base';
-import type { IComponentInstanceClass } from './instance';
+import type { IComponentInstanceClass } from '../instance/static-types';
 
 import { useMemo, useEffect, useState } from 'react';
 
-import { ComponentInstance, useInstance } from './instance';
-import { THooksBase } from './logic';
+import { ComponentInstance, useInstance } from '../instance';
+import { THooksBase } from '../logic';
 
 
 /** Provide more useful stack traces for otherwise non-specific function names. */
