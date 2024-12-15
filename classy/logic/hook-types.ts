@@ -19,14 +19,19 @@ type o = object;
 type ULClassParam = IComponentLogicClass<
 	IComponentLogic<CLBaseType>
 >;
+type ULProplessClassParam = IComponentLogicClass<
+    IComponentLogic<
+        ComponentLogic<HardEmptyObject, o, THooksBase>
+    >
+>;
 
 export type UseLogic = {
-	<Class extends ULClassParam>(
-		Methods: Class,
-	): InstanceType<Class>;
+    <Class extends ULProplessClassParam>(
+        Methods: Class & Constructor<IComponentLogic<InstanceType<Class>>>
+    ): InstanceType<Class>;
 
 	<Class extends ULClassParam>(
-		Methods: Class,
+        Methods: Class & Constructor<IComponentLogic<InstanceType<Class>>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 }
