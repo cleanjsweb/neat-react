@@ -85,7 +85,7 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 
 export  { useMethods };
 
-/*testing: {
+/** /testing: {
 	let a = async () => { 
 		const a: object = {b: ''};
 
@@ -100,5 +100,5 @@ export  { useMethods };
 		const self = useMethods(MyMethods, {});
 		self.state;
 	}
-}*/
+}/**/
 

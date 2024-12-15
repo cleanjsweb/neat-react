@@ -35,7 +35,7 @@ const UniqueSecretSymbolKey = Symbol('asdfghjkliuytrewqaxcvb,nb');
 type TEmptyObject1 = { ''?: never };
 type TEmptyObject2 = Record<keyof any, never>;
 
-/*testing: {
+/** /testing: {
 	const mySymbol = Symbol('asdfgh') as symbol;
 
 	const tt = {
@@ -46,7 +46,7 @@ type TEmptyObject2 = Record<keyof any, never>;
 
 	let TT: WeakEmptyObject = {};
 	TT = tt;
-}*/
+}/**/
 
 
 //////////////
