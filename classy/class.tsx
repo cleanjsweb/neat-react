@@ -35,15 +35,21 @@ export const useRerender = () => {
 
 type o = object;
 
+type ComponentClassOwnStaticKeys = Exclude<
+	// eslint-disable-next-line no-use-before-define
+	keyof typeof ClassComponent,
+	keyof IComponentInstanceClass
+>;
 
-type ComponentClassStatics = {
-	[Key in keyof typeof ClassComponent]: (typeof ClassComponent)[Key];
+type ComponentClassOwnStatics = {
+	// eslint-disable-next-line no-use-before-define
+	[Key in ComponentClassOwnStaticKeys]: (typeof ClassComponent)[Key];
 }
 
 export interface IComponentClass<
 	// eslint-disable-next-line no-use-before-define
 	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent
-> extends Constructor<Instance>, ComponentClassStatics, IComponentInstanceClass<Instance> {};
+> extends Constructor<Instance>, ComponentClassOwnStatics, IComponentInstanceClass<Instance> {};
 
 
 type BaseClassComponent = ClassComponent<o, o, THooksBase>;
@@ -51,7 +57,7 @@ type BaseClassComponent = ClassComponent<o, o, THooksBase>;
 
 type Extractor = <TComponent extends IComponentClass<BaseClassComponent>>(
 	this: NonNullable<typeof _Component>,
-	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
+	_Component?: TComponent
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 
 
@@ -294,7 +300,7 @@ export const Use: ClassComponentHookWrapper = (params) => {
 	type t = keyof typeof a;
 
 	class MyComponentLogic extends ClassComponent<{}, {a: ''}> {
-		// static getInitialState = () => ({a: '' as const});
+		static getInitialState = () => ({a: '' as const});
 		// a = () => this.hooks.a = '';
 
 		useHooks = () => {

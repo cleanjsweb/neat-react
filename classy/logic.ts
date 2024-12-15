@@ -62,7 +62,7 @@ export namespace ComponentLogic {
 		useHooks = () => {};
 	};
 
-	export interface TInstance<Instance extends Class<o, o, THooksBase>>
+	export interface TInstance<Instance extends Class<o, o, THooksBase> = Class>
 			extends Class<
 			Instance['props'],
 			ExtractCleanStateData<Instance['state']>,
@@ -76,27 +76,31 @@ export namespace ComponentLogic {
 	type TStatics = Omit<typeof Class<o, o, THooksBase>, 'prototype'>;
 
 	export interface ClassType<
-				Instance extends Class<o, o, THooksBase>,
+				Instance extends Class<o, o, THooksBase> = Class,
 			> extends TStatics, Constructor<Instance> {
 		getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;
 	}
 }
 
+type ULClassParam = ComponentLogic.ClassType<
+	ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>
+>;
+
 type UseLogic = {
-	<Class extends ComponentLogic.ClassType<ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>>>(
-		Methods: Class & ComponentLogic.ClassType<InstanceType<Class>>,
+	<Class extends ULClassParam>(
+		Methods: Class,
 	): InstanceType<Class>;
 
-	<Class extends ComponentLogic.ClassType<ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>>>(
-		Methods: Class & ComponentLogic.ClassType<InstanceType<Class>>,
+	<Class extends ULClassParam>(
+		Methods: Class,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 }
 
 type ULParams = [
-	Class: (
-		ComponentLogic.ClassType<ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>>
-	),
+	Class: ComponentLogic.ClassType<
+		ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>
+	>,
 	props?: object
 ]
 
@@ -137,13 +141,13 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 };
 
 
-/** /testing: {
+/**/testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends Base<{}, {}, {a: string}> {
-		static getInitialState = () => ({a: '' as const});
+	class MyComponentLogic extends ComponentLogic.Class<{}, {b: number}, {a: string}> {
+		static getInitialState = () => ({b: 7});
 		// b = this.state.put[''] + this.props.b;
 
 		useHooks = () => ({a: 'undefined'});
@@ -156,7 +160,7 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	self.useHooks();
 
 
-	const A = class C extends Base {
+	const A = class C extends ComponentLogic.Class {
 		// static getInitialState = () => ({a: 'l'});
 		// a = () => this.state.yyy = '';
 	}
@@ -165,5 +169,5 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 
 	// const oa = {['a' as unknown as symbol]: 'boo'};
 	const oa = {['a']: 'boo'};
-	// const self = useLogic(A, oa);
+	useLogic(A, oa);
 }/**/

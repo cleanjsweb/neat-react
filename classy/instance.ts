@@ -104,27 +104,31 @@ export class ComponentInstance<
 
 type o = object;
 
-type ComponentInstanceStatics = {
-	[Key in keyof typeof ComponentInstance]: (typeof ComponentInstance)[Key];
-}
+type ComponentInstanceOwnStaticKeys = Exclude<
+	keyof typeof ComponentInstance,
+	keyof ComponentLogic.ClassType
+>;
 
+type ComponentInstanceOwnStatics = {
+	[Key in ComponentInstanceOwnStaticKeys]: (typeof ComponentInstance)[Key];
+}
 
 export interface IComponentInstance<
 	Instance extends ComponentInstance<o, o, THooksBase>
-> extends ComponentLogic.TInstance<Instance>, ComponentInstance<
+> extends ComponentLogic.TInstance<Instance>, Omit<ComponentInstance<
 	Instance['props'],
 	ExtractCleanStateData<Instance['state']>,
-	Instance['_thooks']
-> {
-	useHooks: ComponentLogic.TInstance<Instance>['useHooks'];
-}
+	Instance['_thooks']>, 'useHooks'>
+{}
 
 
 export interface IComponentInstanceClass<
 	Instance extends ComponentInstance<o, o, THooksBase> = ComponentInstance,
-> extends Constructor<IComponentInstance<Instance>>, ComponentInstanceStatics, ComponentLogic.ClassType<Instance> {
-	getInitialState: ComponentLogic.ClassType<Instance>['getInitialState'];
-};
+> extends
+	Constructor<IComponentInstance<Instance>>,
+	ComponentInstanceOwnStatics,
+	ComponentLogic.ClassType<Instance>
+{};
 
 type UseInstance = {
 	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
@@ -199,7 +203,7 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	return instance;
 };
 
-/** /testing: {
+/**/testing: {
 	class A extends ComponentInstance<{}, {}, object> {
 		static getInitialState: (p?: object) => ({putan: ''});
 		// k = this.props.o
@@ -211,7 +215,6 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 		// weak empty is not assignable to hard empty
 	}
 
-	const p = {k: ''}
 	const a = useInstance(A, {o: ''});
 	a.a;
 
