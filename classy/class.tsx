@@ -43,7 +43,7 @@ type ComponentClassStatics = {
 export interface IComponentClass<
 	// eslint-disable-next-line no-use-before-define
 	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent
-> extends Constructor<Instance>, ComponentClassStatics {};
+> extends Constructor<Instance>, ComponentClassStatics, IComponentInstanceClass<Instance> {};
 
 
 type BaseClassComponent = ClassComponent<o, o, THooksBase>;
@@ -51,7 +51,7 @@ type BaseClassComponent = ClassComponent<o, o, THooksBase>;
 
 type Extractor = <TComponent extends IComponentClass<BaseClassComponent>>(
 	this: NonNullable<typeof _Component>,
-	_Component?: TComponent
+	_Component?: TComponent & IComponentClass<InstanceType<TComponent>>
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 
 
@@ -298,7 +298,7 @@ export const Use: ClassComponentHookWrapper = (params) => {
 		// a = () => this.hooks.a = '';
 
 		useHooks = () => {
-
+			this.state.a;
 		};
 	};
 

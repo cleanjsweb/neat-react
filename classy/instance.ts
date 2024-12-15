@@ -1,4 +1,4 @@
-import type { TStateData } from '@/base/state';
+import type { ExtractCleanStateData, TStateData } from '@/base/state';
 import type { THooksBase } from './logic';
 
 import { useEffect } from 'react';
@@ -108,9 +108,23 @@ type ComponentInstanceStatics = {
 	[Key in keyof typeof ComponentInstance]: (typeof ComponentInstance)[Key];
 }
 
+
+export interface IComponentInstance<
+	Instance extends ComponentInstance<o, o, THooksBase>
+> extends ComponentLogic.TInstance<Instance>, ComponentInstance<
+	Instance['props'],
+	ExtractCleanStateData<Instance['state']>,
+	Instance['_thooks']
+> {
+	useHooks: ComponentLogic.TInstance<Instance>['useHooks'];
+}
+
+
 export interface IComponentInstanceClass<
 	Instance extends ComponentInstance<o, o, THooksBase> = ComponentInstance,
-> extends Constructor<Instance>, ComponentInstanceStatics {};
+> extends Constructor<IComponentInstance<Instance>>, ComponentInstanceStatics, ComponentLogic.ClassType<Instance> {
+	getInitialState: ComponentLogic.ClassType<Instance>['getInitialState'];
+};
 
 type UseInstance = {
 	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(

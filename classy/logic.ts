@@ -62,12 +62,12 @@ export namespace ComponentLogic {
 		useHooks = () => {};
 	};
 
-	export interface InstanceType<Instance extends Class<o, o, THooksBase>>
+	export interface TInstance<Instance extends Class<o, o, THooksBase>>
 			extends Class<
-				Instance['props'],
-				ExtractCleanStateData<Instance['state']>,
-				Instance['_thooks']
-			> {
+			Instance['props'],
+			ExtractCleanStateData<Instance['state']>,
+			Instance['_thooks']
+		> {
 		useHooks: Instance['_thooks'] extends void
 			? () => (void | HardEmptyObject)
 			: () => Instance['_thooks'] // (Instance['_thooks'] extends object ? Instance['_thooks'] : {});
@@ -77,17 +77,17 @@ export namespace ComponentLogic {
 
 	export interface ClassType<
 				Instance extends Class<o, o, THooksBase>,
-			> extends TStatics, Constructor<InstanceType<Instance>> {
+			> extends TStatics, Constructor<Instance> {
 		getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;
 	}
 }
 
 type UseLogic = {
-	<Class extends ComponentLogic.ClassType<ComponentLogic.Class<o, o, THooksBase>>>(
+	<Class extends ComponentLogic.ClassType<ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>>>(
 		Methods: Class & ComponentLogic.ClassType<InstanceType<Class>>,
 	): InstanceType<Class>;
 
-	<Class extends ComponentLogic.ClassType<ComponentLogic.Class<o, o, THooksBase>>>(
+	<Class extends ComponentLogic.ClassType<ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>>>(
 		Methods: Class & ComponentLogic.ClassType<InstanceType<Class>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
@@ -95,7 +95,7 @@ type UseLogic = {
 
 type ULParams = [
 	Class: (
-		ComponentLogic.ClassType<ComponentLogic.Class<o, o, THooksBase>>
+		ComponentLogic.ClassType<ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>>
 	),
 	props?: object
 ]
@@ -126,7 +126,7 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	// @ts-expect-error
 	self.state = (
 		_stateProxy_ = state
-	);;
+	);
 
 	// @ts-expect-error
 	self.hooks = (
