@@ -115,7 +115,7 @@ type ComponentInstanceOwnStatics = {
 
 export interface IComponentInstance<
 	Instance extends ComponentInstance<o, o, THooksBase>
-> extends ComponentLogic.TInstance<Instance>, Omit<ComponentInstance<
+> extends ComponentLogic.Instance<Instance>, Omit<ComponentInstance<
 	Instance['props'],
 	ExtractCleanStateData<Instance['state']>,
 	Instance['_thooks']>, 'useHooks'>

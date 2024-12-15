@@ -1,4 +1,5 @@
 import type { TCleanState, ExtractCleanStateData, TStateData } from '@/base/state';
+import type { IComponentLogic, IComponentLogicClass, ULParams, ULReturn, UseLogic } from './logic-types';
 
 import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
@@ -18,93 +19,46 @@ export type THooksBase = object | void;
 
 type o = object;
 
-export namespace ComponentLogic {
+/**
+ * Base class for a class that holds methods intended for use in a function component,
+ * as well as a static method for initializing state.
+ * 
+ * These methods will have access to the components state and props via
+ * `this.state` and `this.props` respectively.
+ * 
+ * The special {@link Class['useHooks'] | useHooks} method allows you to consume
+ * React hooks within this class.
+ * 
+ * Call the {@link useLogic} hook inside your function component to instantiate the class.
+ */
+export class ComponentLogic<
+		TProps extends object = {},
+		TState extends TStateData = WeakEmpty,
+		THooks extends THooksBase = void> {
+	declare readonly state: TCleanState<TState>;
+	declare readonly props: TProps;
+	declare readonly hooks: THooks extends object ? THooks : WeakEmptyObject;
+
 	/**
-	 * Base class for a class that holds methods intended for use in a function component,
-	 * as well as a static method for initializing state.
+	 * Called before each instance of your component is mounted.
+	 * It receives the initial `props` object and should return
+	 * an object with the initial values for your component's state.
 	 * 
-	 * These methods will have access to the components state and props via
-	 * `this.state` and `this.props` respectively.
-	 * 
-	 * The special {@link Class['useHooks'] | useHooks} method allows you to consume
-	 * React hooks within this class.
-	 * 
-	 * Call the {@link useLogic} hook inside your function component to instantiate the class.
+	 * PS: `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
 	 */
-	export class Class<
-			/** Describe the values your component expects to be passed as props. */
-			TProps extends object = {},
-			/** An object type that descibes your component's state. */
-			TState extends TStateData = WeakEmpty,
-			/** The object type returned by your component's {@link useHooks} method. */
-			THooks extends THooksBase = void> {
-		declare readonly state: TCleanState<TState>;
-		declare readonly props: TProps;
-		declare readonly hooks: THooks extends object ? THooks : WeakEmptyObject;
-
-		/**
-		 * Called before each instance of your component is mounted.
-		 * It receives the initial `props` object and should return
-		 * an object with the initial values for your component's state.
-		 * 
-		 * PS: `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
-		 */
-		static getInitialState = (p?: any): object => ({});
+	static getInitialState = (p?: any): object => ({});
 
 
-		/** Do not use. Will be undefined at runtime. */
-		declare readonly _thooks: THooks;
-		/**
-		 * Call React hooks and expose any values your component
-		 * needs by return an object with said values. The returned
-		 * object will be accessible as `this.hooks`;
-		 */
-		useHooks = () => {};
-	};
+	/** Do not use. Will be undefined at runtime. */
+	declare readonly _thooks: THooks;
+	/**
+	 * Call React hooks and expose any values your component
+	 * needs by return an object with said values. The returned
+	 * object will be accessible as `this.hooks`;
+	 */
+	useHooks = () => {};
+};
 
-	export interface TInstance<Instance extends Class<o, o, THooksBase> = Class>
-			extends Class<
-			Instance['props'],
-			ExtractCleanStateData<Instance['state']>,
-			Instance['_thooks']
-		> {
-		useHooks: Instance['_thooks'] extends void
-			? () => (void | HardEmptyObject)
-			: () => Instance['_thooks'] // (Instance['_thooks'] extends object ? Instance['_thooks'] : {});
-	}
-
-	type TStatics = Omit<typeof Class<o, o, THooksBase>, 'prototype'>;
-
-	export interface ClassType<
-				Instance extends Class<o, o, THooksBase> = Class,
-			> extends TStatics, Constructor<Instance> {
-		getInitialState: (props?: Instance['props']) => ExtractCleanStateData<Instance['state']>;
-	}
-}
-
-type ULClassParam = ComponentLogic.ClassType<
-	ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>
->;
-
-type UseLogic = {
-	<Class extends ULClassParam>(
-		Methods: Class,
-	): InstanceType<Class>;
-
-	<Class extends ULClassParam>(
-		Methods: Class,
-		props: InstanceType<Class>['props']
-	): InstanceType<Class>;
-}
-
-type ULParams = [
-	Class: ComponentLogic.ClassType<
-		ComponentLogic.TInstance<ComponentLogic.Class<o, o, THooksBase>>
-	>,
-	props?: object
-]
-
-type ULReturn = ComponentLogic.Class<o, o, THooksBase>;
 
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
@@ -139,6 +93,24 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 
 	return self;
 };
+
+
+
+export namespace ComponentLogic {
+	export class Class<
+		TProps extends object = {},
+		TState extends TStateData = WeakEmpty,
+		THooks extends THooksBase = void> extends ComponentLogic<TProps, TState, THooks> {
+	};
+
+	export type Instance<
+		Instance extends Class<o, o, THooksBase> = Class
+	> = IComponentLogic<Instance>;
+
+	export type ClassType<
+		Instance extends Class<o, o, THooksBase> = Class,
+	> = IComponentLogicClass<Instance>;
+}
 
 
 /**/testing: {
