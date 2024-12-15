@@ -9,7 +9,7 @@ type o = object;
 
 /** */
 
-interface StaticOverrides<
+export interface StaticOverrides<
 	Instance extends CIBaseType = ComponentInstance,
 > extends CLStaticOverrides<Instance> {/* Types here */}
 

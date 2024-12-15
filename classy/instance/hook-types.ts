@@ -1,32 +1,38 @@
 import { ComponentInstance } from '.';
 import { THooksBase } from '../logic';
+import { CIBaseType, IComponentInstance } from './instance-types';
 import { IComponentInstanceClass } from './static-types';
 
 
 
 type o = object;
 
+type UIClassParam = IComponentInstanceClass<
+	IComponentInstance<CIBaseType>
+>;
+type UIProplessClassParam = IComponentInstanceClass<
+    IComponentInstance<
+        ComponentInstance<HardEmptyObject, o, THooksBase>
+    >
+>;
 
 export type UseInstance = {
-	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
-		Methods: Class,
-	): InstanceType<Class>;
+    <Class extends UIProplessClassParam>(
+        Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>
+    ): InstanceType<Class>;
 
-	// "has no props in common" error doesn't fire when comparing types in generic argument.
-	// only shown when assigning actual values.
-
-	<Class extends IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>>(
-		Methods: Class,
+	<Class extends UIClassParam>(
+        Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
-}
+};
 
 export type UIParams = [
-	Methods: (
-		IComponentInstanceClass<ComponentInstance<o, o, THooksBase>>
-	),
+	Class: IComponentInstanceClass<
+		IComponentInstance<CIBaseType>
+	>,
 	props?: object
-]
+];
 
-export type UIReturn = ComponentInstance<o, o, THooksBase>;
+export type UIReturn = CIBaseType;
 
