@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { ComponentLogic,  useLogic } from '../logic';
 import { UIParams, UIReturn, UseInstance } from './hook-types';
 import { useMountCallbacks } from './mount-callbacks';
+import { CIBaseType, IComponentInstance } from './instance-types';
+import { IComponentInstanceClass } from './static-types';
 
 // @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 
@@ -122,6 +124,25 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 
 	return instance;
 };
+
+
+
+export namespace ComponentInstance {
+	export class Class<
+		TProps extends object = {},
+		TState extends TStateData = WeakEmptyObject,
+		THooks extends THooksBase = void
+	> extends ComponentInstance<TProps, TState, THooks> {};
+
+	export type Instance<
+		Instance extends CIBaseType = Class
+	> = IComponentInstance<Instance>;
+
+	export type ClassType<
+		Instance extends CIBaseType = Class,
+	> = IComponentInstanceClass<Instance>;
+}
+
 
 /** /testing: {
 	class A extends ComponentInstance<{}, {}, object> {
