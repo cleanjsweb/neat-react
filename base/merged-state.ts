@@ -1,6 +1,6 @@
 import '../globals';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 class MergedState<TState extends object> {
 	static useRefresh<TState extends object>(this: MergedState<TState>) {
@@ -13,7 +13,7 @@ class MergedState<TState extends object> {
 	private _initialValues_  = {} as TState;
 	private _values_ = {} as TState;
 
-	private setState: (value: TState) => void;
+	declare private setState: (value: TState) => void;
 	private _setters_ = {} as {
 		[Key in keyof TState]: (value: TState[Key]) => void;
 	};
@@ -71,9 +71,11 @@ class MergedState<TState extends object> {
 }
 
 export const useMergedState = <TState extends object>(initialState: TState) => {
-	const cleanState = useMemo(() => {
-		return new MergedState(initialState);
-	}, []) as MergedState<TState> & TState;
+	const cleanState = useRef(
+		useMemo(() => {
+			return new MergedState(initialState);
+		}, []) as MergedState<TState> & TState
+	).current;
 
 	MergedState.useRefresh.call(cleanState);
 	return cleanState;
