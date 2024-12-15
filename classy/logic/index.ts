@@ -1,5 +1,7 @@
 import type { TCleanState, ExtractCleanStateData, TStateData } from '@/base/state';
-import type { IComponentLogic, IComponentLogicClass, ULParams, ULReturn, UseLogic } from './logic-types';
+import type { IComponentLogicClass } from './static-types';
+import type { CLBaseType, IComponentLogic } from './instance-types';
+import type { ULParams, ULReturn, UseLogic } from './hook-types';
 
 import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
@@ -95,25 +97,24 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 };
 
 
-
 export namespace ComponentLogic {
 	export class Class<
 		TProps extends object = {},
 		TState extends TStateData = WeakEmpty,
-		THooks extends THooksBase = void> extends ComponentLogic<TProps, TState, THooks> {
-	};
+		THooks extends THooksBase = void
+	> extends ComponentLogic<TProps, TState, THooks> {};
 
 	export type Instance<
-		Instance extends Class<o, o, THooksBase> = Class
+		Instance extends CLBaseType = Class
 	> = IComponentLogic<Instance>;
 
 	export type ClassType<
-		Instance extends Class<o, o, THooksBase> = Class,
+		Instance extends CLBaseType = Class,
 	> = IComponentLogicClass<Instance>;
 }
 
 
-/**/testing: {
+/** /testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
