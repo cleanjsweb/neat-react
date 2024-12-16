@@ -22,10 +22,12 @@
     "./state": "./build/base/state.js",
     "./state/merged": "./build/base/merged-state.js",
     "./methods": "./build/base/methods.js",
-    "./logic": "./build/classy/logic.js",
-    "./instance": "./build/classy/instance.js",
-    "./class-component": "./build/classy/class.js",
-    "./full-class": "./build/classy/class.js"
+    "./logic": "./build/classy/logic/index.js",
+    "./logic/*": "./build/classy/logic/*.js",
+    "./instance": "./build/classy/instance/index.js",
+    "./instance/*": "./build/classy/instance/*.js",
+    "./class": "./build/classy/class/index.js",
+    "./class/*": "./build/classy/class/*.js"
   },
   "scripts": {
     "prebuild": "rimraf ./build",
