@@ -4,10 +4,10 @@ import type { THooksBase } from '../logic';
 import { useEffect } from 'react';
 
 import { ComponentLogic,  useLogic } from '../logic';
-import { UIParams, UIReturn, UseInstance } from './hook-types';
+import { UIParams, UIReturn, UseInstance } from './types/hook';
 import { useMountCallbacks } from './mount-callbacks';
-import { CIBaseType, IComponentInstance } from './instance-types';
-import { IComponentInstanceClass } from './static-types';
+import { CIBaseType, IComponentInstance } from './types/instance';
+import { IComponentInstanceClass } from './types/static';
 
 // @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 

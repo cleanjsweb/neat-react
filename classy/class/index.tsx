@@ -4,6 +4,7 @@ import type { THooksBase } from '../logic';
 import type { Extractor } from './types/extractor';
 
 import { useMemo } from 'react';
+
 import { ComponentInstance, useInstance } from '../instance';
 import { setFunctionName } from './utils/function-name';
 import { useRerender } from './utils/rerender';
@@ -198,6 +199,8 @@ export class ClassComponent<
 	/** @see {@link ClassComponent.FC} */
 	static readonly extract = this.FC;
 }
+
+export { ClassComponent as Component };
 
 
 /** /testing: {

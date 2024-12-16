@@ -1,8 +1,8 @@
-import { ComponentInstance } from '.';
-import { THooksBase } from '../logic';
-import { CIBaseType, IComponentInstance } from './instance-types';
-import { IComponentInstanceClass } from './static-types';
+import type { THooksBase } from '@/classy/logic';
+import type { CIBaseType, IComponentInstance } from './instance';
+import type { IComponentInstanceClass } from './static';
 
+import { ComponentInstance } from '..';
 
 
 type o = object;

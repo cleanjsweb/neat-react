@@ -1,8 +1,8 @@
 import { ExtractCleanStateData } from "@/base";
-import { ComponentInstance } from ".";
-import { ComponentLogic, THooksBase } from "../logic";
+import { ComponentInstance } from "..";
+import { ComponentLogic, THooksBase } from "../../logic";
 import { CIBaseType, IComponentInstance } from "./instance-types";
-import { StaticOverrides as CLStaticOverrides } from "../logic/static-types";
+import { StaticOverrides as CLStaticOverrides } from "../../logic/static-types";
 
 
 type o = object;
