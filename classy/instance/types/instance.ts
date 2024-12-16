@@ -1,8 +1,8 @@
-import type { InstanceOverrides as CLInstanceOverrides } from '../logic/instance-types';
+import type { InstanceOverrides as CLInstanceOverrides } from '@/classy/logic/instance-types';
 import type { ExtractCleanStateData } from '@/base';
-import type { THooksBase } from '../logic';
+import type { THooksBase } from '@/classy/logic';
 
-import { ComponentInstance } from '.';
+import { ComponentInstance } from '@/classy/instance';
 
 
 export type CIBaseType = ComponentInstance<object, object, THooksBase>;
