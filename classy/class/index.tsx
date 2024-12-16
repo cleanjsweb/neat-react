@@ -1,64 +1,15 @@
-import type { VoidFunctionComponent, Component } from 'react';
+import type { VoidFunctionComponent } from 'react';
 import type { TStateData } from '@/base';
-import type { IComponentInstanceClass } from '../instance/static-types';
+import type { THooksBase } from '../logic';
+import type { Extractor } from './types/extractor';
 
-import { useMemo, useEffect, useState } from 'react';
-
+import { useMemo } from 'react';
 import { ComponentInstance, useInstance } from '../instance';
-import { THooksBase } from '../logic';
-
-
-/** Provide more useful stack traces for otherwise non-specific function names. */
-const setFunctionName = (func: FunctionType, newName: string) => {
-	try {
-		// Must use try block, as `name` is not configurable on older browsers, and may yield a TypeError.
-		Object.defineProperty(func, 'name', {
-			writable: true,
-			value: newName,
-		});
-	} catch (error) {
-		console.warn(error);
-	}
-}
-
-export const useRerender = () => {
-	/*
-	 * Skip the value, we don't need it.
-	 * Grab just the setter function.
-	 */
-	const [, _forceRerender] = useState(Date.now());
-	const rerender = () => _forceRerender(Date.now());
-
-	return rerender;
-};
+import { setFunctionName } from './utils/function-name';
+import { useRerender } from './utils/rerender';
 
 
 type o = object;
-
-type ComponentClassOwnStaticKeys = Exclude<
-	// eslint-disable-next-line no-use-before-define
-	keyof typeof ClassComponent,
-	keyof IComponentInstanceClass
->;
-
-type ComponentClassOwnStatics = {
-	// eslint-disable-next-line no-use-before-define
-	[Key in ComponentClassOwnStaticKeys]: (typeof ClassComponent)[Key];
-}
-
-export interface IComponentClass<
-	// eslint-disable-next-line no-use-before-define
-	Instance extends ClassComponent<o, o, THooksBase> = ClassComponent
-> extends Constructor<Instance>, ComponentClassOwnStatics, IComponentInstanceClass<Instance> {};
-
-
-type BaseClassComponent = ClassComponent<o, o, THooksBase>;
-
-
-type Extractor = <TComponent extends IComponentClass<BaseClassComponent>>(
-	this: NonNullable<typeof _Component>,
-	_Component?: TComponent
-) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
 
 
 /**
@@ -70,9 +21,10 @@ type Extractor = <TComponent extends IComponentClass<BaseClassComponent>>(
  * with little to no changes to their existing semantics/implementation.
  */
 export class ClassComponent<
-		TProps extends o = WeakEmptyObject,
-		TState extends TStateData = WeakEmptyObject,
-		THooks extends THooksBase = void> extends ComponentInstance<TProps, TState, THooks> {
+			TProps extends o = WeakEmptyObject,
+			TState extends TStateData = WeakEmptyObject,
+			THooks extends THooksBase = void
+		> extends ComponentInstance<TProps, TState, THooks> {
 
 	/**
 	 * @deprecated An older alternative to {@link template}.
@@ -125,7 +77,7 @@ export class ClassComponent<
 	 * Manually trigger a rerender of your component.
 	 * You should rarely ever need this. But if you are migrating
 	 * an older React.Component class, this should provide similar functionality
-	 * to the {@link Component.forceUpdate | `forceUpdate`} method provided there.
+	 * to the {@link React.Component.forceUpdate | `forceUpdate`} method provided there.
 	 * 
 	 * Note that the callback argument is currently not supported.
 	 */
@@ -172,11 +124,11 @@ export class ClassComponent<
 		type ComponentProps = InstanceType<typeof Component>['props'];
 
 
-
 		/*************************************
 		 *    Begin Function Component       *
 		**************************************/
-		/** A class-based React function component created with (@cleanweb/react).ClassComponent */
+
+		/** A class-based React function component created with (@cleanweb/react).{@link ClassComponent} */
 		const Wrapper: VoidFunctionComponent<ComponentProps> = (props) => {
 			const instance = useInstance(Component, props);
 			const { Render, template } = instance;
@@ -234,8 +186,8 @@ export class ClassComponent<
 				default: return template;
 			}
 		}
-		/*************************************
-		 *     End Function Component        *
+		/**************************************
+		*     End Function Component          *
 		**************************************/
 
 
@@ -246,52 +198,6 @@ export class ClassComponent<
 	/** @see {@link ClassComponent.FC} */
 	static readonly extract = this.FC;
 }
-
-
-interface HookWrapperProps<THookFunction extends AnyFunction> {
-	/**
-	 * The React hook you which to consume.
-	 * Render a separate instance of the `<Use />` component for each hook.
-	 * You can also create a custom hook that combines multiple hooks,
-	 * then use that wrapper hook with a single `<Use />` instance.
-	 */
-	hook: THookFunction,
-
-	/**
-	 * An array containing the list of arguments
-	 * to be passed to your hook, in the right order.
-	 */
-	argumentsList: Parameters<THookFunction>,
-
-	/**
-	 * A callback that will be called with whatever value your hook returns.
-	 * Use this to update your component's state with the value.
-	 * This will allow your component to rerender whenever the hook returns a new value.
-	 */
-	onUpdate: (output: ReturnType<THookFunction>) => void,
-}
-
-type ClassComponentHookWrapper = <Hook extends AnyFunction>(
-	props: HookWrapperProps<Hook>
-) => null;
-
-
-/**
- * A component you can use to consume hooks
- * in a {@link Component | React.Component} class component.
- */
-export const Use: ClassComponentHookWrapper = (params) => {
-	const { hook: useGenericHook, argumentsList, onUpdate } = params;
-
-	const output = useGenericHook(...argumentsList);
-
-	useEffect(() => {
-		onUpdate(output);
-	}, [output]);
-
-	return null;
-};
-
 
 
 /** /testing: {

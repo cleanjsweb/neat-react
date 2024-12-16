@@ -14,7 +14,6 @@ type CIFromSubType<SubType extends CIBaseType> = ComponentInstance<
 >;
 
 
-
 export interface InstanceOverrides<
 	Instance extends CIBaseType = ComponentInstance
 > extends CLInstanceOverrides<Instance> {/* Define types here. */}

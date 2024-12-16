@@ -11,18 +11,18 @@ type UIClassParam = IComponentInstanceClass<
 	IComponentInstance<CIBaseType>
 >;
 type UIProplessClassParam = IComponentInstanceClass<
-    IComponentInstance<
-        ComponentInstance<HardEmptyObject, o, THooksBase>
-    >
+	IComponentInstance<
+		ComponentInstance<HardEmptyObject, o, THooksBase>
+	>
 >;
 
 export type UseInstance = {
-    <Class extends UIProplessClassParam>(
-        Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>
-    ): InstanceType<Class>;
+	<Class extends UIProplessClassParam>(
+		Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>
+	): InstanceType<Class>;
 
 	<Class extends UIClassParam>(
-        Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>,
+		Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 };

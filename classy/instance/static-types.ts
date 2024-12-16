@@ -20,7 +20,7 @@ type BaseStatics = Omit<
 
 export interface IComponentInstanceClass<
 	Instance extends CIBaseType = ComponentInstance,
-> extends BaseStatics, CLStaticOverrides<Instance> {/* Keep empty */}
+> extends BaseStatics, StaticOverrides<Instance> {/* Keep empty */}
 
 /** */
 
