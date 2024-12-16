@@ -1,5 +1,5 @@
 import type { ExtractCleanStateData } from '@/base';
-import type { ComponentLogic, THooksBase } from '.';
+import type { ComponentLogic, THooksBase } from '@/classy/logic';
 
 
 /*************************************

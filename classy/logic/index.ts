@@ -1,7 +1,7 @@
 import type { TCleanState, ExtractCleanStateData, TStateData } from '@/base/state';
-import type { IComponentLogicClass } from './static-types';
-import type { CLBaseType, IComponentLogic } from './instance-types';
-import type { ULParams, ULReturn, UseLogic } from './hook-types';
+import type { IComponentLogicClass } from './types/static';
+import type { CLBaseType, IComponentLogic } from './types/instance';
+import type { ULParams, ULReturn, UseLogic } from './types/hook';
 
 import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';

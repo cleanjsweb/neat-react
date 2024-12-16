@@ -1,6 +1,6 @@
-import type { ComponentLogic, THooksBase } from '.';
-import type { CLBaseType, IComponentLogic } from './instance-types';
-import type { IComponentLogicClass } from './static-types';
+import type { ComponentLogic, THooksBase } from '..';
+import type { CLBaseType, IComponentLogic } from './instance';
+import type { IComponentLogicClass } from './static';
 
 
 /*************************************

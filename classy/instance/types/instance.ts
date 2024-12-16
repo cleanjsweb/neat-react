@@ -1,4 +1,4 @@
-import type { InstanceOverrides as CLInstanceOverrides } from '@/classy/logic/instance-types';
+import type { InstanceOverrides as CLInstanceOverrides } from '@/classy/logic/types/instance';
 import type { ExtractCleanStateData } from '@/base';
 import type { THooksBase } from '@/classy/logic';
 

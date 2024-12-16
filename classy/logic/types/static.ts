@@ -1,6 +1,6 @@
 import type { ExtractCleanStateData } from '@/base';
-import type { ComponentLogic, THooksBase } from '.';
-import type { CLBaseType } from './instance-types';
+import type { ComponentLogic, THooksBase } from '@/classy/logic';
+import type { CLBaseType } from './instance';
 
 
 /*************************************
