@@ -247,7 +247,7 @@ class Button extends ClassComponent {
 	}
 
 	/** Button Template */
-	Render = () => {
+	template = () => {
 		const { Paragraphs, submit, state } = this;
 
 		return <>

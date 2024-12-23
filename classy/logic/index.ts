@@ -45,10 +45,9 @@ export class ComponentLogic<
 	 * Called before each instance of your component is mounted.
 	 * It receives the initial `props` object and should return
 	 * an object with the initial values for your component's state.
-	 * 
-	 * PS: `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
 	 */
 	static getInitialState = (p?: any): object => ({});
+	// * PS: `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
 
 
 	/** Do not use. Will be undefined at runtime. */

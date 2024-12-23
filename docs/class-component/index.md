@@ -50,7 +50,7 @@ class Button extends ClassComponent {
 	}
 
 	/** Button Template */
-	Render = () => <>
+	template = () => <>
 		{/* const self = useInstance(ButtonComponent, this.props); */}
 		<p>{this.hooks.memoizedValue}</p>
 		<button onClick={this.submit}>
@@ -169,7 +169,7 @@ class Button extends ClassComponent {
 	}
 
 	/** Button Template */
-	Render = () => <>
+	template = () => <>
 		<p>{this.hooks.memoizedValue}</p>
 		<button onClick={this.submit}>
 			{this.state.label}

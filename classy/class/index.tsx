@@ -28,20 +28,6 @@ export class ClassComponent<
 		> extends ComponentInstance<TProps, TState, THooks> {
 
 	/**
-	 * @deprecated An older alternative to {@link template}.
-	 * 
-	 * Using this will add a component boundary between your JSX template
-	 * and the function component returned from ClassComponent.FC();
-	 * 
-	 * This means that from React's perspective, your template won't "own" the state and props it consumes.
-	 * This could lead to subtle unexpected changes in behaviour.
-	 * 
-	 * In most cases, you should use {@link template} instead, as it allows your class component
-	 * to function more predictably as a single unit.
-	 */
-	Render?: VoidFunctionComponent<{}>;
-
-	/**
 	 * Analogous to {@link React.Component.render}. A function that returns
 	 * your component's JSX template.
 	 * 
@@ -72,7 +58,7 @@ export class ClassComponent<
 	 * }
 	 * ```
 	 */
-	template?: () => (React.JSX.Element | null);
+	template: () => (React.JSX.Element | null) = () => null;
 
 	/**
 	 * Manually trigger a rerender of your component.
@@ -112,7 +98,7 @@ export class ClassComponent<
 	 * // Render with `<Button.RC />`, or export RC to use the component in other files.
 	 * export default Button.RC;
 	 */
-	static readonly FC: Extractor = function FC (this, _Component) {
+	static readonly extract: Extractor = function FC (this, _Component) {
 		const Component = _Component ?? this;
 		const isClassComponentType = Component.prototype instanceof ClassComponent;
 
@@ -132,7 +118,7 @@ export class ClassComponent<
 		/** A class-based React function component created with (@cleanweb/react).{@link ClassComponent} */
 		const Wrapper: VoidFunctionComponent<ComponentProps> = (props) => {
 			const instance = useInstance(Component, props);
-			const { Render, template } = instance;
+			const { template } = instance;
 
 			let _forceUpdate: typeof instance.forceUpdate;
 
@@ -141,51 +127,12 @@ export class ClassComponent<
 				_forceUpdate = useRerender() // Moved this to separate line to allow TS errors. Use proxy local variable to regain some type checking for the assignment to `instance.forceUpdate`.
 			);
 
-			// Add calling component name to Render function name in stack traces.
+			// Add calling component name to template function name in stack traces.
 			useMemo(() => {
-				if (typeof template === 'function')
-					setFunctionName(template, `${Component.name}.template`);
-				else if (typeof Render === 'function')
-					setFunctionName(Render, `${Component.name}.Render`);
-			}, [Render, template]);
+				setFunctionName(template, `${Component.name}.template`);
+			}, [template]);
 
-			/**
-			 * Normally a component can update it's own state in the "before-render" stage to
-			 * skip DOM updates and trigger and immediate rerun of the rendering with the new state.
-			 * 
-			 * It may be impossible to do this within the body of Render, if we call it as JSX here,
-			 * since technically, the Wrapper component owns the state and not the Render component.
-			 * Using it as JSX establishes a component boundary, and React will throw an error if we try to set
-			 * state in the "before-render" stage of `Render`, since it will be attempting to update it's parent's
-			 * state (i.e `Wrapper` component) rather than it's own state.
-			 * 
-			 * Users should favor using the `template()` method instead. This way, we avoid
-			 * establishing a component boundary between `Wrapper` and `Render`.
-			 * 
-			 * Although, since beforeRender() is called earlier from a hook, this is probably
-			 * a non-issue. It will only force users to move their logic into `beforeRender` instead
-			 * of doing it directly in `Render`. Even if `template` is being used, the `beforeRender` method
-			 * is the preferred location for such logic to maintain a high level of separation of concerns,
-			 * which is what this library exists to provide.
-			 * 
-			 * So there's probably no real value lost with the component boundary. Users should just use
-			 * `beforeRender` + `template`.
-			**/
-
-			switch (typeof template) {
-				case 'undefined':
-					if (typeof Render === 'function') return <Render />;
-					else throw new Error([
-						'A ClassComponent must have either a `template` or a `Render` property. But neither was found.',
-						'Add a `template: (JSX.Element | null);` member to your class, (or a `template` method that returns the same type).',
-						'Alternatively, add a `Render: FunctionComponent;` method.',
-						'\n\n',
-						'Expected `Render` to be a Function Component because `template` was `undefined`.',
-						`Instead got the following '${typeof Render}': $o`,
-					].join(' '), Render);
-				case 'function': return template();
-				default: return template;
-			}
+			return template();
 		}
 		/**************************************
 		*     End Function Component          *
@@ -196,8 +143,8 @@ export class ClassComponent<
 		return Wrapper;
 	};
 
-	/** @see {@link ClassComponent.FC} */
-	static readonly extract = this.FC;
+	/** @see {@link ClassComponent.extract} */
+	static readonly FC = this.extract;
 }
 
 export { ClassComponent as Component };
