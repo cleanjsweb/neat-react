@@ -192,11 +192,11 @@ class Footer extends ClassComponent {
 	static getInitialState = (props) => {
 		return {
 			state1: props.defaultValue,
-			state2: null,
+			state2: undefined,
 			label: 'Click me',
 			submitted: false,
 		};
-	}
+	};
 
 	useHooks = () => {
 		const [store, updateStore] = useGlobalStore();
@@ -213,12 +213,11 @@ class Footer extends ClassComponent {
 
 	// Run after the component is mounted.
 	onMount = () => {
-		const unsubscribe = this.subscribeToExternalDataSource();
+		this.subscribeToExternalDataSource();
 		window.addEventListener('resize', this.onWindowResize);
 
 		// Return cleanup callback.
 		return () => {
-			unsubscribe();
 			window.removeEventListener('resize', this.onWindowResize);
 		};
 	}
@@ -255,9 +254,7 @@ class Footer extends ClassComponent {
 		this.state.submitted = true;
 	}
 
-	onWindowResize = () => {
-		;
-	}
+	onWindowResize = () => {};
 
 	subscribeToExternalDataSource = () => {
 		const unsubscribe = externalDataSource.subscribe((data) => {
