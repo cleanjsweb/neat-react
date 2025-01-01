@@ -1,32 +1,10 @@
-import '../globals';
 
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ICleanStateClass, ICleanStateConstructor, PutState } from './class-types';
 
 
-/**
- * Returns a value that is false before the component has been mounted,
- * then true during all subsequent rerenders.
- */ 
-export const useMountState = () => {
-	/**
-	 * This must not be a stateful value. It should not be the cause of a rerender.
-	 * It merely provides information about the render count,
-	 * without influencing that count itself.
-	 * So `mounted` should never be set with `useState`.
-	 */
-	let mounted = useRef(false);
-	useEffect(() => {
-		mounted.current = true;
-	}, []);
-	return mounted.current;
-};
-
-type PutState<TState extends object> = {
-	[Key in keyof TState]: React.Dispatch<React.SetStateAction<TState[Key]>>;
-}
-
-class CleanStateBase<TState extends Record<string, any>> {
+export class CleanStateBase<TState extends Record<string, any>> {
 	readonly reservedKeys: string[];
 	readonly valueKeys: string[];
 
@@ -113,87 +91,5 @@ class CleanStateBase<TState extends Record<string, any>> {
 		});
 	};
 };
-type TCleanStateBase = typeof CleanStateBase;
-type TCleanStateBaseKeys = keyof TCleanStateBase;
 
-interface ICleanStateConstructor {
-	new <TState extends object>(
-		...args: ConstructorParameters<typeof CleanStateBase>
-	): TCleanState<TState>;
-}
-
-type ICleanStateClass = {
-	[Key in TCleanStateBaseKeys]: (typeof CleanStateBase)[Key];
-}
-const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;
-
-
-export type TStateData = object & {
-	[Key in keyof CleanStateBase<{}>]?: never;
-};
-
-export type TCleanState<TState extends TStateData> = (
-	CleanStateBase<TState>
-	& Omit<TState, keyof CleanStateBase<{}>>
-);
-
-export type ExtractCleanStateData<
-	YourCleanState extends CleanStateBase<{}>
-> = Omit<YourCleanState, keyof CleanStateBase<{}>>;
-
-
-type StateInitFunction = (...args: any[]) => object;
-type StateInit = object | StateInitFunction;
-
-type TInitialState<
-	Initializer extends StateInit
-> = Initializer extends (...args: any[]) => (infer TState extends object)
-	? TState
-	: Initializer;
-
-
-
-type TUseCleanState = <TInit extends StateInit>(
-	_initialState: TInit,
-	...props: TInit extends (...args: infer TProps extends any[]) => (infer TState extends object)
-		? TProps
-		: []
-) => TCleanState<TInitialState<TInit>>;
-
-/**
- * Creates a state object, which includes the provided values, and helper methods for
- * updating those values and automatically rerendering your component's UI accordingly.
- */
-export const useCleanState: TUseCleanState = (_initialState, ...props) => {
-	type TState = TInitialState<typeof _initialState>;
-
-	const initialState: TState = typeof _initialState === 'function'
-		? useMemo(() => _initialState(...props), [])
-		: _initialState;
-	;
-
-	const cleanState: TCleanState<TState> = useRef(useMemo(() => {
-		return new CleanState<TState>(initialState);
-	}, [])).current;
-
-	CleanState.update.call(cleanState);
-	return cleanState;
-};
-
-
-// Should be valid.
-// useCleanState((a: number) => ({b: a.toString(), q: 1}), 6);
-// useCleanState((a: boolean) => ({b: a.toString()}), true);
-// useCleanState((a: number, c?: string) => ({ b: `${a}` }), 6);
-// useCleanState((a: number, c?: string) => ({ b: `${a}` }), 6, 'word');
-// useCleanState((a: number, c: string) => ({ b: a + c, f: true }), 6, 'text');
-// useCleanState({ d: 5000 });
-
-
-// Should fail.
-// useCleanState((a: number) => ({b: a.toString(), q: 1}), 6, false);
-// useCleanState((a: boolean) => ({b: a.toString()}));
-// useCleanState((a: number, c?: string) => ({ b: `${a}` }), '6');
-// useCleanState((a: number, c?: string) => ({ b: `${a}` }));
-// useCleanState((a: number, c: string) => ({ b: a + c, f: true }), 6, 7);
-// useCleanState({ d: 5000 }, true);
+export const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;
