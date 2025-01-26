@@ -1,76 +1,159 @@
-# Structured & Cleaner React Function Components
+# Object Oriented Programming for Modern React
+This package provides a number of tools for creating modern React function components with object-oriented code. With Oore, you can avoid common errors, and write complex components that are cleaner, better structured, and eassier to read & understand.
 
-## Quick Start
-This package provides a suite of tools for writing cleaner React function components. It is particularly useful for larger components with lots of state variables and multiple closure functions that need to access those variables. The most likely use cases will use one of the two main exported members.
+## Usage
+### Clean State
+The `useCleanState` hook provides a clean API for working with a high number of state variables in a unified way. The example below demonstrates how to use it.
 
-### Extracting and Structuring Component Logic
-The `useLogic` allows you to write your component's logic outside the function component's body, and helps you keep them all better organized. It also provides a much cleaner API for working with multiple state variables. Here's what a function component looks like with the `useLogic` hook.
-
-**Before**
 ```jsx
+const initialState = {
+	label: 'Click me',
+	clicked: false,
+	inputValue: {},
+};
+// or
+const getInitialState = (props) => {
+	return {
+		label: props.label,
+		clicked: false,
+		inputValue: {},
+	};
+};
+
 const Button = (props) => {
-	const { param } = props;
+	const state = useCleanState(initialState);
+	// or
+	const state = useCleanState(getInitialState, props);
+	
 
-	const [state1, setState1] = useState();
-	const [state2, setState2] = useState();
-	const [label, setLabel] = useState('Click me');
-	const [submitted, setSubmitted] = useState(false);
-
-	const memoizedValue = useMemo(() => getValue(param), [param]);
-
-	const subscribeToExternalDataSource = useCallback(() => {
-		externalDataSource.subscribe((data) => {
-			setLabel(data.label);
+	const onClick = useCallback(() => {
+		state.clicked = true;
+		// or
+		state.putMany({
+			label: 'Loading',
+			clicked: true,
 		});
-	}, [setLabel]);
-
-	useEffect(subscribeToExternalDataSource, []);
-
-	const submit = useCallback(() => {
-		sendData(state1, state2);
-		setSubmitted(true);
-	}, [state1]); // Notice how `state2` above could easily be stale by the time the callback runs.
+		// or
+		state.put.clicked(true);
+		// or
+		state.put.clicked((oldClicked) => !oldClicked);
+	}, []);
 
 	return <>
-		<p>{memoizedValue}</p>
-		<button onClick={submit}>
-			{label}
+		<CustomInput setValue={state.put.inputValue}>
+
+		<button onClick={onClick}>
+			{state.label}
 		</button>
 	</>;
 }
 ```
 
-**After**
-```jsx
-class ButtonLogic {
-	static getInitialState = () => {
-		return {
-			state1: undefined,
-			state2: null,
-			label: 'Click me',
-			submitted: false,
-		};
-	}
+> **Note:** You can call `useCleanState` multiple times in the same component, allowing you to group related state values into separate objects.
 
+> **Note:** Each top-level key in your initial state object gets a separate call to `React.useState`, and `state.put[key]()` is a proxy for the setter function returned from `useState`. So using this hook is fundamentally the same as calling `useState` directly for each value. What `useCleanState` provides is a way to unify those values and a convenient API for updating them.
+
+[Read the `useCleanState` docs]() for more details.
+
+### Methods
+The `useMethods` hooks manage the closures that your component uses in a separate class, keeping the body of the component clean and easier to read. With `useMethods`, your functions are not recreated on every render, yet every method of your component is guaranteed to always have access to the latest props and state without the need for a dependencty array.
+
+```jsx
+class ButtonMethods {
 	submit = () => {
 		const { state1, state2 } = this.state;
 		sendData(state1, state2);
 		this.state.submitted = true;
 	}
 
-	subscribeToExternalDataSource = () => {
-		externalDataSource.subscribe((data) => {
-			this.state.label = data.label;
-		});
+	doSomething = () => {
+		// Setup...
+
+		return () => {
+			// Cleanup...
+		}
+	} 
+}
+
+const initialState = {
+	value1: undefined,
+	value2: null,
+	label: 'Click me',
+	submitted: false,
+}
+
+const Button = (props) => {
+	const state = useCleanState(initialState);
+	const methods = useMethods(ButtonMethods, state, props);
+
+	useEffect(methods.doSomething, []);
+
+	return (
+		<button onClick={methods.submit}>
+			{state.label}
+		</button>
+	);
+}
+```
+
+`useMethods` only accepts a single state object. So if you are using multiple calls to `useCleanState`, you may have to group them into a single object when passing to `useMethods`.
+
+```jsx
+const getDefaultValues = (props) => ({/* ... */});
+
+const Button = (props) => {
+	const formValues = useCleanState(getDefaultValues, props);
+	const apiData = useCleanState({});
+
+	const multiState = { formValues, apiData };
+	const methods = useMethods(ButtonMethods, multiState, props);
+
+	// ...
+}
+```
+
+[Read the `useMethods` docs]() for more details.
+
+### Logic
+The `useLogic` hook is an expansion of `useMethods`, with the aim of being a more holistic solution. It combines the functionality of `useCleanState` and `useMethods`. In addition, it allows you to externalize _all_ of your component's logic, not just closures and state. Essentially, this means being able to call hooks from within the class, rather than having to do so within the component body.
+
+```jsx
+class ButtonLogic {
+	static getInitialState = () => {
+		return {
+			value1: undefined,
+			value2: null,
+			label: 'Click me',
+			submitted: false,
+		};
+	}
+
+	submit = async () => {
+		const { value1, value2 } = this.state;
+		await sendData(value1, value2);
+		this.state.submitted = true;
+	}
+
+	doSomething = () => {
+		// Setup...
+
+		return () => {
+			// Cleanup...
+		}
 	}
 
 	useHooks = () => {
 		const { param } = this.props;
 
-		useEffect(this.subscribeToExternalDataSource, []);
-		const memoizedValue = useMemo(() => getValue(param), [param]);
+		useEffect(this.doSomething, []);
 
-		return { memoizedValue };
+		const memoizedValue = useMemo(() => getValue(param), [param]);
+		const value2 = useCustomHook();
+
+		return {
+			memoizedValue,
+			value2,
+		};
 	}
 }
 
@@ -87,202 +170,156 @@ const Button = (props) => {
 }
 ```
 
-The `useLogic` hook combines the functionality of two base hooks which can also be used directly. They are [`useCleanState`](https://cleanjsweb.github.io/neat-react/clean-state/index) and [`useMethods`](https://cleanjsweb.github.io/neat-react/methods/index). `useCleanState` can be used independently if you only want a cleaner state management API. `useMethods` is designed to be used together with `useCleanState`, but rather than calling both individually, you may find it more convenient to use `useLogic`, which combines both and also adds additional functionality.
+[Read the `useLogic` docs]() for more details.
 
-> It is possible to have multiple calls to `useLogic` in the same component. This allows your function component template to consume state and logic from multiple sources, or it can simply be used to group distinct pieces of related logic into separate classes.
+### Lifecycle (`useInstance`)
+The `useInstance` hook provides a simple approach for working with your components lifecycle. It includes all the features of [`useLogic`](#logic), and adds special lifecycle methods. This gives you a declarative way to run certain logic at specific stages of your component's life time. You will likely find this to be less error prone and much easier to reason about than the imperative approach of using React's hooks directly.
 
-For a fuller discussion of how `useLogic` works, start at the [clean-state documentation](https://cleanjsweb.github.io/neat-react/clean-state/index).    
-For an API reference, see the [API reference](https://cleanjsweb.github.io/neat-react/logic/api).
-
-
-### Working With Lifecycle, and Migrating From a React.Component Class to a Function Component
-In addition to having cleaner and more structured component logic, you can also simplify the process of working with your component's lifecycle with the final two exported members. The `useInstance` hook builds on the functionality of `useLogic` and adds lifecyle methods to the class. This means the class can now be thought of as truly representing a single instance of a React component. The `ClassComponent` class extends this to its fullest by allowing you to write the function component itself as a method within the class, and removing the need to explicitly call `useInstance`.
-
-**Before**
 ```jsx
-const Button = (props) => {
-	const [state1, setState1] = useState(props.defaultValue);
-	const [state2, setState2] = useState();
-	const [label, setLabel] = useState('Click me');
-	const [submitted, setSubmitted] = useState(false);
-	const [store, updateStore] = useGlobalStore();
+/** Button Component Class. */
+class ButtonCC extends ComponentInstance {
+	// ...
+	// Static method(s), same as useLogic...
+	// ...
 
-	// Required to run once *before* the component mounts.
-	const memoizedValue = useMemo(() => getValue(), []);
 
-	// Required to run once *after* the component mounts.
-	useEffect(() => {
-		const unsubscribe = externalDataSource.subscribe((data) => {
-			setLabel(data.label);
-		});
-
-		const onWindowResize = () => {};
-
-		window.addEventListener('resize', onWindowResize);
-
-		return () => {
-			unsubscribe();
-			window.removeEventListener('resize', onWindowResize);
-		};
-	}, []);
-
-	// Run *after* every render.
-	useEffect(() => {
-		doSomething();
-		return () => {};
-	})
-
-	const submit = useCallback(() => {
-		sendData(state1, state2);
-		setSubmitted(true);
-	}, [state1]);
-
-	// Run before every render.
-	const text = `${label}, please.`;
-
-	return <>
-		{memoizedValue ? memoizedValue.map((copy) => (
-			<p>{copy}</p>
-		)) : null}
-		<button onClick={submit}>
-			{text}
-		</button>
-	</>;
-}
-
-export default Button;
-```
-
-**After**
-```jsx
-class Button extends ClassComponent {
-	static getInitialState = (props) => {
-		return {
-			state1: props.defaultValue,
-			state2: null,
-			label: 'Click me',
-			submitted: false,
-		};
-	}
-
-	useHooks = () => {
-		const [store, updateStore] = useGlobalStore();
-		return { store, updateStore };
-	}
-
-	/***************************
-	 *  New Lifecycle Methods  *
-	 ***************************/
+	/* Lifecycle Methods */
 
 	beforeMount = () => {
-		this.memoizedValue = getValue();
+		// Runs before the component is first rendered.
+		// This is implemented using useMemo.
 	}
 
-	// Run after the component is mounted.
 	onMount = () => {
-		const unsubscribe = this.subscribeToExternalDataSource();
-		window.addEventListener('resize', this.onWindowResize);
+		// Runs after the component is first rendered.
+		// Same as `useEffect(() => {}, []);`
 
-		// Return cleanup callback.
 		return () => {
-			unsubscribe();
-			window.removeEventListener('resize', this.onWindowResize);
+			// Required clean up function must be returned.
+			// Return an empty function if you have no cleanup.
 		};
 	}
 
 	beforeRender = () => {
-		this.text = `${label}, please.`;
+		// Runs before every single render.
+		// Same as code placed before the return statement in a function component.
+
+		// Example: Generate display values from state and props,
+		// and store them as instance members for use in your JSX template.
+		const displayValue2 = this.hooks.memoizedValue + this.state.value2;
+
+		this.templateContext = {
+			intro: `Hello, ${this.props.name}`,
+			displayValue2,
+		};
 	}
 
-	// Run after every render.
 	onRender = () => {
-		doSomething();
+		// Runs after every single render.
+		// Same as `useEffect(() => {});`
 
-		// Return cleanup callback.
-		return () => {};
+		return () => {
+			// Required clean up function must be returned.
+			// Return an empty function if you have no cleanup.
+		};
 	}
 
 	cleanUp = () => {
-		// Run some non-mount-related cleanup when the component dismounts.
-		// onMount (and onRender) returns its own cleanup function.
+		// Runs when the component is unmounted.
+		// Similar to the function returned by `onMount`.
 	}
 
-	/***************************
-	 * [End] Lifecycle Methods *
-	 ***************************/
+	/* [End] Lifecycle Methods */
 
-	submit = () => {
-		// Methods are guaranteed to have access to the most recent state values,
-		// without any delicate hoops to jump through.
-		const { state1, state2 } = this.state;
 
-		sendData(state1, state2);
+	// ...
+	// Other instance methods, same as useLogic...
+	// ...
+}
 
-		// CleanState uses JavaScript's getters and setters, allowing you to assign state values directly.
-		// The effect is the same as if you called the setter function, which is available through `state.put.submitted(true)`.
-		this.state.submitted = true;
-	}
+// Button Template
+const Button = (props) => {
+	const self = useInstance(ButtonCC, props);
+	const { intro } = self.templateContext;
 
-	onWindowResize = () => {
-		;
-	}
+	return <>
+		<p>{intro}</p>
+		<button onClick={self.submit}>
+			{self.state.label}
+		</button>
+	</>;
+}
+```
 
-	subscribeToExternalDataSource = () => {
-		const unsubscribe = externalDataSource.subscribe((data) => {
-			this.state.label = data.label;
-		});
+[Read the `useInstance` docs]() for more details.
 
-		return unsubscribe;
-	}
+### Class Component
+With `useInstance`, pretty much every aspect of your component is now part of the class, except for the JSX template. The `ClassComponent` class takes that final step and provides a fully integrated class-based React component.
 
-	/** You can also separate out discreet chunks of your UI template. */
-	Paragraphs = () => {
-		if (!this.memoizedValue) return null;
+If you're currently maintaining older components writtend with the `React.Component` class and haven't had time to rewrite them as function components with hooks, porting them to `ClassComponent` should be _significantly_ simplify and speed up the process. You can access all the latest React features, without changing the overall structure of your existing component classes.
 
-		return this.memoizedValue.map((content, index) => (
-			<p key={index}>
-				{content || this.state.label}
-			</p>
-		));
+
+```jsx
+class Button extends ClassComponent {
+	static RC = Button.extract();
+	// Or...
+	static RC = Button.FC();
+	// Or...
+	static RC = this.extract(); // Here, `this` refers to the class itself (not an instance) because of the "static" keyword.
+	// Or...
+	static RC = this.FC();
+
+	// ...
+	// Other static and instance members, same as useInstance...
+	// ...
+
+
+	/**
+	 * Unlike in `useInstance`, there's no need to manually store
+	 * values from `beforeRender` for use in the template.
+	 * Simply return an object and it will be passed as an argument to
+	 * to the template function.
+	 */
+	beforeRender = () => {
+		const displayValue2 = this.hooks.memoizedValue + this.state.value2;
+
+		return {
+			intro: `Hello, ${this.props.name}`,
+			displayValue2,
+		};
 	}
 
 	/** Button Template */
-	Render = () => {
-		const { Paragraphs, submit, state } = this;
+	template = (context) => (
+		<section>
+			<p>{context.intro}</p>
 
-		return <>
-			<Paragraphs />
-
-			{/* You can access the setter functions returned from useState through the state.put object. */}
-			{/* This is more convenient than the assignment approach if you need to pass a setter as a callback. */}
-			{/* Use state.putMany to set multiple values at once. It works just like setState in React.Component classes. */}
-			{/* e.g state.inputValue = 'foo', or state.put.inputValue('foo'), or state.putMany({ inputValue: 'foo' }) */}
-			<CustomInput setValue={state.put.inputValue}>
-
-			<button onClick={submit}>
-				{this.text}
+			<button onClick={this.submit}>
+				{this.state.label}
 			</button>
-		</>;
-	}
+		</section>
+	);
 }
 
-// Call the static method FC() to get a function component that you can render like any other function component.
-export default Button.FC();
+export default Button.RC;
+// Or render directly with `<Button.RC />`.
 ```
 
-> If you would like to keep the actual function component separate and call `useInstance` directly, see the [`useInstance` docs](https://cleanjsweb.github.io/neat-react/instance/index) for more details and examples.
+Every class derived from the base `ClassComponent` is not itself a React component. Instead, it has a static `extract()` method (also aliased as `FC()` for "Function Component") which returns a function component that can be rendered like any other react component. Each instance of this component mounted in the React tree will create a separate new instance of your `ClassComponent` for itself. To make it easier to use the class component directly, you should create a static property that holds the function component returned by `extract`. The recommended convention is to use the name `RC` for "React Component". Such a class can then easily be rendered as JSX by writing `<MyClass.RC />`.
 
-At its core, any component you write with `ClassComponent` is still just a React function component, with some supporting logic around it. This has the added advantage of making it significantly easier to migrate class components written with `React.Component` to the newer hooks-based function components, while still maintaining the overall structure of a class component, and the advantages that the class component approach provided.
+[Read the `ClassComponent` docs]() for more details.
 
-For a fuller discussion of how this works, start at the [`useInstance` documentation](https://cleanjsweb.github.io/neat-react/instance/index).    
-For more details on the lifecycle methods and other API reference, see the [`ClassComponent` API docs](https://cleanjsweb.github.io/neat-react/class-component/api).
 
-### The `<Use>` Component
-If you only want to use hooks in your `React.Component` class without having to refactor anything, use the [`Use` component](https://cleanjsweb.github.io/neat-react/class-component/index#the-use-component).
+### Other Exports
+
+#### The `<Use>` Component
+If you simply want to use hooks in your `React.Component` class without having to rewrite anything, this package also exports a `<Use>` component that helps you achieve this easily. Here's how to use it.
 
 ```jsx
+import { useGlobalStore } from '@/hooks/store';
+
 class Button extends React.Component {
-	handleGlobalStore = ([store, updateStore]) => {
+	syncGlobalStore = ([store, updateStore]) => {
 		this.setState({ userId: store.userId });
 		this.store = store;
 		this.updateStore = updateStore;
@@ -291,7 +328,7 @@ class Button extends React.Component {
 	UseHooks = () => {
 		return <>
 			<Use hook={useGlobalStore}
-				onUpdate={handleGlobalStore}
+				onUpdate={syncGlobalStore}
 				argumentsList={[]}
 				key="useGlobalStore"
 			/>
@@ -309,3 +346,20 @@ class Button extends React.Component {
 	}
 }
 ```
+
+The provided hook is called with the `argumentsList` array passed in (the array is spread, so each item in the list is a separate argument). The return value from the hook is passed on to the `onUpdate` callback. So ypu can use this to update your component's state and trigger a rerender when something changes.
+
+#### Merged State
+This package also exports a `useMergedState` hook, which provides all the same features as `useCleanState`, but with a slightly different implementation.
+
+The `useCleanState` hook is designed to exactly mirror how function components are usually written: a separate `React.useState` call for each distinct value. `useMergedState` takes a simpler approach by making just one `React.useState` call for the entire initial state object. Functionally though, the effect is probably the same.
+
+It is recommended that you use `useCleanState` instead of this since the implementation is truer to how `React.useState` is commonly used. `useMergedState` may be removed in future versions.
+
+### Issues
+If you observe an issue or bug, please report it by creating an issue on the [Oore repo on GitHub]().
+
+#### Known Issues
+Methods on your component classes may not be updated as expected during HMR. So fully refreshing the page may sometimes be required while developing with Oore. A fix for this being investigated.
+
+
