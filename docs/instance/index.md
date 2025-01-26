@@ -18,25 +18,13 @@ The imperative approach for working with lifecycle in function components makes 
 
 ```jsx
 class ButtonComponent extends ComponentInstance {
-	static getInitialState = () => {
-		return {
-			state1: undefined,
-			state2: null,
-			label: 'Click me',
-			submitted: false,
-		};
-	}
+	// ...
+	// Static method(s), same as useLogic...
+	// ...
 
-	useHooks = () => {
-		useEffect(this.subscribeToExternalDataSource, []);
-		const memoizedValue = useMemo(() => getValue(props.param), [props.param]);
 
-		return {
-			memoizedValue,
-		};
-	}
+	/* Lifecycle Methods */
 
-	/* New Lifecycle Methods */
 	beforeMount = () => {}
 	onMount = () => {
 		return () => {};
@@ -46,20 +34,13 @@ class ButtonComponent extends ComponentInstance {
 		return () => {};
 	}
 	cleanUp = () => {}
+
 	/* [End] Lifecycle Methods */
 
 
-	submit = () => {
-		const { state1, state2 } = this.state;
-		sendData(state1, state2);
-		this.state.submitted = true;
-	}
-
-	subscribeToExternalDataSource = () => {
-		externalDataSource.subscribe((data) => {
-			this.state.label = data.label;
-		});
-	}
+	// ...
+	// Other instance methods, same as useLogic...
+	// ...
 }
 
 // Button Template

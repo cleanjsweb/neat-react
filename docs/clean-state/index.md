@@ -73,6 +73,7 @@ const Button = () => {
 	</>;
 }
 ```
+
 1. `put` holds setter functions that can be passed around conveniently. Each key in your state object gets a corresponding setter function of the same name in the `state.put` object. This means you cannot have a value named `put` in your state object, as it is a reserved name. To set multiple values simultaneously, use [`state.putMany`](./api#putMany), which works just like `setState` in React class components.
 
 2. Using JavaScript setters, state properties can also be assigned directly, with the same effect as if you called the setter function.
