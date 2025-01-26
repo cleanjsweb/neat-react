@@ -17,63 +17,80 @@ Figuring these things out at the point of writing the component is one thing, bu
 The imperative approach for working with lifecycle in function components makes for some very unintuitive components, and at the very least adds a notable cognitive overhead to reading and writing larger components. Creating a declarative mechanism for hooking into the lifecycle of function components without having to simply switch to a class component would be a great improvement. And this is what `useInstance` achieves. Here is what it looks like:
 
 ```jsx
-class ButtonComponent extends ComponentInstance {
-	static getInitialState = () => {
-		return {
-			state1: undefined,
-			state2: null,
-			label: 'Click me',
-			submitted: false,
-		};
+/** Button Component Class. */
+class ButtonCC extends ComponentInstance {
+	// ...
+	// Static method(s), same as useLogic...
+	// ...
+
+
+	/* Lifecycle Methods */
+
+	beforeMount = () => {
+		// Runs before the component is first rendered.
 	}
 
-	useHooks = () => {
-		useEffect(this.subscribeToExternalDataSource, []);
-		const memoizedValue = useMemo(() => getValue(props.param), [props.param]);
-
-		return {
-			memoizedValue,
-		};
-	}
-
-	/* New Lifecycle Methods */
-	beforeMount = () => {}
 	onMount = () => {
-		return () => {};
+		// Runs after the component is first rendered.
+		// Same as `useEffect(() => {}, []);`
+
+		return () => {
+			// Required clean up function must be returned.
+			// Return an empty function if you have no cleanup.
+		};
 	}
-	beforeRender = () => {}
+
+	beforeRender = () => {
+		// Runs before every single render.
+		// Same as code placed before the return statement in a function component.
+
+		// Example: Generate display values from state and props,
+		// and store them as instance members for use in your JSX template.
+		const displayValue2 = this.hooks.memoizedValue + this.state.value2;
+
+		this.templateContext = {
+			intro: `Hello, ${this.props.name}`,
+			displayValue2,
+		};
+	}
+
 	onRender = () => {
-		return () => {};
+		// Runs after every single render.
+		// Same as `useEffect(() => {});`
+
+		return () => {
+			// Required clean up function must be returned.
+			// Return an empty function if you have no cleanup.
+		};
 	}
-	cleanUp = () => {}
+
+	cleanUp = () => {
+		// Runs when the component is unmounted.
+		// Similar to the function returned by `onMount`.
+	}
+
 	/* [End] Lifecycle Methods */
 
 
-	submit = () => {
-		const { state1, state2 } = this.state;
-		sendData(state1, state2);
-		this.state.submitted = true;
-	}
-
-	subscribeToExternalDataSource = () => {
-		externalDataSource.subscribe((data) => {
-			this.state.label = data.label;
-		});
-	}
+	// ...
+	// Other instance methods, same as useLogic...
+	// ...
 }
 
 // Button Template
 const Button = (props) => {
-	const self = useInstance(ButtonComponent, props);
+	const self = useInstance(ButtonCC, props);
+	const { intro } = self.templateContext;
 
 	return <>
-		<p>{self.hooks.memoizedValue}</p>
+		<p>{intro}</p>
 		<button onClick={self.submit}>
 			{self.state.label}
 		</button>
 	</>;
 }
 ```
+
 See the API documentation for each lifecycle method to learn more about how it works.
 
 With the addition of the lifecycle methods, the component logic class starts to look very much like a `React.Component` component class. It can now be thought of as a complete representation of the behaviours associated with a given component template. Each instance of this class fully represents an instance of the function component in the DOM—state,

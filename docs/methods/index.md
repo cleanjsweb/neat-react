@@ -1,5 +1,5 @@
 ## useMethods
-When thinking about cleaning up function components, something that is definitely more important than state variables, is the closure functions that require up-to-date access to those state variables and props, and thus cannot simply be defined outside the component. Consider the following example.
+When thinking about cleaning up function components, another concern is the closure functions that require up-to-date access to state variables and props, and thus cannot simply be defined outside the component. Consider the following example.
 
 ```jsx
 const Button = () => {
@@ -119,10 +119,12 @@ class ButtonMethods {
 		this.state.submitted = true;
 	}
 
-	subscribeToExternalDataSource = () => {
-		externalDataSource.subscribe((data) => {
-			this.state.label = data.label;
-		});
+	doSomething = () => {
+		// Setup...
+
+		return () => {
+			// Cleanup...
+		}
 	} 
 }
 
@@ -137,7 +139,7 @@ const Button = (props) => {
 	const state = useCleanState(initialState);
 	const methods = useMethods(ButtonMethods, state, props);
 
-	useEffect(subscribeToExternalDataSource, []);
+	useEffect(methods.doSomething, []);
 
 	return (
 		<button onClick={methods.submit}>

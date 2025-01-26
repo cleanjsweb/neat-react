@@ -1,6 +1,6 @@
 {
   "name": "@cleanweb/react",
-  "version": "1.0.11",
+  "version": "1.1.1-beta.28",
   "description": "A suite of helpers for writing cleaner React function components.",
   "engines": {
     "node": ">=18"
@@ -22,20 +22,31 @@
     "./state": "./build/base/state.js",
     "./state/merged": "./build/base/merged-state.js",
     "./methods": "./build/base/methods.js",
-    "./logic": "./build/classy/logic.js",
-    "./instance": "./build/classy/instance.js",
-    "./class-component": "./build/classy/class.js",
-    "./full-class": "./build/classy/class.js"
+    "./logic": "./build/classy/logic/index.js",
+    "./logic/*": "./build/classy/logic/*.js",
+    "./instance": "./build/classy/instance/index.js",
+    "./instance/*": "./build/classy/instance/*.js",
+    "./class": "./build/classy/class/index.js",
+    "./class/*": "./build/classy/class/*.js"
   },
   "scripts": {
     "prebuild": "rimraf ./build",
     "build": "tsc && tsc-alias",
-    "postbuild": "copyfiles globals.d.ts tsconfig.json build",
+    "postbuild": "copyfiles tsconfig.json build",
     "_": "",
     "prepublishOnly": "npm run build",
     "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish",
+    "__": "/// Increment beta number for the current patch version. ///",
+    "publish:beta:current": "npm version prerelease --preid beta && npm publish --tag beta",
+    "___": "/// Create a beta.0 for a new patch/minor/major version ///",
+    "publish:beta:new-patch": "npm version prepatch --preid beta && npm publish --tag beta",
+    "publish:beta:new-minor": "npm version preminor --preid beta && npm publish --tag beta",
+    "publish:beta:new-major": "npm version premajor --preid beta && npm publish --tag beta",
+    "____": "",
     "//postpublish": "cd ./mirror-pkg && npm publish && cd ..",
-    "__": "",
+    "______": "",
     "test": "echo \"No tests ATM\""
   },
   "keywords": [
@@ -55,9 +66,16 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@babel/eslint-parser": "^7.25.9",
+    "@babel/preset-typescript": "^7.26.0",
     "@types/node": "20.14.10",
     "@types/react": "^16",
+    "babel-preset-react-app": "^10.0.1",
     "copyfiles": "^2.4.1",
+    "eslint": "^9.15.0",
+    "eslint-plugin-jsdoc": "^50.5.0",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.12.0",
     "rimraf": "^6.0.1",
     "tsc-alias": "1.8.10",
     "typescript": "^5.6.2"
