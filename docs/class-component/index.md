@@ -3,64 +3,48 @@ This class builds on `useInstance` with one simple addition. It moves the functi
 
 ```jsx
 class Button extends ClassComponent {
-	static getInitialState = (props) => {
+	static RC = Button.extract();
+	// Or...
+	static RC = Button.FC();
+	// Or...
+	static RC = this.extract(); // Here, `this` refers to the class itself (not an instance) because of the "static" keyword.
+	// Or...
+	static RC = this.FC();
+
+	// ...
+	// Other static and instance members, same as useInstance...
+	// ...
+
+
+	/**
+	 * Unlike in `useInstance`, there's no need to manually store
+	 * values from `beforeRender` for use in the template.
+	 * Simply return an object and it will be passed as an argument to
+	 * to the template function.
+	 */
+	beforeRender = () => {
+		const displayValue2 = this.hooks.memoizedValue + this.state.value2;
+
 		return {
-			state1: props.defaultValue,
-			state2: null,
-			label: 'Click me',
-			submitted: false,
+			intro: `Hello, ${this.props.name}`,
+			displayValue2,
 		};
-	}
-
-	useHooks = () => {
-		useEffect(this.subscribeToExternalDataSource, []);
-		const memoizedValue = useMemo(() => getValue(props.param), [props.param]);
-		[this.store, this.updateStore] = useGlobalStore();
-
-		return {
-			memoizedValue,
-		};
-	}
-
-	/* New Lifecycle Methods */
-	beforeMount = () => {}
-	onMount = () => {
-		return () => {};
-	}
-
-	beforeRender = () => {}
-	onRender = () => {
-		return () => {};
-	}
-
-	cleanUp = () => {}
-	/* [End] Lifecycle Methods */
-
-
-	submit = () => {
-		const { state1, state2 } = this.state;
-		sendData(state1, state2);
-		this.state.submitted = true;
-	}
-
-	subscribeToExternalDataSource = () => {
-		externalDataSource.subscribe((data) => {
-			this.state.label = data.label;
-		});
 	}
 
 	/** Button Template */
-	template = () => <>
-		{/* const self = useInstance(ButtonComponent, this.props); */}
-		<p>{this.hooks.memoizedValue}</p>
-		<button onClick={this.submit}>
-			{this.state.label}
-		</button>
-	</>;
+	template = (context) => (
+		<section>
+			<p>{context.intro}</p>
+
+			<button onClick={this.submit}>
+				{this.state.label}
+			</button>
+		</section>
+	);
 }
 
-// Call the static method FC() to get a function component that you can render like any other function component.
-export default Button.FC();
+export default Button.RC;
+// Or render directly with `<Button.RC />`.
 ```
 
 ## Migrating From `React.Component`
@@ -188,18 +172,18 @@ If you're still unsure, it might help to consider that the logic of the `this` v
 1. Only relevant in function-keyword functions. Everything else inherits from parent context. At the root level, it's undefined, or globalThis (i.e `window`) in older browsers.
 2. Refers to the object before the dot when the function is called. It's evaluated at runtime, so if the method is passed around, `this` value changes accordingly. The key here is "before the dot".
 3. If there is no dot...
-4. To decide what `this` will be at the time of writing the code, use an arrow function, or use Function.bind(); `bind` can be called inline with an assignment at the time or declaring the function, so you don't have to declare the function first and bind separately. `foo = (function foo(a, b) {}).bind(this);`.
+4. To decide what `this` will be at the time of writing the code, use an arrow function, or use `Function.prototype.bind(thisValue);`. `bind` can be called inline with an assignment at the time of declaring the function, so you don't have to declare the function first and bind separately. `foo = (function foo(a) {}).bind(this);`.
 
 For more details and examples, the website javascript.info has [a brilliant chapter explaining this]() very well.
 
 ## The `<Use>` Component
-If you simply want to use hooks in your `React.Component` class without having to rewrite anything, this module also exports a `<Use>` component that helps you achieve this easily. The mechanism is simple, and you could easily [write a minimal function component to achieve this](https://feranmi.dev/posts/react-class-hook) yourself. `Use` is exported as a convenience if you would rather not write one yourself. Here's how to use it.
+If you simply want to use hooks in your `React.Component` class without having to rewrite anything, this package also exports a `<Use>` component that helps you achieve this easily. Here's how to use it.
 
 ```jsx
 import { useGlobalStore } from '@/hooks/store';
 
 class Button extends React.Component {
-	handleGlobalStore = ([store, updateStore]) => {
+	syncGlobalStore = ([store, updateStore]) => {
 		this.setState({ userId: store.userId });
 		this.store = store;
 		this.updateStore = updateStore;
@@ -208,7 +192,7 @@ class Button extends React.Component {
 	UseHooks = () => {
 		return <>
 			<Use hook={useGlobalStore}
-				onUpdate={handleGlobalStore}
+				onUpdate={syncGlobalStore}
 				argumentsList={[]}
 				key="useGlobalStore"
 			/>
@@ -227,4 +211,4 @@ class Button extends React.Component {
 }
 ```
 
-Now your component will get updated whenever there is an updated value from the hook, and the hook will be called with updated input whenever the props to `<Use>` change.
+The provided hook is called with the `argumentsList` array passed in (the array is spread, so each item in the list is a separate argument). The return value from the hook is passed on to the `onUpdate` callback. So ypu can use this to update your component's state and trigger a rerender when something changes.
