@@ -1,6 +1,6 @@
 
 import type { Dispatch, SetStateAction } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
 import { ICleanStateClass, ICleanStateConstructor, PutState } from './class-types';
 
 

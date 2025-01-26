@@ -5,7 +5,8 @@ import type { THooksBase } from '@/classy/logic';
 import { ComponentInstance } from '@/classy/instance';
 
 
-export type CIBaseType = ComponentInstance<object, object, THooksBase>;
+// Remove any private or protected members with Omit, to prevent weird TS issues.
+export type CIBaseType = Omit<ComponentInstance<object, object, THooksBase>, never>;
 
 type CIFromSubType<SubType extends CIBaseType> = ComponentInstance<
 	SubType['props'],

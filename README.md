@@ -1,9 +1,11 @@
 # Object Oriented Programming for React
 This package provides a number of tools for creating React function components with object-oriented code. With Oore, you can avoid common errors, and write complex components that are cleaner, better structured, and eassier to read & understand.
 
+Oore is written in Typescript and all exports are fully typed.
+
 ## Usage
 ### Clean State
-The `useCleanState` hook provides a clean API for working with a high number of state variables in a unified way. The example below demonstrates how to use it.
+The `useCleanState` hook provides a clean API for working with multiple state variables in a unified way. The example below demonstrates how to use it.
 
 ```jsx
 const initialState = {
@@ -56,7 +58,7 @@ const Button = (props) => {
 [Read the `useCleanState` docs]() for more details.
 
 ### Methods
-The `useMethods` hooks manage the closures that your component uses in a separate class, keeping the body of the component clean and easier to read. With `useMethods`, your functions are not recreated on every render, yet every method of your component is guaranteed to always have access to the latest props and state without the need for a dependencty array.
+The `useMethods` hook lets you manage the closures that your component uses in a separate class, keeping the body of the component clean and easier to read. With `useMethods`, your functions are not recreated on every render. Yet, every method of your component is guaranteed to always have access to the latest props and state without the need for a dependencty array.
 
 ```jsx
 class ButtonMethods {
@@ -67,11 +69,7 @@ class ButtonMethods {
 	}
 
 	doSomething = () => {
-		// Setup...
-
-		return () => {
-			// Cleanup...
-		}
+		console.table(this.props);
 	} 
 }
 
@@ -96,7 +94,7 @@ const Button = (props) => {
 }
 ```
 
-`useMethods` only accepts a single state object. So if you are using multiple calls to `useCleanState`, you may have to group them into a single object when passing to `useMethods`.
+`useMethods` only accepts a single state object. So if you are using multiple calls to `useCleanState`, you may have to group them into a single object when calling `useMethods`.
 
 ```jsx
 const getDefaultValues = (props) => ({/* ... */});
@@ -135,11 +133,7 @@ class ButtonLogic {
 	}
 
 	doSomething = () => {
-		// Setup...
-
-		return () => {
-			// Cleanup...
-		}
+		// ...
 	}
 
 	useHooks = () => {
@@ -173,7 +167,7 @@ const Button = (props) => {
 [Read the `useLogic` docs]() for more details.
 
 ### Lifecycle (`useInstance`)
-The `useInstance` hook provides a simple approach for working with your components lifecycle. It includes all the features of [`useLogic`](#logic), and adds special lifecycle methods. This gives you a declarative way to run certain logic at specific stages of your component's life time. You will likely find this to be less error prone and much easier to reason about than the imperative approach of using React's hooks directly.
+The `useInstance` hook provides a simple approach for working with your components lifecycle. It includes all the features of [`useLogic`](#logic), and adds special lifecycle methods. This gives you a declarative way to run certain code at specific stages of your component's life time. You will likely find this to be less error prone and much easier to reason about than the imperative approach of using React's hooks directly.
 
 ```jsx
 /** Button Component Class. */
@@ -205,13 +199,18 @@ class ButtonCC extends ComponentInstance {
 		// Same as code placed before the return statement in a function component.
 
 		// Example: Generate display values from state and props,
-		// and store them as instance members for use in your JSX template.
+		// and return them for use in your JSX template.
 		const displayValue2 = this.hooks.memoizedValue + this.state.value2;
 
-		this.templateContext = {
+		// The optional returned object will be available
+		// on the created instance as `instance.templateContext`
+		return {
 			intro: `Hello, ${this.props.name}`,
 			displayValue2,
 		};
+
+		// PS: For any expensive logic, you should wrap it
+		// in useMemo and move it into the useHooks method instead.
 	}
 
 	onRender = () => {
@@ -240,10 +239,10 @@ class ButtonCC extends ComponentInstance {
 // Button Template
 const Button = (props) => {
 	const self = useInstance(ButtonCC, props);
-	const { intro } = self.templateContext;
+	const ctx = self.templateContext;
 
 	return <>
-		<p>{intro}</p>
+		<p>{ctx.intro}</p>
 		<button onClick={self.submit}>
 			{self.state.label}
 		</button>
@@ -256,16 +255,18 @@ const Button = (props) => {
 ### Class Component
 With `useInstance`, pretty much every aspect of your component is now part of the class, except for the JSX template. The `ClassComponent` class takes that final step and provides a fully integrated class-based React component.
 
-If you're currently maintaining older components writtend with the `React.Component` class and haven't had time to rewrite them as function components with hooks, porting them to `ClassComponent` should be _significantly_ simplify and speed up the process. You can access all the latest React features, without changing the overall structure of your existing component classes.
+If you're currently maintaining older components written with the `React.Component` which you would like to rewrite as function components with hooks, porting them to `ClassComponent` will _significantly_ simplify and speed up the migration process. You can access all the latest React features, without changing the overall structure of your existing component classes.
 
 
 ```jsx
 class Button extends ClassComponent {
+	/** See description of `RC` property below this example. */
 	static RC = Button.extract();
 	// Or...
 	static RC = Button.FC();
-	// Or...
-	static RC = this.extract(); // Here, `this` refers to the class itself (not an instance) because of the "static" keyword.
+	// Or, using `this`, which refers to the class itself
+	// when the static keyword is present...
+	static RC = this.extract();
 	// Or...
 	static RC = this.FC();
 
@@ -274,12 +275,6 @@ class Button extends ClassComponent {
 	// ...
 
 
-	/**
-	 * Unlike in `useInstance`, there's no need to manually store
-	 * values from `beforeRender` for use in the template.
-	 * Simply return an object and it will be passed as an argument to
-	 * to the template function.
-	 */
 	beforeRender = () => {
 		const displayValue2 = this.hooks.memoizedValue + this.state.value2;
 
@@ -289,10 +284,14 @@ class Button extends ClassComponent {
 		};
 	}
 
-	/** Button Template */
-	template = (context) => (
+	/**
+	 * Button Template.
+	 * @param ctx - The `templateContext` object returned in `beforeRender`.
+	 * Will be `undefined` if nothing is returned by `beforeRender`.
+	 */
+	template = (ctx) => (
 		<section>
-			<p>{context.intro}</p>
+			<p>{ctx.intro}</p>
 
 			<button onClick={this.submit}>
 				{this.state.label}
@@ -305,7 +304,7 @@ export default Button.RC;
 // Or render directly with `<Button.RC />`.
 ```
 
-Every class derived from the base `ClassComponent` is not itself a React component. Instead, it has a static `extract()` method (also aliased as `FC()` for "Function Component") which returns a function component that can be rendered like any other react component. Each instance of this component mounted in the React tree will create a separate new instance of your `ClassComponent` for itself. To make it easier to use the class component directly, you should create a static property that holds the function component returned by `extract`. The recommended convention is to use the name `RC` for "React Component". Such a class can then easily be rendered as JSX by writing `<MyClass.RC />`.
+Every class derived from the base `ClassComponent` is not itself a React component. Instead, it has a static `extract()` method (also aliased as `FC()` for "Function Component") which returns a function component that can be rendered like any other react component. Each instance of this component mounted in the React tree will create a separate new instance of your `ClassComponent` for itself. To make it easier to use the class component directly, you should create a static property that holds the function component returned by `extract`. The recommended convention is to use the name `RC` for "React Component". Such a class can then easily be rendered as JSX by writing `<MyComponent.RC />`.
 
 [Read the `ClassComponent` docs]() for more details.
 
@@ -320,7 +319,9 @@ import { useGlobalStore } from '@/hooks/store';
 
 class Button extends React.Component {
 	syncGlobalStore = ([store, updateStore]) => {
-		this.setState({ userId: store.userId });
+		if (this.state.userId !== store.userId) {
+			this.setState({ userId: store.userId });
+		}
 		this.store = store;
 		this.updateStore = updateStore;
 	}
@@ -347,19 +348,19 @@ class Button extends React.Component {
 }
 ```
 
-The provided hook is called with the `argumentsList` array passed in (the array is spread, so each item in the list is a separate argument). The return value from the hook is passed on to the `onUpdate` callback. So ypu can use this to update your component's state and trigger a rerender when something changes.
+The provided hook is called with the `argumentsList` array passed in (the array is spread, so each item in the list is a separate argument). The return value from the hook is passed on to the `onUpdate` callback. So you can use this to update your component's state and trigger a rerender when something changes.
 
 #### Merged State
 This package also exports a `useMergedState` hook, which provides all the same features as `useCleanState`, but with a slightly different implementation.
 
-The `useCleanState` hook is designed to exactly mirror how function components are usually written: a separate `React.useState` call for each distinct value. `useMergedState` takes a simpler approach by making just one `React.useState` call for the entire initial state object. Functionally though, the effect is probably the same.
+The `useCleanState` hook is designed to exactly mirror how function components are usually written: a separate `React.useState` call for each distinct value. `useMergedState` takes a simpler approach by making just one `React.useState` call for the entire `initialState` object. Functionally though, the effect is probably the same.
 
-It is recommended that you use `useCleanState` instead of this since the implementation is truer to how `React.useState` is commonly used. `useMergedState` may be removed in future versions.
+It is recommended that you use `useCleanState` instead of this since that implementation is truer to how `React.useState` is commonly used. `useMergedState` may be removed in future versions.
 
 ### Issues
 If you observe an issue or bug, please report it by creating an issue on the [Oore repo on GitHub]().
 
 #### Known Issues
-Methods on your component classes may not be updated as expected during HMR. So fully refreshing the page may sometimes be required while developing with Oore. A fix for this being investigated.
+Methods on your component classes may not be updated as expected during HMR. So fully refreshing the page may sometimes be required while developing with Oore. A fix for this is being investigated.
 
 

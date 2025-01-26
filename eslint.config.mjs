@@ -122,14 +122,6 @@ const appConfig = {
 		'implicit-arrow-linebreak': ['error', 'beside'],
 
 		'prefer-const': ['warn'],
-		'no-unused-vars': [
-			'warn',
-			{
-				args: 'after-used',
-				varsIgnorePattern: '^_',
-				argsIgnorePattern: '^_',
-			},
-		],
 		// 'jsx-a11y/valid-aria-role': 'error',
 	},
 	settings: {
@@ -158,14 +150,23 @@ const appConfig = {
 const jsOnlyConfig = {
 	files: ['**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
 	rules: {
-		'no-undef': 'warn', // @to-do Fix warnings showing on TS types.
+		'no-undef': 'warn',
+		'no-unused-vars': [
+			'warn',
+			{
+				args: 'after-used',
+				varsIgnorePattern: '^_',
+				argsIgnorePattern: '^_',
+			},
+		],
 	},
 };
 
 const tsOnlyConfig = {
 	files: ['**/*.ts', '**/*.tsx'],
 	rules: {
-		'no-undef': 'off', // @to-do Fix warnings showing on TS types.
+		'no-undef': 'off',
+		'no-unused-vars': 'off',
 	},
 };
 

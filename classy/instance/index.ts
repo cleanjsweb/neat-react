@@ -1,4 +1,4 @@
-import type { ExtractCleanStateData, TStateData } from '@/base/state';
+import type { TStateData } from '@/base';
 import type { THooksBase } from '@/classy/logic';
 
 import type { UIParams, UIReturn, UseInstance } from './types/hook';
@@ -52,6 +52,11 @@ export class ComponentInstance<
 	 */
 	onMount: AsyncAllowedEffectCallback = () => noOp;
 
+	declare private _templateContext: ReturnType<this['beforeRender']>;
+	get templateContext() {
+		return this._templateContext;
+	}
+
 	/**
 	 * Runs _before_ every render cycle, including the first.
 	 * Useful for logic that is involved in determining what to render.
@@ -59,7 +64,7 @@ export class ComponentInstance<
 	 * Updating local state from in here will abort the render cycle early, before changes are committed to the DOM,
 	 * and prompt React to immediately rerender the component with the updated state value(s).
 	 */
-	beforeRender: IVoidFunction = () => {};
+	beforeRender: () => object | void = () => {};
 	/**
 	 * Runs **_after_** every render cycle, including the first.
 	 * 
@@ -111,7 +116,16 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	useMountCallbacks(instance);
 
 	// beforeRender.
-	instance.beforeRender?.();
+	/**
+	 * A proxy variable to allow typechecking of the assignment
+	 * to `self.templateContext` despite the need for "readonly" error suppression.
+	 */
+	let _templateContextProxy_: ReturnType<typeof instance.beforeRender>;
+
+	// @ts-expect-error
+	instance._templateContext = (
+		_templateContextProxy_ = instance.beforeRender?.()
+	);
 
 	// onRender.
 	useEffect(() => {
@@ -145,13 +159,18 @@ export namespace ComponentInstance {
 }
 
 
-/** /testing: {
-	class A extends ComponentInstance<{}, {}, object> {
+/** /
+testing: {
+	class A extends ComponentInstance<{}, {}> {
 		static getInitialState: (p?: object) => ({putan: ''});
 		// k = this.props.o
-		a = this.state['_initialValues_']
+		a = this.state['_initialValues_'];
 
-		// useHooks: (() => void | HardEmptyObject) | undefined;
+		beforeRender = () => '';
+
+		useHooks = () => {
+			type a = typeof this._templateContext;
+		};
 		// hard empty has every key
 		// weak empty has no key
 		// weak empty is not assignable to hard empty
@@ -163,4 +182,5 @@ export namespace ComponentInstance {
 	// a.props['o'];
 	type bbbb = A['state'];
 	type ttt = bbbb['put'];
-}/**/
+}
+/**/

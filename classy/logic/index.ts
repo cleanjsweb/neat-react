@@ -1,4 +1,4 @@
-import type { TCleanState, ExtractCleanStateData, TStateData } from '@/base/state';
+import type { TCleanState, TStateData } from '@/base/state';
 import type { IComponentLogicClass } from './types/static';
 import type { CLBaseType, IComponentLogic } from './types/instance';
 import type { ULParams, ULReturn, UseLogic } from './types/hook';

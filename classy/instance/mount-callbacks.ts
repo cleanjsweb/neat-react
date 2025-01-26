@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { useMountState } from '@/base/state';
 import { ComponentInstance } from '.';
+import { CIBaseType, IComponentInstance } from './types/instance';
 
 type UseMountCallbacks = <
 	// eslint-disable-next-line no-use-before-define
-	TInstance extends ComponentInstance<any, any, any>
+	TInstance extends IComponentInstance<CIBaseType> // ComponentInstance<any, any, any>
 >(instance: TInstance) => void;
 
 export const useMountCallbacks: UseMountCallbacks = (instance) => {

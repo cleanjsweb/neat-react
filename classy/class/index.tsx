@@ -58,7 +58,7 @@ export class ClassComponent<
 	 * }
 	 * ```
 	 */
-	template: () => (React.JSX.Element | null) = () => null;
+	template: (context: this['templateContext']) => (React.JSX.Element | null) = () => null;
 
 	/**
 	 * Manually trigger a rerender of your component.
@@ -118,7 +118,7 @@ export class ClassComponent<
 		/** A class-based React function component created with (@cleanweb/react).{@link ClassComponent} */
 		const Wrapper: VoidFunctionComponent<ComponentProps> = (props) => {
 			const instance = useInstance(Component, props);
-			const { template } = instance;
+			const { template, templateContext } = instance;
 
 			let _forceUpdate: typeof instance.forceUpdate;
 
@@ -132,7 +132,7 @@ export class ClassComponent<
 				setFunctionName(template, `${Component.name}.template`);
 			}, [template]);
 
-			return template();
+			return template(templateContext);
 		}
 		/**************************************
 		*     End Function Component          *
@@ -150,7 +150,8 @@ export class ClassComponent<
 export { ClassComponent as Component };
 
 
-/** /testing: {
+/** /
+testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
