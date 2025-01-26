@@ -1,5 +1,5 @@
-# Object Oriented Programming for Modern React
-This package provides a number of tools for creating modern React function components with object-oriented code. With Oore, you can avoid common errors, and write complex components that are cleaner, better structured, and eassier to read & understand.
+# Object Oriented Programming for React
+This package provides a number of tools for creating React function components with object-oriented code. With Oore, you can avoid common errors, and write complex components that are cleaner, better structured, and eassier to read & understand.
 
 ## Usage
 ### Clean State
