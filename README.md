@@ -255,12 +255,12 @@ const Button = (props) => {
 ### Class Component
 With `useInstance`, pretty much every aspect of your component is now part of the class, except for the JSX template. The `ClassComponent` class takes that final step and provides a fully integrated class-based React component.
 
-If you're currently maintaining older components written with the `React.Component` which you would like to rewrite as function components with hooks, porting them to `ClassComponent` will _significantly_ simplify and speed up the migration process. You can access all the latest React features, without changing the overall structure of your existing component classes.
+If you're currently maintaining older components written with the old `React.Component` class and you would like to rewrite them as function components with hooks, porting them to `ClassComponent` will _significantly_ simplify and speed up the migration process. You can access all the latest React features, without changing the overall structure of your existing component classes.
 
 
 ```jsx
 class Button extends ClassComponent {
-	/** See description of `RC` property below this example. */
+	/** See the description of the `RC` property below this example. */
 	static RC = Button.extract();
 	// Or...
 	static RC = Button.FC();
@@ -304,7 +304,7 @@ export default Button.RC;
 // Or render directly with `<Button.RC />`.
 ```
 
-Every class derived from the base `ClassComponent` is not itself a React component. Instead, it has a static `extract()` method (also aliased as `FC()` for "Function Component") which returns a function component that can be rendered like any other react component. Each instance of this component mounted in the React tree will create a separate new instance of your `ClassComponent` for itself. To make it easier to use the class component directly, you should create a static property that holds the function component returned by `extract`. The recommended convention is to use the name `RC` for "React Component". Such a class can then easily be rendered as JSX by writing `<MyComponent.RC />`.
+Every class derived from the base `ClassComponent` is not itself a React component. Instead, it has a static `extract()` method (also aliased as `FC()` for "Function Component") which returns a function component that can be rendered like any other React component. Each instance of this function component mounted in the React tree creates it's own separate instance of your `ClassComponent` class. To make it easier to use the class component directly, you should create a static property that holds the function component returned by `extract`. The recommended convention is to use the name `RC` (for "React Component"). Such a class can then easily be rendered as JSX by writing `<MyComponent.RC />`.
 
 [Read the `ClassComponent` docs]() for more details.
 
