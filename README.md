@@ -1,5 +1,5 @@
 # Object Oriented Programming for Modern React
-This package provides a set of tools for creating modern React function components with object-oriented code.
+This package provides a number of tools for creating modern React function components with object-oriented code. With Oore, you can avoid common errors, and write complex components that are cleaner, better structured, and eassier to read & understand.
 
 ## Usage
 ### Clean State
@@ -50,6 +50,8 @@ const Button = (props) => {
 ```
 
 > **Note:** You can call `useCleanState` multiple times in the same component, allowing you to group related state values into separate objects.
+
+> **Note:** Each top-level key in your initial state object gets a separate call to `React.useState`, and `state.put[key]()` is a proxy for the setter function returned from `useState`. So using this hook is fundamentally the same as calling `useState` directly for each value. What `useCleanState` provides is a way to unify those values and a convenient API for updating them.
 
 [Read the `useCleanState` docs]() for more details.
 
@@ -185,6 +187,7 @@ class ButtonCC extends ComponentInstance {
 
 	beforeMount = () => {
 		// Runs before the component is first rendered.
+		// This is implemented using useMemo.
 	}
 
 	onMount = () => {
@@ -306,7 +309,9 @@ Every class derived from the base `ClassComponent` is not itself a React compone
 
 [Read the `ClassComponent` docs]() for more details.
 
+
 ### Other Exports
+
 #### The `<Use>` Component
 If you simply want to use hooks in your `React.Component` class without having to rewrite anything, this package also exports a `<Use>` component that helps you achieve this easily. Here's how to use it.
 
@@ -345,9 +350,16 @@ class Button extends React.Component {
 The provided hook is called with the `argumentsList` array passed in (the array is spread, so each item in the list is a separate argument). The return value from the hook is passed on to the `onUpdate` callback. So ypu can use this to update your component's state and trigger a rerender when something changes.
 
 #### Merged State
+This package also exports a `useMergedState` hook, which provides all the same features as `useCleanState`, but with a slightly different implementation.
 
+The `useCleanState` hook is designed to exactly mirror how function components are usually written: a separate `React.useState` call for each distinct value. `useMergedState` takes a simpler approach by making just one `React.useState` call for the entire initial state object. Functionally though, the effect is probably the same.
+
+It is recommended that you use `useCleanState` instead of this since the implementation is truer to how `React.useState` is commonly used. `useMergedState` may be removed in future versions.
 
 ### Issues
-If observe an issue or bug, please report it by creating an issue on the [Oore repo on GitHub]().
+If you observe an issue or bug, please report it by creating an issue on the [Oore repo on GitHub]().
+
+#### Known Issues
+Methods on your component classes may not be updated as expected during HMR. So fully refreshing the page may sometimes be required while developing with Oore. A fix for this being investigated.
 
 
