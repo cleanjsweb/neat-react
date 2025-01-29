@@ -1,4 +1,4 @@
-import type { ComponentLogic, THooksBase } from '..';
+import type { ComponentLogic } from '..';
 import type { CLBaseType, IComponentLogic } from './instance';
 import type { IComponentLogicClass } from './static';
 
@@ -21,7 +21,7 @@ type ULClassParam = IComponentLogicClass<
 >;
 type ULProplessClassParam = IComponentLogicClass<
     IComponentLogic<
-        ComponentLogic<HardEmptyObject, o, THooksBase>
+        ComponentLogic<HardEmptyObject, o>
     >
 >;
 

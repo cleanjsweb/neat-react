@@ -1,8 +1,6 @@
 import type { StaticOverrides as CLStaticOverrides } from '@/classy/logic/types/static';
-import type { THooksBase } from '@/classy/logic';
-import type { CIBaseType, IComponentInstance } from './instance';
+import type { CIBaseType } from './instance';
 
-import { ComponentLogic } from '@/classy/logic';
 import { ComponentInstance } from '@/classy/instance';
 
 
@@ -35,7 +33,7 @@ export interface IComponentInstanceClass<
 // }
 
 // export interface IComponentInstanceClass<
-// 	Instance extends ComponentInstance<o, o, THooksBase> = ComponentInstance,
+// 	Instance extends ComponentInstance<o, o> = ComponentInstance,
 // > extends
 // 	Constructor<IComponentInstance<Instance>>,
 // 	ComponentInstanceOwnStatics,

@@ -1,5 +1,5 @@
 import type { ExtractCleanStateData } from '@/base';
-import type { ComponentLogic, THooksBase } from '@/classy/logic';
+import type { ComponentLogic } from '@/classy/logic';
 import type { CLBaseType } from './instance';
 
 
@@ -26,5 +26,5 @@ type BaseStatics = Omit<
 >;
 
 export interface IComponentLogicClass<
-	Instance extends ComponentLogic<o, o, THooksBase> = ComponentLogic,
+	Instance extends ComponentLogic<o, o> = ComponentLogic,
 > extends BaseStatics, StaticOverrides<Instance> {}

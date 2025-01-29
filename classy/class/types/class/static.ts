@@ -1,8 +1,5 @@
 
-import type { IComponentInstanceClass, StaticOverrides as CIStaticOverrides } from '@/classy/instance/types/static';
-import type { THooksBase } from '@/classy/logic';
-import type { ExtractCleanStateData } from '@/base';
-import type { InstanceOverrides as CIInstanceOverrides } from '@/classy/instance/types/instance';
+import type { StaticOverrides as CIStaticOverrides } from '@/classy/instance/types/static';
 import type { CCBaseType } from './instance';
 
 import { ClassComponent } from '../..';

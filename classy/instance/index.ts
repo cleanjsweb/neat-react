@@ -1,5 +1,4 @@
 import type { TStateData } from '@/base';
-import type { THooksBase } from '@/classy/logic';
 
 import type { UIParams, UIReturn, UseInstance } from './types/hook';
 import type { CIBaseType, IComponentInstance } from './types/instance';
@@ -28,8 +27,8 @@ export const noOp = () => {};
  */
 export class ComponentInstance<
 		TProps extends o = {},
-		TState extends TStateData = WeakEmptyObject,
-		THooks extends THooksBase = void> extends ComponentLogic.Class<TProps, TState, THooks> {
+		TState extends TStateData = WeakEmptyObject
+	> extends ComponentLogic.Class<TProps, TState> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.
@@ -145,9 +144,8 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 export namespace ComponentInstance {
 	export class Class<
 		TProps extends object = {},
-		TState extends TStateData = WeakEmptyObject,
-		THooks extends THooksBase = void
-	> extends ComponentInstance<TProps, TState, THooks> {/* Keep empty */};
+		TState extends TStateData = WeakEmptyObject
+	> extends ComponentInstance<TProps, TState> {/* Keep empty */};
 
 	export type Instance<
 		Instance extends CIBaseType = Class

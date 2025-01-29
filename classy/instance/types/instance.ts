@@ -1,17 +1,15 @@
 import type { InstanceOverrides as CLInstanceOverrides } from '@/classy/logic/types/instance';
 import type { ExtractCleanStateData } from '@/base';
-import type { THooksBase } from '@/classy/logic';
 
 import { ComponentInstance } from '@/classy/instance';
 
 
 // Remove any private or protected members with Omit, to prevent weird TS issues.
-export type CIBaseType = Omit<ComponentInstance<object, object, THooksBase>, never>;
+export type CIBaseType = Omit<ComponentInstance<object, object>, never>;
 
 type CIFromSubType<SubType extends CIBaseType> = ComponentInstance<
 	SubType['props'],
-	ExtractCleanStateData<SubType['state']>,
-	SubType['_thooks']
+	ExtractCleanStateData<SubType['state']>
 >;
 
 

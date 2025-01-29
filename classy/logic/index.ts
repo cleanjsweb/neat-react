@@ -13,8 +13,6 @@ import { useCleanState } from '@/base/state';
 export type HardEmpty = HardEmptyObject;
 export type WeakEmpty = WeakEmptyObject;
 
-export type THooksBase = object | void;
-
 
 //////////////////////////////////
 
@@ -35,11 +33,10 @@ type o = object;
  */
 export class ComponentLogic<
 		TProps extends object = {},
-		TState extends TStateData = WeakEmpty,
-		THooks extends THooksBase = void> {
+		TState extends TStateData = WeakEmpty> {
 	declare readonly state: TCleanState<TState>;
 	declare readonly props: TProps;
-	declare readonly hooks: THooks extends object ? THooks : WeakEmptyObject;
+	declare readonly hooks: ReturnType<this['useHooks']>;
 
 	/**
 	 * Called before each instance of your component is mounted.
@@ -50,14 +47,12 @@ export class ComponentLogic<
 	// * PS: `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
 
 
-	/** Do not use. Will be undefined at runtime. */
-	declare readonly _thooks: THooks;
 	/**
 	 * Call React hooks and expose any values your component
-	 * needs by return an object with said values. The returned
+	 * needs by returning an object with said values. The returned
 	 * object will be accessible as `this.hooks`;
 	 */
-	useHooks = () => {};
+	useHooks = (): object | void => {};
 };
 
 
@@ -99,9 +94,8 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 export namespace ComponentLogic {
 	export class Class<
 		TProps extends object = {},
-		TState extends TStateData = WeakEmpty,
-		THooks extends THooksBase = void
-	> extends ComponentLogic<TProps, TState, THooks> {};
+		TState extends TStateData = WeakEmpty
+	> extends ComponentLogic<TProps, TState> {};
 
 	export type Instance<
 		Instance extends CLBaseType = Class
@@ -113,12 +107,13 @@ export namespace ComponentLogic {
 }
 
 
-/** /testing: {
+/**/
+testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic.Class<{}, {b: number}, {a: string}> {
+	class MyComponentLogic extends ComponentLogic.Class<{}, {b: number}> {
 		static getInitialState = () => ({b: 7});
 		// b = this.state.put[''] + this.props.b;
 
@@ -129,6 +124,7 @@ export namespace ComponentLogic {
 
 	MyComponentLogic.getInitialState
 	const self = useLogic(MyComponentLogic);
+	self.hooks;
 	self.useHooks();
 
 
@@ -142,4 +138,5 @@ export namespace ComponentLogic {
 	// const oa = {['a' as unknown as symbol]: 'boo'};
 	const oa = {['a']: 'boo'};
 	useLogic(A, oa);
-}/**/
+}
+/**/

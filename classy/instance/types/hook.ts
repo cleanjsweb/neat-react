@@ -1,4 +1,3 @@
-import type { THooksBase } from '@/classy/logic';
 import type { CIBaseType, IComponentInstance } from './instance';
 import type { IComponentInstanceClass } from './static';
 
@@ -12,7 +11,7 @@ type UIClassParam = IComponentInstanceClass<
 >;
 type UIProplessClassParam = IComponentInstanceClass<
 	IComponentInstance<
-		ComponentInstance<HardEmptyObject, o, THooksBase>
+		ComponentInstance<HardEmptyObject, o>
 	>
 >;
 

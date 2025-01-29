@@ -1,6 +1,5 @@
 import type { VoidFunctionComponent } from 'react';
 import type { TStateData } from '@/base';
-import type { THooksBase } from '../logic';
 import type { Extractor } from './types/extractor';
 
 import { useMemo } from 'react';
@@ -23,9 +22,8 @@ type o = object;
  */
 export class ClassComponent<
 			TProps extends o = WeakEmptyObject,
-			TState extends TStateData = WeakEmptyObject,
-			THooks extends THooksBase = void
-		> extends ComponentInstance<TProps, TState, THooks> {
+			TState extends TStateData = WeakEmptyObject
+		> extends ComponentInstance<TProps, TState> {
 
 	/**
 	 * Analogous to {@link React.Component.render}. A function that returns

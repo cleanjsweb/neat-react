@@ -1,5 +1,5 @@
 import type { ExtractCleanStateData } from '@/base';
-import type { ComponentLogic, THooksBase } from '@/classy/logic';
+import type { ComponentLogic } from '@/classy/logic';
 
 
 /*************************************
@@ -7,12 +7,11 @@ import type { ComponentLogic, THooksBase } from '@/classy/logic';
 **************************************/
 
 /** */
-export type CLBaseType = ComponentLogic<object, object, THooksBase>;
+export type CLBaseType = ComponentLogic<object, object>;
 
 type CLFromSubType<SubType extends CLBaseType> = ComponentLogic<
 	SubType['props'],
-	ExtractCleanStateData<SubType['state']>,
-	SubType['_thooks']
+	ExtractCleanStateData<SubType['state']>
 >;
 
 
@@ -22,9 +21,7 @@ type CLFromSubType<SubType extends CLBaseType> = ComponentLogic<
 
 /** */
 export interface InstanceOverrides<Instance extends CLBaseType = ComponentLogic> {
-	useHooks: Instance['_thooks'] extends void
-		? () => (void | HardEmptyObject)
-		: () => Instance['_thooks'];
+
 }
 
 type BaseInstance<
