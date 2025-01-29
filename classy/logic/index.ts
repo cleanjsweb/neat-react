@@ -34,7 +34,8 @@ type o = object;
 export class ComponentLogic<
 		TProps extends object = {},
 		TState extends TStateData = WeakEmpty> {
-	declare readonly state: TCleanState<TState>;
+	declare readonly state: TCleanState<TState>; // this[''];
+	// declare readonly state2: (typeof this)[''];
 	declare readonly props: TProps;
 	declare readonly hooks: ReturnType<this['useHooks']>;
 
@@ -107,7 +108,7 @@ export namespace ComponentLogic {
 }
 
 
-/**/
+/** /
 testing: {
 	const a: object = {b: ''};
 
