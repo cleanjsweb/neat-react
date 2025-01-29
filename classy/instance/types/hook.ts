@@ -17,11 +17,11 @@ type UIProplessClassParam = IComponentInstanceClass<
 
 export type UseInstance = {
 	<Class extends UIProplessClassParam>(
-		Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>
+		Methods: Class & Constructor<InstanceType<Class>>
 	): InstanceType<Class>;
 
 	<Class extends UIClassParam>(
-		Methods: Class & Constructor<IComponentInstance<InstanceType<Class>>>,
+		Methods: Class & Constructor<InstanceType<Class>>,
 		props: InstanceType<Class>['props']
 	): InstanceType<Class>;
 };

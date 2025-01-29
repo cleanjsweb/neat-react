@@ -8,8 +8,8 @@ type BaseCCConstructor = IClassComponentConstructor<BaseClassComponent>;
 export type Extractor = <TComponent extends BaseCCConstructor>(
 	this: TComponent
 		// & Constructor<IClassComponent<InstanceType<TComponent>>>
-		& IClassComponentConstructor<IClassComponent<InstanceType<TComponent>>>,
+		& IClassComponentConstructor<InstanceType<TComponent>>,
 	Component?: TComponent
 		// & Constructor<IClassComponent<InstanceType<TComponent>>>
-		& IClassComponentConstructor<IClassComponent<InstanceType<TComponent>>>
+		& IClassComponentConstructor<InstanceType<TComponent>>
 ) => VoidFunctionComponent<InstanceType<TComponent>['props']>;

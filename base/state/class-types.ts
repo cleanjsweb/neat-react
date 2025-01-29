@@ -14,9 +14,11 @@ export interface ICleanStateConstructor {
 	): TCleanState<TState>;
 }
 
-export type ICleanStateClass = {
+type T = {
 	new <TState extends object>(
 		...args: ConstructorParameters<typeof CleanStateBase>
 	): TCleanState<TState>;
+}
+export type ICleanStateClass = T & {
 	[Key in TCleanStateBaseKeys]: (typeof CleanStateBase)[Key];
 }
