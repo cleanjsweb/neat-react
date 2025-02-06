@@ -14,7 +14,7 @@ type o = object;
 **************************************/
 
 /** */
-type ULClassParam = typeof ComponentLogic;
+type ULClassParam = typeof ComponentLogic<object>;
 type ULProplessClassParam = typeof ComponentLogic<HardEmptyObject>;
 
 export type UseLogic = {

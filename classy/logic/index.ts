@@ -83,33 +83,30 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 };
 
 
-/** /
+/**/
 testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ComponentLogic.Class<{}, {b: number}> {
-		static getInitialState = () => ({b: 7});
-		// b = this.state.put[''] + this.props.b;
+	class MyComponentLogic extends ComponentLogic<{}> {
+		getInitialState = () => ({b: 7});
+		b = () => 8 + this.state.b;
 
 		useHooks = () => ({a: 'undefined'});
 	};
 
 	type tt = keyof {};
 
-	MyComponentLogic.getInitialState
 	const self = useLogic(MyComponentLogic);
 	self.hooks;
 	self.useHooks();
 
 
-	const A = class C extends ComponentLogic.Class {
-		// static getInitialState = () => ({a: 'l'});
-		// a = () => this.state.yyy = '';
+	const A = class C extends ComponentLogic {
+		getInitialState = () => ({a: 'l'});
+		a = () => this.state.a = '';
 	}
-
-	A.getInitialState();
 
 	// const oa = {['a' as unknown as symbol]: 'boo'};
 	const oa = {['a']: 'boo'};

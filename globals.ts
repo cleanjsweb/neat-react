@@ -97,13 +97,40 @@ declare global {
 	type FunctionType = AnyFunction;
 	type TFunction = AnyFunction;
 
+	/** @deprecated Use {@link NonNullish} */
 	type NotNullish = {};
+	type NonNullish = {};
 	type NonPrimitive = object;
 
+
+	/**
+	 * Describes an object that has no keys,
+	 * except for a secret unique symbol key,
+	 * whose value type is the union `never | undefuned`.
+	 * 
+	 * Having a single key allows the object to throw type errors
+	 * of the form:
+	 * ```
+	 * Type `A` has no properties in common with `WeakEmptyObject`.
+	 * ```
+	 * This may provide a slightly stricter type checking than simply
+	 * using the non-nullish (`{}`) or non-primitive (`object`)
+	 * built-in types.
+	 * 
+	 * Note: `WeakEmptyObject` is not assignable to `HardEmptyObject`
+	 * because it has a key whose value type includes `undefined`,
+	 * but `HardEmptyObject` keys can only have a type of `never`.
+	 */
 	interface WeakEmptyObject {
 		[UniqueSecretSymbolKey]?: never;
 	}
 
+	/**
+	 * Describes an object that can have any key, but all keys have
+	 * a type of `never`. This effectively prevents any value
+	 * from ever being stored on the object. The object is therefore
+	 * guaranteed to always be empty.
+	 */
 	interface HardEmptyObject {
 		[key: keyof any]: never;
 	}

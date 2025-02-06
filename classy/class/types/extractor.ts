@@ -1,15 +1,10 @@
 import type { VoidFunctionComponent } from 'react';
-import type { BaseClassComponent, IClassComponent } from './class/instance';
-import type { IClassComponentConstructor } from './class/static';
+import type { ClassComponent } from '..';
 
 
-type BaseCCConstructor = IClassComponentConstructor<BaseClassComponent>;
+type BaseCCConstructor = typeof ClassComponent<object>;
 
-export type Extractor = <TComponent extends BaseCCConstructor>(
-	this: TComponent
-		// & Constructor<IClassComponent<InstanceType<TComponent>>>
-		& IClassComponentConstructor<InstanceType<TComponent>>,
-	Component?: TComponent
-		// & Constructor<IClassComponent<InstanceType<TComponent>>>
-		& IClassComponentConstructor<InstanceType<TComponent>>
-) => VoidFunctionComponent<InstanceType<TComponent>['props']>;
+export type Extractor = <TComponentClass extends BaseCCConstructor>(
+	this: TComponentClass,
+	Component?: TComponentClass
+) => VoidFunctionComponent<InstanceType<TComponentClass>['props']>;

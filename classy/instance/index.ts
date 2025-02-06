@@ -1,8 +1,4 @@
-import type { TStateData } from '@/base';
-
 import type { UIParams, UIReturn, UseInstance } from './types/hook';
-import type { CIBaseType, IComponentInstance } from './types/instance';
-import type { IComponentInstanceClass } from './types/static';
 
 import { useEffect } from 'react';
 
@@ -13,7 +9,6 @@ import { useMountCallbacks } from './mount-callbacks';
 
 
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
-type o = object;
 
 
 /** An empty function. It returns (void) without performing any operations. */
@@ -25,10 +20,8 @@ export const noOp = () => {};
  * This provides a declarative API for working with your React function component's lifecycle,
  * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
  */
-export class ComponentInstance<
-		TProps extends o = {},
-		TState extends TStateData = WeakEmptyObject
-	> extends ComponentLogic.Class<TProps, TState> {
+export class ComponentInstance<TProps extends object = {}>
+		extends ComponentLogic<TProps> {
 	/**
 	 * Runs only _before_ first render, i.e before the component instance is mounted.
 	 * Useful for logic that is involved in determining what to render.
@@ -140,42 +133,23 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 };
 
 
-
-export namespace ComponentInstance {
-	export class Class<
-		TProps extends object = {},
-		TState extends TStateData = WeakEmptyObject
-	> extends ComponentInstance<TProps, TState> {/* Keep empty */};
-
-	export type Instance<
-		Instance extends CIBaseType = Class
-	> = IComponentInstance<Instance>;
-
-	export type ClassType<
-		Instance extends CIBaseType = Class,
-	> = IComponentInstanceClass<Instance>;
-}
-
-
-/** /
+/**/
 testing: {
-	class A extends ComponentInstance<{}, {}> {
-		static getInitialState: (p?: object) => ({putan: ''});
+	class A extends ComponentInstance<WeakEmptyObject> {
+		getInitialState = (p?: object) => ({putan: ''});
 		// k = this.props.o
-		a = this.state['_initialValues_'];
+		am = this.state['_initialValues_'];
+		k = this.am.putan;
 
-		beforeRender = () => '';
+		beforeRender = () => ({g: ''});
 
 		useHooks = () => {
-			type a = typeof this._templateContext;
+			return {j: 9};
 		};
-		// hard empty has every key
-		// weak empty has no key
-		// weak empty is not assignable to hard empty
 	}
 
-	const a = useInstance(A, {o: ''});
-	a.a;
+	const a = useInstance(A, {});
+	a.am;
 
 	// a.props['o'];
 	type bbbb = A['state'];

@@ -1,5 +1,4 @@
 import type { VoidFunctionComponent } from 'react';
-import type { TStateData } from '@/base';
 import type { Extractor } from './types/extractor';
 
 import { useMemo } from 'react';
@@ -7,9 +6,6 @@ import { useMemo } from 'react';
 import { ComponentInstance, useInstance } from '../instance';
 import { setFunctionName } from './utils/function-name';
 import { useRerender } from './utils/rerender';
-
-
-type o = object;
 
 
 /**
@@ -21,10 +17,8 @@ type o = object;
  * with little to no changes to their existing semantics/implementation.
  */
 export class ClassComponent<
-			TProps extends o = WeakEmptyObject,
-			TState extends TStateData = WeakEmptyObject
-		> extends ComponentInstance<TProps, TState> {
-
+			TProps extends object = WeakEmptyObject
+		> extends ComponentInstance<TProps> {
 	/**
 	 * Analogous to {@link React.Component.render}. A function that returns
 	 * your component's JSX template.
@@ -42,7 +36,7 @@ export class ClassComponent<
 	 * 
 	 * ******
 	 * 
-	 * @example < caption>Using a template function that returns JSX.</ caption>
+	 * @example <caption>Using a template function that returns JSX.</caption>
 	 * 
 	 * ```tsx
 	 * template = () => {
@@ -56,7 +50,9 @@ export class ClassComponent<
 	 * }
 	 * ```
 	 */
-	template: (context: this['templateContext']) => (React.JSX.Element | null) = () => null;
+	template: (
+		context: this['templateContext']
+	) => JSX.Element | null = () => null;
 
 	/**
 	 * Manually trigger a rerender of your component.
@@ -100,7 +96,7 @@ export class ClassComponent<
 		const Component = _Component ?? this;
 		const isClassComponentType = Component.prototype instanceof ClassComponent;
 
-		if (!Component.getInitialState || !isClassComponentType) throw new Error(
+		if (!isClassComponentType) throw new Error(
 			'Attempted to initialize ClassComponent with invalid Class type. Either pass a class that extends ClassComponent to FC (e.g `export FC(MyComponent);`), or ensure it is called as a method on a ClassComponent constructor type (e.g `export MyComponent.FC()`).'
 		);
 
@@ -148,14 +144,14 @@ export class ClassComponent<
 export { ClassComponent as Component };
 
 
-/** /
+/**/
 testing: {
 	const a: object = {b: ''};
 
 	type t = keyof typeof a;
 
-	class MyComponentLogic extends ClassComponent<{}, {a: ''}> {
-		static getInitialState = () => ({a: '' as const});
+	class MyComponentLogic extends ClassComponent<{a: ''}> {
+		getInitialState = () => ({a: '' as const});
 		// a = () => this.hooks.a = '';
 
 		useHooks = () => {

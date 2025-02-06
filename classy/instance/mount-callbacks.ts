@@ -1,17 +1,16 @@
 import { useEffect } from 'react';
 import { useMountState } from '@/base/state';
 import { ComponentInstance } from '.';
-import { CIBaseType, IComponentInstance } from './types/instance';
 
 type UseMountCallbacks = <
 	// eslint-disable-next-line no-use-before-define
-	TInstance extends IComponentInstance<CIBaseType> // ComponentInstance<any, any, any>
+	TInstance extends ComponentInstance
 >(instance: TInstance) => void;
 
 export const useMountCallbacks: UseMountCallbacks = (instance) => {
-	const mounted = useMountState();
+	const isMounted = useMountState();
 
-	if (!mounted) instance.beforeMount?.();
+	if (!isMounted()) instance.beforeMount?.();
 
 	useEffect(() => {
 		const mountHandlerCleanUp = instance.onMount?.();
