@@ -1,6 +1,4 @@
-import type { TCleanState, TStateData } from '@/base/state';
-import type { IComponentLogicClass } from './types/static';
-import type { CLBaseType, IComponentLogic } from './types/instance';
+import type { TCleanState } from '@/base/state';
 import type { ULParams, ULReturn, UseLogic } from './types/hook';
 
 import { useMemo, useRef } from 'react';
@@ -31,11 +29,8 @@ type o = object;
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  */
-export class ComponentLogic<
-		TProps extends object = {},
-		TState extends TStateData = WeakEmpty> {
-	declare readonly state: TCleanState<TState>; // this[''];
-	// declare readonly state2: (typeof this)[''];
+export class ComponentLogic<TProps extends object = {}> {
+	declare readonly state: TCleanState<ReturnType<this['getInitialState']>>;
 	declare readonly props: TProps;
 	declare readonly hooks: ReturnType<this['useHooks']>;
 
@@ -44,9 +39,7 @@ export class ComponentLogic<
 	 * It receives the initial `props` object and should return
 	 * an object with the initial values for your component's state.
 	 */
-	static getInitialState = (p?: any): object => ({});
-	// * PS: `p?: object` wierdly causes TS error in v^5.5.4; object is not assignable to the component's TProps.
-
+	getInitialState = (p?: TProps): object => ({});
 
 	/**
 	 * Call React hooks and expose any values your component
@@ -59,8 +52,6 @@ export class ComponentLogic<
 
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
-
-	const state = useCleanState(Logic.getInitialState, props);
 
 	const self = useRef(useMemo(() => {
 		return new Logic();
@@ -80,7 +71,7 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 
 	// @ts-expect-error
 	self.state = (
-		_stateProxy_ = state
+		_stateProxy_ = useCleanState(self.getInitialState, props)
 	);
 
 	// @ts-expect-error
@@ -90,22 +81,6 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 
 	return self;
 };
-
-
-export namespace ComponentLogic {
-	export class Class<
-		TProps extends object = {},
-		TState extends TStateData = WeakEmpty
-	> extends ComponentLogic<TProps, TState> {};
-
-	export type Instance<
-		Instance extends CLBaseType = Class
-	> = IComponentLogic<Instance>;
-
-	export type ClassType<
-		Instance extends CLBaseType = Class,
-	> = IComponentLogicClass<Instance>;
-}
 
 
 /** /
