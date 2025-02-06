@@ -14,7 +14,7 @@ type o = object;
 **************************************/
 
 /** */
-type ULClassParam = typeof ComponentLogic<object>;
+type ULClassParam = typeof ComponentLogic<any>;
 type ULProplessClassParam = typeof ComponentLogic<HardEmptyObject>;
 
 export type UseLogic = {
@@ -29,8 +29,8 @@ export type UseLogic = {
 }
 
 export type ULParams = [
-	Class: typeof ComponentLogic,
+	Class: typeof ComponentLogic<any>,
 	props?: object
 ]
 
-export type ULReturn = ComponentLogic;
+export type ULReturn = ComponentLogic<any>;

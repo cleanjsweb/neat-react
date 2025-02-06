@@ -1,7 +1,7 @@
 import { ComponentInstance } from '..';
 
 
-type UIClassParam = typeof ComponentInstance<object>;
+type UIClassParam = typeof ComponentInstance<any>;
 type UIProplessClassParam = typeof ComponentInstance<HardEmptyObject>;
 
 
@@ -17,9 +17,9 @@ export type UseInstance = {
 };
 
 export type UIParams = [
-	Class: typeof ComponentInstance,
+	Class: typeof ComponentInstance<any>,
 	props?: object
 ];
 
-export type UIReturn = ComponentInstance;
+export type UIReturn = ComponentInstance<any>;
 

@@ -29,7 +29,7 @@ type o = object;
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  */
-export class ComponentLogic<TProps extends object = {}> {
+export class ComponentLogic<TProps extends object = NonPrimitive> {
 	/**
 	 * A {@link TCleanState | `CleanState`} object.
 	 * Holds all of your component's state,
@@ -99,7 +99,7 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 };
 
 
-/**/
+/** /
 testing: {
 	const a: object = {b: ''};
 

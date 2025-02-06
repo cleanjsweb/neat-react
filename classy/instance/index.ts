@@ -22,7 +22,7 @@ export const noOp = () => {};
  * 
  * @see https://github.com/cleanjsweb/neat-react#lifecycle-useinstance
  */
-export class ComponentInstance<TProps extends object = {}>
+export class ComponentInstance<TProps extends object = NonPrimitive>
 		extends ComponentLogic<TProps> {
 	/**
 	 * Runs only _before_ first render,
@@ -140,7 +140,7 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 };
 
 
-/**/
+/** /
 testing: {
 	class A extends ComponentInstance<WeakEmptyObject> {
 		getInitialState = (p?: object) => ({putan: ''});

@@ -146,7 +146,7 @@ export { ClassComponent as Component };
 export { Use } from './use-component';
 
 
-/**/
+/** /
 testing: {
 	const a: object = {b: ''};
 
