@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 
 import { ComponentInstance, useInstance } from '../instance';
 import { setFunctionName } from './utils/function-name';
-import { useRerender } from './utils/rerender';
+import { useRerender } from '@/helpers/rerender';
 
 
 /**
@@ -141,7 +141,9 @@ export class ClassComponent<
 	static readonly FC = this.extract;
 }
 
+
 export { ClassComponent as Component };
+export { Use } from './use-component';
 
 
 /**/
