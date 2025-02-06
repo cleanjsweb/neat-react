@@ -23,6 +23,7 @@
   "scripts": {
     "prebuild": "rimraf ./build",
     "build": "tsc && tsc-alias",
+    "build:docs": "npx typedoc",
     "postbuild": "copyfiles tsconfig.json build",
     "_": "",
     "prepublishOnly": "npm run build",
@@ -69,6 +70,7 @@
     "globals": "^15.12.0",
     "rimraf": "^6.0.1",
     "tsc-alias": "1.8.10",
+    "typedoc-plugin-markdown": "^4.4.1",
     "typescript": "^5.6.2"
   },
   "peerDependencies": {
