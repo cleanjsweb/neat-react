@@ -98,4 +98,4 @@ props, and all—hence the name. `useInstance` allows your function component to
 
 At this point, you might jokingly say, "we've basically recreated class components". We pretty much have, with one significant advantage. At its core, your component is still a function component, and can seamlessly benefit from any optimizations, improvements, or new features that React adds to function components. Its the best of both worlds. Stay on the new system, and carry over all of the advantages from the old one. The declarative lifecycle API, the ergonomics of working with state, and the cleaner structure and separation of concerns. `useInstance` gives you all of this in a neat and simple package.
 
-Now, if we're going to work our way back to writing components as classes, why not just go all the way? Well, actually, [we can](../class-component/index).
+Now, if we're going to work our way back to writing components as classes, why not just go all the way? Well, actually, [we can](./../class-component/index).
