@@ -1,33 +1,6 @@
-
-import type { Dispatch, SetStateAction } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { CleanState } from './class';
 import { TUseCleanState, TCleanState, TInitialState } from './hook-types';
-
-
-/**
- * Returns a value that is false before the component has been mounted,
- * then true during all subsequent rerenders.
- */ 
-export const useMountState = () => {
-	/**
-	 * This must not be a state value. It should not be the cause of a rerender.
-	 * It merely provides information about the render count,
-	 * without influencing that count itself.
-	 * So `mounted` should never be set with `useState`.
-	 */
-	let mounted = useRef(false);
-
-	useEffect(() => {
-		mounted.current = true;
-
-		return () => {
-			mounted.current = false;
-		}
-	}, []);
-
-	return () => mounted.current;
-};
 
 
 /**

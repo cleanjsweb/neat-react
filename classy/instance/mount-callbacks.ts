@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useMountState } from '@/base/state';
+import { useMountState } from '@/helpers/mount-state';
 import { ComponentInstance } from '.';
+
 
 type UseMountCallbacks = <
 	// eslint-disable-next-line no-use-before-define

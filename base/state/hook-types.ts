@@ -5,6 +5,7 @@ export type TStateData = object & {
 	[Key in keyof CleanStateBase<{}>]?: never;
 };
 
+/** @see https://github.com/cleanjsweb/neat-react#clean-state */
 export type TCleanState<TState extends TStateData> = (
 	CleanStateBase<TState>
 	& Omit<TState, keyof CleanStateBase<{}>>

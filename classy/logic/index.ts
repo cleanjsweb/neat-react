@@ -30,8 +30,21 @@ type o = object;
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  */
 export class ComponentLogic<TProps extends object = {}> {
+	/**
+	 * A {@link TCleanState | `CleanState`} object.
+	 * Holds all of your component's state,
+	 * and methods for conveniently manipulating those values.
+	 */
 	declare readonly state: TCleanState<ReturnType<this['getInitialState']>>;
+
+	/** The props pass into your component at the time of rendering. */
 	declare readonly props: TProps;
+
+	/**
+	 * Values received from the hooks your component consumes.
+	 * This holds the latest copy of the object returned by
+	 * {@link useHooks}.
+	 */
 	declare readonly hooks: ReturnType<this['useHooks']>;
 
 	/**
@@ -39,12 +52,15 @@ export class ComponentLogic<TProps extends object = {}> {
 	 * It receives the initial `props` object and should return
 	 * an object with the initial values for your component's state.
 	 */
-	getInitialState = (p?: TProps): object => ({});
+	getInitialState = (props?: TProps): object => ({});
 
 	/**
-	 * Call React hooks and expose any values your component
-	 * needs by returning an object with said values. The returned
-	 * object will be accessible as `this.hooks`;
+	 * Call React hooks from here. If your component needs
+	 * access to values return from the hooks you call,
+	 * expose those values by returning an object with said values.
+	 * 
+	 * The returned object will be accessible as {@link hooks | `this.hooks`} within
+	 * your component class.
 	 */
 	useHooks = (): object | void => {};
 };

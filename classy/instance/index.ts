@@ -19,28 +19,32 @@ export const noOp = () => {};
  * A superset of {@link ComponentLogic} that adds support for lifecycle methods.
  * This provides a declarative API for working with your React function component's lifecycle,
  * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
+ * 
+ * @see https://github.com/cleanjsweb/neat-react#lifecycle-useinstance
  */
 export class ComponentInstance<TProps extends object = {}>
 		extends ComponentLogic<TProps> {
 	/**
-	 * Runs only _before_ first render, i.e before the component instance is mounted.
-	 * Useful for logic that is involved in determining what to render.
+	 * Runs only _before_ first render,
+	 * i.e before the component instance is mounted.
 	 * 
-	 * Updating local state from in here will abort the render cycle early, before changes are committed to the DOM,
-	 * and prompt React to immediately rerender the component with the updated state value(s).
+	 * It is ignored on subsequent rerenders.
 	 * 
-	 * Ignored on subsequent rerenders.
+	 * PS: You can conditionally update state from here, but with certain caveats.
+	 * {@link https://react.dev/reference/react/useState#storing-information-from-previous-renders | See the React docs for more details}.
 	 */
 	beforeMount: IVoidFunction = () => {};
+
 	/**
 	 * Runs only **_after_** first render, i.e after the component instance is mounted.
+	 * It is ignored on subsequent rerenders.
 	 * 
 	 * Should usually only be used for logic that does not directly take part in determining what to render, like
 	 * synchronize your component with some external system.
 	 * 
-	 * Ignored on subsequent rerenders.
+	 * @returns A cleanup function.
 	 * 
-	 * Returns a cleanup function.
+	 * Uses `useEffect()` under the hood.
 	 */
 	onMount: AsyncAllowedEffectCallback = () => noOp;
 
@@ -53,15 +57,18 @@ export class ComponentInstance<TProps extends object = {}>
 	 * Runs _before_ every render cycle, including the first.
 	 * Useful for logic that is involved in determining what to render.
 	 * 
-	 * Updating local state from in here will abort the render cycle early, before changes are committed to the DOM,
-	 * and prompt React to immediately rerender the component with the updated state value(s).
+	 * PS: You can conditionally update state from here, but with certain caveats.
+	 * {@link https://react.dev/reference/react/useState#storing-information-from-previous-renders | See the React docs for more details}.
 	 */
 	beforeRender: () => object | void = () => {};
+
 	/**
 	 * Runs **_after_** every render cycle, including the first.
 	 * 
 	 * Should usually only be used for logic that does not directly take part in determining what to render, like
 	 * synchronize your component with some external system.
+	 * 
+	 * Uses `useEffect()` under the hood.
 	 * 
 	 * Returns a cleanup function.
 	 */
