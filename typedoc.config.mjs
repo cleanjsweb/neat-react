@@ -3,7 +3,7 @@ const config = {
     entryPoints: ['./base', './classy', 'helpers'],
     out: 'doc',
 	entryPointStrategy: 'Expand',
-	plugin: 'typedoc-plugin-markdown',
+	// plugin: 'typedoc-plugin-markdown',
 };
 
 export default config;
