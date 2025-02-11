@@ -66,6 +66,10 @@ export class ComponentLogic<TProps extends object = NonPrimitive> {
 };
 
 
+/**
+ * @group Component Logic
+ * @category Classy
+ */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
 
