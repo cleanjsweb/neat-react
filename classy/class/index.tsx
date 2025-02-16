@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { ComponentInstance, useInstance } from '../instance';
 import { setFunctionName } from './utils/function-name';
 import { useRerender } from '@/helpers/rerender';
+import { TPropsBase } from '../logic';
 
 
 /**
@@ -17,7 +18,7 @@ import { useRerender } from '@/helpers/rerender';
  * with little to no changes to their existing semantics/implementation.
  */
 export class ClassComponent<
-			TProps extends object = WeakEmptyObject
+			TProps extends TPropsBase = null 
 		> extends ComponentInstance<TProps> {
 	/**
 	 * Analogous to {@link React.Component.render}. A function that returns

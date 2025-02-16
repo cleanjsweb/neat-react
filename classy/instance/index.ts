@@ -2,7 +2,7 @@ import type { UIParams, UIReturn, UseInstance } from './types/hook';
 
 import { useEffect } from 'react';
 
-import { ComponentLogic,  useLogic } from '@/classy/logic';
+import { ComponentLogic,  type TPropsBase,  useLogic } from '@/classy/logic';
 import { useMountCallbacks } from './mount-callbacks';
 
 // @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
@@ -22,7 +22,7 @@ export const noOp = () => {};
  * 
  * @see https://github.com/cleanjsweb/neat-react#lifecycle-useinstance
  */
-export class ComponentInstance<TProps extends object = NonPrimitive>
+export class ComponentInstance<TProps extends TPropsBase = null>
 		extends ComponentLogic<TProps> {
 	/**
 	 * Runs only _before_ first render,

@@ -1,8 +1,9 @@
+import { TPropsBase } from '@/classy/logic';
 import { ComponentInstance } from '..';
 
 
-type UIClassParam = typeof ComponentInstance<any>;
-type UIProplessClassParam = typeof ComponentInstance<HardEmptyObject>;
+type UIClassParam = typeof ComponentInstance<NonNullable<TPropsBase>>;
+type UIProplessClassParam = typeof ComponentInstance<null>;
 
 
 export type UseInstance = {

@@ -8,14 +8,11 @@ import { useCleanState } from '@/base/state';
 ///////////////////////////////////
 
 
-export type HardEmpty = HardEmptyObject;
-export type WeakEmpty = WeakEmptyObject;
+export type TPropsBase = NonPrimitive | null;
 
 
 //////////////////////////////////
 
-
-type o = object;
 
 /**
  * Base class for a class that holds methods intended for use in a function component,
@@ -29,16 +26,17 @@ type o = object;
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  */
-export class ComponentLogic<TProps extends object = NonPrimitive> {
+export class ComponentLogic<TProps extends TPropsBase = null> {
 	/**
 	 * A {@link TCleanState | `CleanState`} object.
 	 * Holds all of your component's state,
 	 * and methods for conveniently manipulating those values.
+	 * Initialiazed with the object returned from your `getInitialState` method.
 	 */
 	declare readonly state: TCleanState<ReturnType<this['getInitialState']>>;
 
-	/** The props pass into your component at the time of rendering. */
-	declare readonly props: TProps;
+	/** The props passed into your component at the time of rendering. */
+	declare readonly props: TProps extends null ? EmptyObject : TProps;
 
 	/**
 	 * Values received from the hooks your component consumes.
@@ -52,7 +50,7 @@ export class ComponentLogic<TProps extends object = NonPrimitive> {
 	 * It receives the initial `props` object and should return
 	 * an object with the initial values for your component's state.
 	 */
-	getInitialState = (props?: TProps): object => ({});
+	getInitialState = (props?: this['props']): object => ({});
 
 	/**
 	 * Call React hooks from here. If your component needs

@@ -125,6 +125,8 @@ declare global {
 		[UniqueSecretSymbolKey]?: never;
 	}
 
+	type EmptyObject = WeakEmptyObject;
+
 	/**
 	 * Describes an object that can have any key, but all keys have
 	 * a type of `never`. This effectively prevents any value

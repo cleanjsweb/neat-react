@@ -1,21 +1,13 @@
-import type { ComponentLogic } from '..';
-
-
-/*************************************
- *        # Utils                    *
-**************************************/
-
-/** */
-type o = object;
+import type { ComponentLogic, TPropsBase } from '..';
 
 
 /*************************************
  *        # Hooks                    *
 **************************************/
 
-/** */
-type ULClassParam = typeof ComponentLogic<any>;
-type ULProplessClassParam = typeof ComponentLogic<HardEmptyObject>;
+
+type ULClassParam = typeof ComponentLogic<NonNullable<TPropsBase>>;
+type ULProplessClassParam = typeof ComponentLogic<null>;
 
 export type UseLogic = {
     <Class extends ULProplessClassParam>(
