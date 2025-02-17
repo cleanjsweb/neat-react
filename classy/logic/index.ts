@@ -15,9 +15,6 @@ export type TPropsBase = NonPrimitive | null;
 
 
 /**
- * @group Component Logic
- * @category Classes
- * 
  * Base class for a class that holds methods intended for use in a function component,
  * as well as a static method for initializing state.
  * 
@@ -28,6 +25,9 @@ export type TPropsBase = NonPrimitive | null;
  * React hooks within this class.
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
+ * 
+ * @group Component Logic
+ * @category Classes
  */
 export class ComponentLogic<TProps extends TPropsBase = null> {
 	/**
@@ -68,13 +68,13 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
 
 
 /**
- * @group Component Logic
- * @category Hooks
- * 
  * Returns an instance of the provided class, which holds methods for your component and
  * encapsulates hook calls with the special {@link ComponentLogic.useHooks | `useHooks`} method.
  * 
  * The class argument must be a subclass of {@link ComponentLogic}.
+ * 
+ * @group Component Logic
+ * @category Hooks
  */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
