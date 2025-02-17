@@ -18,7 +18,7 @@ const config = {
 	// externalPattern: 'standalone-docs/**/*.md',
 	exclude: "**/internal/**/*",
 	projectDocuments: [
-		"./standalone-docs/discussion/**/*",
+		"./standalone-docs/discussion/index.md",
 		// "./api-docs/**/*",
 	],
 	excludeInternal: true, // Use @internal doc tag.
