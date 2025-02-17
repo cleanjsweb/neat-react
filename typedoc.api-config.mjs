@@ -75,11 +75,11 @@ const config = {
 	"navigation": {
 		"includeCategories": true,
 		"includeGroups": true,
-		"includeFolders": true,
+		"includeFolders": false,
 		"compactFolders": false,
 		"excludeReferences": true,
 	},
-	categorizeByGroup: true,
+	categorizeByGroup: false,
 	defaultCategory: "Default Category Name",
 	// categoryOrder: ["Category Name", "Other Category", "*"],
 	groupOrder: ["ComponentLogic", "*"],

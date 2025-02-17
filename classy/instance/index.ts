@@ -21,6 +21,10 @@ export const noOp = () => {};
  * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
  * 
  * @see https://github.com/cleanjsweb/neat-react#lifecycle-useinstance
+ * 
+ * 
+ * @group ComponentInstance
+ * @category Classes
  */
 export class ComponentInstance<TProps extends TPropsBase = null>
 		extends ComponentLogic<TProps> {
