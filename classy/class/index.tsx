@@ -17,6 +17,8 @@ import { TPropsBase } from '../logic';
  * This is designed to closely resemble the old {@link React.Component} class,
  * making it easier to migrate older class components to the newer hooks-based system
  * with little to no changes to their existing semantics/implementation.
+ * 
+ * @category Advanced Tools
  */
 export class ClassComponent<
 			TProps extends TPropsBase = null 

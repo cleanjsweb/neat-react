@@ -3,7 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
 import { ICleanStateClass, ICleanStateConstructor, PutState } from './class-types';
 
-
+/** @internal */
 export class CleanStateBase<TState extends Record<string, any>> {
 	readonly reservedKeys: string[];
 	readonly valueKeys: string[];
@@ -92,4 +92,5 @@ export class CleanStateBase<TState extends Record<string, any>> {
 	};
 };
 
+/** @internal */
 export const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;

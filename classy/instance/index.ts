@@ -4,15 +4,12 @@ import { useEffect } from 'react';
 
 import { ComponentLogic,  type TPropsBase,  useLogic } from '@/classy/logic';
 import { useMountCallbacks } from './mount-callbacks';
+import { noOp } from '@/helpers';
 
 // @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 
 
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
-
-
-/** An empty function. It returns (void) without performing any operations. */
-export const noOp = () => {};
 
 
 /**
@@ -22,9 +19,8 @@ export const noOp = () => {};
  * 
  * @see https://github.com/cleanjsweb/neat-react#lifecycle-useinstance
  * 
- * 
+ * @category External Classes
  * @group ComponentInstance
- * @category Classes
  */
 export class ComponentInstance<TProps extends TPropsBase = null>
 		extends ComponentLogic<TProps> {
@@ -85,7 +81,7 @@ export class ComponentInstance<TProps extends TPropsBase = null>
 	cleanUp: IVoidFunction = () => {};
 };
 
-/*
+/**
  * To ensure successful type checking, the second parameter must be written with spread syntax.
  * Likely because of the `exactOptionalPropertyTypes` config option turned on,
  * and `UseInstance` using an empty tuple in its rest parameter type, attempting to simply
@@ -93,6 +89,8 @@ export class ComponentInstance<TProps extends TPropsBase = null>
  * But directly working with the rest array bypasses the problem. Also note that the issue persists even when
  * the second param is given `{}` as a default follow to account for the empty tuple case. TypeScript
  * just wants us to use the rest parameter explicitly by force.
+ * 
+ * @category Advanced Tools
  */
 export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	const [Component, props = {}] = args;

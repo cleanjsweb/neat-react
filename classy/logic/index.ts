@@ -5,13 +5,19 @@ import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
 
 
-///////////////////////////////////
-
-
+/**
+ * The base type for the props type argument.
+ * This is not the type the `props` property itself.
+ * It merely defines the type constraint for the type argument
+ * passed when extending any of the advanced external classes.
+ * 
+ * It differs from the type of the actual props object
+ * in that it accepts null for components that don't take any props.
+ * 
+ * @category Types
+ */
 export type TPropsBase = NonPrimitive | null;
 
-
-//////////////////////////////////
 
 
 /**
@@ -26,8 +32,10 @@ export type TPropsBase = NonPrimitive | null;
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  * 
+ * @typeParam TProps - {@include ./types/tprops.md}
+ * 
  * @group ComponentLogic
- * @category Classes
+ * @category External Classes
  */
 export class ComponentLogic<TProps extends TPropsBase = null> {
 	/**
@@ -74,7 +82,7 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
  * The class argument must be a subclass of {@link ComponentLogic}.
  * 
  * @group ComponentLogic
- * @category Hooks
+ * @category Advanced Tools
  */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;

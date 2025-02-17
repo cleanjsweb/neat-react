@@ -1,8 +1,9 @@
 
 
 /**
+ * Basic exported utilities.
  * @module Base
- * Basic exported Utilities.
+ * @mergeModuleWith <project>
  */
 
 export * from './state';

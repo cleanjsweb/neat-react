@@ -14,6 +14,8 @@ import { useMemo, useRef } from 'react';
  * `this.state` and `this.props` respectively.
  * 
  * Call the {@link useMethods} hook inside your function component to instantiate the class.
+ * 
+ * @category External Classes
  */
 export class ComponentMethods<
 		TProps extends object = {},
@@ -57,6 +59,8 @@ type UMReturn = ComponentMethods<object, object>;
  * with the state and props arguments added as instance members.
  * 
  * `state` must be an instance of `CleanState` created with {@link useCleanState}.
+ * 
+ * @category Base Tools
  */
 const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 	const [Methods, props = {}, state] = args;

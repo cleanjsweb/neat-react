@@ -80,9 +80,9 @@ const config = {
 		"excludeReferences": true,
 	},
 	categorizeByGroup: false,
-	defaultCategory: "Default Category Name",
-	// categoryOrder: ["Category Name", "Other Category", "*"],
-	groupOrder: ["ComponentLogic", "*"],
+	// groupOrder: ["ComponentLogic", "*"],
+	defaultCategory: "Others",
+	categoryOrder: ["Base Tools", 'Advanced Tools', 'External Classes', 'Types', 'Helpers', "*"],
 	sort: [
 		// "source-order",
 		// "alphabetical",
