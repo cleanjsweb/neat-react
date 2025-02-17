@@ -145,7 +145,7 @@ export class ClassComponent<
 
 
 export { ClassComponent as Component };
-export { Use } from './use-component';
+export { Use } from '@/helpers/use-component';
 
 
 /** /

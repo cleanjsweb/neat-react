@@ -1,8 +1,9 @@
 /** @type {Partial<import("typedoc").TypeDocOptions>} */
 const config = {
+	alwaysCreateEntryPointModule: false,
     entryPoints: [
-		'./base/state', './base/methods.ts', './base/merged-state.ts',
-		'./classy/class', './classy/instance', './classy/logic',
+		'./base/state/hooks.ts', './base/methods.ts', './base/merged-state.ts',
+		'./classy/class/index.ts', './classy/instance/index.ts', './classy/logic/index.ts',
 		'helpers',
 	],
     out: 'docs',
@@ -22,10 +23,17 @@ const config = {
 	exclude: "**/internal/**/*",
 	projectDocuments: ["standalone-docs/discussion/index.md"],
 	excludeInternal: true, // Use @internal doc tag.
-	// name: 'Oore',
+	name: 'Oore',
 	includeVersion: true,
 	disableSources: true,
 	groupReferencesByType: true,
+    "navigation": {
+        "includeCategories": true,
+        "includeGroups": true,
+        "includeFolders": false,
+        "compactFolders": false,
+        "excludeReferences": false,
+    },
 	categorizeByGroup: false,
 	// defaultCategory: "Category Name",
 	// categoryOrder: ["Category Name", "Other Category", "*"],
@@ -37,14 +45,14 @@ const config = {
 		// "enum-value-ascending",
 		// "enum-value-descending",
 		// "enum-member-source-order",
-		// "static-first",
+		"static-first",
 		// "instance-first",
 		// "visibility",
 		// "required-first",
 		// "kind",
-		// "external-last",
+		"external-last",
 		// "documents-first",
-		// "documents-last",
+		"documents-last",
 	],
 	// sortEntryPoints: false,
     kindSortOrder: [
