@@ -2,6 +2,7 @@ import { useMountState } from '@/helpers/mount-state';
 import { useState } from 'react';
 
 
+/** Returns a function that can be called to manually trigger a rerender of your component. */
 export const useRerender = () => {
 	const isMounted = useMountState();
 

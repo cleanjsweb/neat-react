@@ -2,8 +2,6 @@
 title: Clean State
 group: Documents
 category: Guides
-# children:
-#     - ./index.old.md
 ---
 
 
