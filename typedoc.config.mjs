@@ -1,8 +1,12 @@
 /** @type {Partial<import("typedoc").TypeDocOptions>} */
 const config = {
-    entryPoints: ['./base', './classy', 'helpers'],
+    entryPoints: [
+		'./base/state', './base/methods.ts', './base/merged-state.ts',
+		'./classy/class', './classy/instance', './classy/logic',
+		'helpers',
+	],
     out: 'docs',
-	entryPointStrategy: 'expand',
+	entryPointStrategy: 'resolve', // 'expand',
 	plugin: [
 		// 'typedoc-plugin-markdown',
 		// '@shipgirl/typedoc-plugin-versions',
@@ -68,6 +72,7 @@ const config = {
         "GetSignature",
         "SetSignature",
     ],
+	highlightLanguages: ['jsx', 'tsx', 'ts', 'js', 'css', 'scss', 'html'],
 };
 
 export default config;

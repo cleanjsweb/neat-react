@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { VoidFunctionComponent } from 'react';
 import type { Extractor } from './types/extractor';
 

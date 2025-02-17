@@ -75,5 +75,9 @@
   },
   "peerDependencies": {
     "react": ">=16"
+  },
+  "dependencies": {
+    "typedoc-plugin-coverage": "^3.4.1",
+    "typedoc-plugin-mdn-links": "^4.0.13"
   }
 }
