@@ -26,7 +26,7 @@ export type TPropsBase = NonPrimitive | null;
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  * 
- * @group Component Logic
+ * @group ComponentLogic
  * @category Classes
  */
 export class ComponentLogic<TProps extends TPropsBase = null> {
@@ -73,7 +73,7 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
  * 
  * The class argument must be a subclass of {@link ComponentLogic}.
  * 
- * @group Component Logic
+ * @group ComponentLogic
  * @category Hooks
  */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {

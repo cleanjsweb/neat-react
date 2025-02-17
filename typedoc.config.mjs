@@ -37,7 +37,7 @@ const config = {
 	categorizeByGroup: false,
 	// defaultCategory: "Category Name",
 	// categoryOrder: ["Category Name", "Other Category", "*"],
-	// groupOrder: ["Variables", "Functions", "*"],
+	groupOrder: ["ComponentLogic", "*"],
 	sort: [
 		// "source-order",
 		// "alphabetical",
