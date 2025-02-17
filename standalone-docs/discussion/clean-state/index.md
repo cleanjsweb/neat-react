@@ -1,3 +1,18 @@
+---
+title: Clean State
+group: Documents
+category: Guides
+# children:
+#     - ./index.old.md
+---
+
+
+| @function       | @description | @params | @returns|
+|_________________|______________|_________|_________|
+| `useCleanState` |              |         |         |
+
+
+
 # Cleaner State Management for React Function Components
 Say you have a component with some state like this:
 
@@ -15,7 +30,7 @@ const Button = (props) => {
 }
 ```
 
-As noted in the [introductory page](./../index.md), you may consider writing a custom hook to simplify working with these state values.
+As noted in the [introductory page](../index.md), you may consider writing a custom hook to simplify working with these state values.
 ```jsx
 const useButtonState = (props) => {
 	const [label, setLabel] = useState('Click me');
