@@ -1,3 +1,10 @@
+---
+title: Instance Hook
+group: Guides
+category: Discussion
+---
+
+
 
 ## useInstance
 With `useLogic`, most of the issues we identified with function components are addressed. The component is cleaner and the functions are more predictable. But one limitation remains.

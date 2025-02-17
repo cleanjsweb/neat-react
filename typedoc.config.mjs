@@ -20,7 +20,7 @@ const config = {
     // "excludeNotDocumentedKinds": ["Property", "Interface", "TypeAlias"]
 	// externalPattern: 'standalone-docs/**/*.md',
 	exclude: "**/internal/**/*",
-	projectDocuments: ["standalone-docs/**/*.md"],
+	projectDocuments: ["standalone-docs/discussion/index.md"],
 	excludeInternal: true, // Use @internal doc tag.
 	// name: 'Oore',
 	includeVersion: true,

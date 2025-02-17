@@ -1,3 +1,10 @@
+---
+title: Class Component
+group: Guides
+category: Discussion
+---
+
+
 ## ClassComponent
 This class builds on `useInstance` with one simple addition. It moves the function component template directly into the class. This allows the class to truly be a self contained entity containing everything that makes up the component. When you write a class that extends `ClassComponent`, you no longer need to call `useInstance` in the template function. This is handled for you internally. You template component can instead access the component instance using the `this` keyword, as it is now part of the class, and therefore part of the instance. As far as React is concerned, this template function is the real component, it is all React sees. The rest of the class provides the logic that powers the component, allowing the function component to be just a template. The example below shows how to use it.
 
