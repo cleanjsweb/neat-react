@@ -44,7 +44,7 @@ type TEmptyObject2 = Record<keyof any, never>;
 		// '': '',
 	}
 
-	let TT: WeakEmptyObject = {};
+	let TT: EmptyObject = {};
 	TT = tt;
 }/**/
 
@@ -111,21 +111,19 @@ declare global {
 	 * Having a single key allows the object to throw type errors
 	 * of the form:
 	 * ```
-	 * Type `A` has no properties in common with `WeakEmptyObject`.
+	 * Type `A` has no properties in common with `EmptyObject`.
 	 * ```
 	 * This may provide a slightly stricter type checking than simply
 	 * using the non-nullish (`{}`) or non-primitive (`object`)
 	 * built-in types.
 	 * 
-	 * Note: `WeakEmptyObject` is not assignable to `HardEmptyObject`
+	 * Note: `EmptyObject` is not assignable to `NeverObject`
 	 * because it has a key whose value type includes `undefined`,
-	 * but `HardEmptyObject` keys can only have a type of `never`.
+	 * but `NeverObject` keys can only have a type of `never`.
 	 */
-	interface WeakEmptyObject {
+	interface EmptyObject {
 		[UniqueSecretSymbolKey]?: never;
 	}
-
-	type EmptyObject = WeakEmptyObject;
 
 	/**
 	 * Describes an object that can have any key, but all keys have
@@ -133,7 +131,7 @@ declare global {
 	 * from ever being stored on the object. The object is therefore
 	 * guaranteed to always be empty.
 	 */
-	interface HardEmptyObject {
+	interface NeverObject {
 		[key: keyof any]: never;
 	}
 

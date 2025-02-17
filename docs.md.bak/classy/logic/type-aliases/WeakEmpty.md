@@ -6,6 +6,6 @@
 
 # Type Alias: WeakEmpty
 
-> **WeakEmpty**: `WeakEmptyObject`
+> **WeakEmpty**: `EmptyObject`
 
 Defined in: [classy/logic/index.ts:12](https://github.com/cleanjsweb/neat-react/blob/14baaff619a13096b0ac0ffe8ec82445197edebb/classy/logic/index.ts#L12)

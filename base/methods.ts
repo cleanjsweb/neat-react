@@ -35,7 +35,7 @@ type UseMethods = {
 		state?: null // null should be equal to InstanceType<Class>['state'] in this case.
 	): InstanceType<Class>;
 
-	<Class extends typeof ComponentMethods<HardEmptyObject, null>>(
+	<Class extends typeof ComponentMethods<NeverObject, null>>(
 		Methods: Class & Constructor<InstanceType<Class>>,
 	): InstanceType<Class>;
 }
@@ -91,7 +91,7 @@ export  { useMethods };
 
 		type t = keyof typeof a;
 
-		class MyMethods extends ComponentMethods<WeakEmptyObject, null> {
+		class MyMethods extends ComponentMethods<EmptyObject, null> {
 			// static getInitialState = () => ({});
 		};
 

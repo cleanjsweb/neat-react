@@ -142,7 +142,7 @@ export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 
 /** /
 testing: {
-	class A extends ComponentInstance<WeakEmptyObject> {
+	class A extends ComponentInstance<EmptyObject> {
 		getInitialState = (p?: object) => ({putan: ''});
 		// k = this.props.o
 		am = this.state['_initialValues_'];

@@ -21,7 +21,7 @@ with little to no changes to their existing semantics/implementation.
 
 ## Type Parameters
 
-• **TProps** *extends* `object` = `WeakEmptyObject`
+• **TProps** *extends* `object` = `EmptyObject`
 
 ## Constructors
 

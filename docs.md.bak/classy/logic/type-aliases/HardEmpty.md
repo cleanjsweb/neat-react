@@ -6,6 +6,6 @@
 
 # Type Alias: HardEmpty
 
-> **HardEmpty**: `HardEmptyObject`
+> **HardEmpty**: `NeverObject`
 
 Defined in: [classy/logic/index.ts:11](https://github.com/cleanjsweb/neat-react/blob/14baaff619a13096b0ac0ffe8ec82445197edebb/classy/logic/index.ts#L11)
