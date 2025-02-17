@@ -34,8 +34,8 @@ const config = {
         "compactFolders": false,
         "excludeReferences": true,
     },
-	categorizeByGroup: false,
-	// defaultCategory: "Category Name",
+	categorizeByGroup: true,
+	defaultCategory: "Default Category Name",
 	// categoryOrder: ["Category Name", "Other Category", "*"],
 	groupOrder: ["ComponentLogic", "*"],
 	sort: [
