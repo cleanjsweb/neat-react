@@ -23,8 +23,11 @@
   "scripts": {
     "prebuild": "rimraf ./build",
     "build": "tsc && tsc-alias",
-    "build:docs": "npx typedoc",
+    "build:docs": "npm run build:api-docs && npm run build:website",
+    "serve-docs": "serve docs",
     "postbuild": "copyfiles tsconfig.json build",
+    "build:api-docs": "typedoc --options typedoc.api-config.mjs",
+    "build:website": "typedoc --options typedoc.website-config.mjs",
     "_": "",
     "prepublishOnly": "npm run build",
     "publish:patch": "npm version patch && npm publish",
@@ -69,15 +72,17 @@
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.12.0",
     "rimraf": "^6.0.1",
+    "serve": "^14.2.4",
     "tsc-alias": "1.8.10",
     "typedoc-plugin-markdown": "^4.4.1",
+    "typedoc-plugin-coverage": "^3.4.1",
+    "typedoc-plugin-mdn-links": "^4.0.13",
+    "typedoc": "latest",
     "typescript": "^5.6.2"
   },
   "peerDependencies": {
     "react": ">=16"
   },
   "dependencies": {
-    "typedoc-plugin-coverage": "^3.4.1",
-    "typedoc-plugin-mdn-links": "^4.0.13"
   }
 }
