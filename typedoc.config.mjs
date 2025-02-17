@@ -26,7 +26,7 @@ const config = {
 	name: 'Oore',
 	includeVersion: true,
 	disableSources: true,
-	groupReferencesByType: true,
+	groupReferencesByType: false,
     "navigation": {
         "includeCategories": true,
         "includeGroups": true,
@@ -34,7 +34,7 @@ const config = {
         "compactFolders": false,
         "excludeReferences": true,
     },
-	categorizeByGroup: true,
+	categorizeByGroup: false,
 	// defaultCategory: "Category Name",
 	// categoryOrder: ["Category Name", "Other Category", "*"],
 	// groupOrder: ["Variables", "Functions", "*"],

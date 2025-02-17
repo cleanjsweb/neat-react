@@ -2,6 +2,7 @@
 title: Discussion
 group: Guides
 category: Discussion
+hideCategory: true
 children:
     - ./why.md
     - ./clean-state/index.md
