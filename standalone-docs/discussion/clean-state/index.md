@@ -2,6 +2,8 @@
 title: Clean State
 group: Documents
 category: Guides
+children:
+    - ./merged-state/index.md
 ---
 
 
