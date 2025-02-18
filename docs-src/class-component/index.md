@@ -1,7 +1,7 @@
 ---
 title: Class Component
 group: Guides
-category: Discussion
+# category Discussion
 ---
 
 

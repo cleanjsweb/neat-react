@@ -1,6 +1,7 @@
 
 /**
  * @module Helpers
+ * @mergeModuleWith API
  */
 
 export * from './mount-state';
@@ -12,6 +13,6 @@ export * from './use-component';
  * An empty function.
  * It returns (void) without performing any operations.
  * 
- * @category Helpers
+ * @ category Helpers
  */
 export const noOp = () => {};

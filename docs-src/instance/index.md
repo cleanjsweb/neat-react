@@ -1,7 +1,7 @@
 ---
 title: Instance Hook
 group: Guides
-category: Discussion
+# category Discussion
 ---
 
 

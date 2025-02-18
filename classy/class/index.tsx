@@ -18,7 +18,7 @@ import { TPropsBase } from '../logic';
  * making it easier to migrate older class components to the newer hooks-based system
  * with little to no changes to their existing semantics/implementation.
  * 
- * @category Advanced Tools
+ * @_category Advanced Tools
  */
 export class ClassComponent<
 			TProps extends TPropsBase = null 

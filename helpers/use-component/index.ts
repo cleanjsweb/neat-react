@@ -7,7 +7,7 @@ import { useEffect } from 'react';
  * A component you can use to consume hooks
  * in a {@link Component | React.Component} class component.
  * 
- * @category Helpers
+ * @_category Helpers
  */
 export const Use: ClassComponentHookWrapper = (params) => {
 	const { hook: useGenericHook, argumentsList, onUpdate } = params;

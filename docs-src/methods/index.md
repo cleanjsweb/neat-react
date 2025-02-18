@@ -1,7 +1,7 @@
 ---
 title: Methods Hook
 group: Guides
-category: Discussion
+# category Discussion
 ---
 
 

@@ -5,7 +5,7 @@ import { CleanStateBase } from './class';
  * Base type for an `initialState` object.
  * It is a regular object type, with some reserved keys excluded.
  *
- * @category Types
+ * @_category Types
  */
 export type TStateData = object & {
 	[Key in keyof CleanStateBase<{}>]?: never;
@@ -17,7 +17,7 @@ export type TStateData = object & {
  * 
  * @typeParam TState - The type of your `initialState` object.
  * 
- * @category Types
+ * @_category Types
  */
 export type TCleanState<TState extends TStateData> = (
 	CleanStateBase<TState>
@@ -31,7 +31,7 @@ export type TCleanState<TState extends TStateData> = (
  * This is useful to isolated the type of your actual state data without
  * any of the reserved keys provided by the Clean State utility.
  * 
- * @category Types
+ * @_category Types
  */
 export type ExtractCleanStateData<
 	YourCleanState extends CleanStateBase<{}>

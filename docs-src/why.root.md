@@ -1,7 +1,7 @@
 ---
 title: Why Object Oriented React?
 group: Guides
-category: Discussion
+# category Discussion
 ---
 
 

@@ -15,7 +15,7 @@ import { TUseCleanState, TCleanState, TInitialState } from './hook-types';
  * as well as helper methods for updating those values
  * and automatically rerendering your component's UI accordingly.
  * 
- * @category Base Tools
+ * @_category Base Tools
  */
 export const useCleanState: TUseCleanState = (_initialState, ...props) => {
 	type TState = TInitialState<typeof _initialState>;

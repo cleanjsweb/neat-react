@@ -14,7 +14,7 @@ import { useCleanState } from '@/base/state';
  * It differs from the type of the actual props object
  * in that it accepts null for components that don't take any props.
  * 
- * @category Types
+ * @_category Types
  */
 export type TPropsBase = NonPrimitive | null;
 
@@ -35,7 +35,7 @@ export type TPropsBase = NonPrimitive | null;
  * @typeParam TProps - {@include ./types/tprops.md}
  * 
  * @group ComponentLogic
- * @category External Classes
+ * @_category External Classes
  */
 export class ComponentLogic<TProps extends TPropsBase = null> {
 	/**
@@ -82,7 +82,7 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
  * The class argument must be a subclass of {@link ComponentLogic}.
  * 
  * @group ComponentLogic
- * @category Advanced Tools
+ * @_category Advanced Tools
  */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;

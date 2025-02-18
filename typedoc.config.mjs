@@ -1,10 +1,11 @@
+//@ts-check
 /** @type {Partial<import("typedoc").TypeDocOptions>} */
 const config = {
 	alwaysCreateEntryPointModule: false,
-	entryPoints: [ './docs-src/api' ],
+	entryPoints: [ './docs-src/api'/* , './helpers' */ ],
 	out: 'docs',
 	// out: 'api-docs',
-	entryPointStrategy: 'resolve',
+	entryPointStrategy: 'expand',
 	plugin: [
 		// 'typedoc-plugin-markdown',
 		// '@shipgirl/typedoc-plugin-versions',
@@ -61,7 +62,7 @@ const config = {
 	// excludeNotDocumented: true,
 	// "excludeNotDocumentedKinds": ["Property", "Interface", "TypeAlias"]
 	// externalPattern: 'standalone-docs/**/*.md',
-	exclude: "**/internal/**/*",
+	exclude: ["**/internal/**/*"],
 	projectDocuments: ["docs-src/**/*.root.md"],
 	excludeInternal: true,
 	// name: 'Oore',
@@ -77,7 +78,7 @@ const config = {
 	},
 	categorizeByGroup: false,
 	// groupOrder: ["ComponentLogic", "*"],
-	defaultCategory: "Others",
+	// defaultCategory: "Others",
 	categoryOrder: ["Base Tools", 'Advanced Tools', 'External Classes', 'Types', 'Helpers', "*"],
 	sort: [
 		// "source-order",

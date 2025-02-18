@@ -1,3 +1,8 @@
+/**
+ * @module Reren
+ * @mergeModuleWith API
+ */
+
 import { useMountState } from '@/helpers/mount-state';
 import { useState } from 'react';
 
@@ -6,7 +11,7 @@ import { useState } from 'react';
  * Returns a function that can be called to manually trigger
  * a rerender of your component.
  * 
- * @category Helpers
+ * @_category Helpers
  */
 export const useRerender = () => {
 	const isMounted = useMountState();

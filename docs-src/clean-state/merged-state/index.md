@@ -1,7 +1,7 @@
 ---
 title: Merged State
 group: Guides
-category: Discussion
+# category Discussion
 ---
 
 
