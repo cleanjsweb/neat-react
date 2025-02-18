@@ -1,3 +1,9 @@
+/**
+ * Basic exported utilities.
+ * @module ComponentMethods
+ */
+
+
 // JSDoc references
 import type { useCleanState } from './state';
 
