@@ -1,3 +1,10 @@
+
+/**
+ * Basic exported utilities.
+ * @module State2
+ */
+
+
 import { useMemo, useRef } from 'react';
 import { CleanState } from './class';
 import { TUseCleanState, TCleanState, TInitialState } from './hook-types';

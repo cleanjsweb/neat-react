@@ -66,15 +66,15 @@ const config = {
 	// "excludeNotDocumentedKinds": ["Property", "Interface", "TypeAlias"]
 	// externalPattern: 'standalone-docs/**/*.md',
 	exclude: "**/internal/**/*",
-	projectDocuments: [/* "standalone-docs/discussion/index.md" */],
-	excludeInternal: true, // Use @internal doc tag.
+	projectDocuments: ["standalone-docs/discussion/index.md"],
+	excludeInternal: true,
 	// name: 'Oore',
 	includeVersion: true,
 	disableSources: true,
 	groupReferencesByType: false,
 	"navigation": {
-		"includeCategories": true,
-		"includeGroups": true,
+		"includeCategories": false,
+		"includeGroups": false,
 		"includeFolders": false,
 		"compactFolders": false,
 		"excludeReferences": true,

@@ -1,9 +1,10 @@
 
 
 /**
- * Basic exported utilities.
  * @module Base
- * @mergeModuleWith <project>
+ * @description
+ * Basic exported utilities.
+ * <!-- @ mergeModuleWith <project> -->
  */
 
 export * from './state';

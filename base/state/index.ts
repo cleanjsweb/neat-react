@@ -1,3 +1,9 @@
+
+/**
+ * Basic exported utilities.
+ * @module State1
+ */
+
 import '../../globals';
 
 

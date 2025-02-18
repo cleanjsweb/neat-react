@@ -2,8 +2,8 @@
 title: Logic Hook
 group: Guides
 category: Discussion
-children: 
-    - ../../../api-docs/functions/useLogic.md
+# children: 
+#     - ../../../api-docs/functions/useLogic.md
 ---
 
 
