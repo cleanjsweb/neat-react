@@ -7,8 +7,14 @@
  * @remarks
  * This keeps your components cleaner and easier to read, and is less error prone.
  * 
- * @module ComponentMethods
- * @mergeModuleWith API
+ * @ module ComponentMethods
+ * @ mergeModuleWith API
  */
 
-export { useMethods } from '@/base/methods';
+import * as ComponentMethods from '@/base/methods';
+// export as namespace _Methods;
+
+export {
+	/** @namespace */
+	ComponentMethods,
+};

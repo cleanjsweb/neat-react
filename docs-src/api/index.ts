@@ -5,4 +5,6 @@
 
 export * from './state';
 export * from './methods';
-export * from '@/helpers';
+
+/** @namespace */
+export * as Helpers from '@/helpers';

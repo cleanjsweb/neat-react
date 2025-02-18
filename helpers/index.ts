@@ -1,12 +1,12 @@
 
 /**
- * @module Helpers
- * @mergeModuleWith API
+ * @ module Helpers
+ * @ mergeModuleWith API
  */
 
-export * from './mount-state';
+export * as MountStateModule from './mount-state';
 export * from './rerender';
-export * from './use-component';
+export * as UseComponentModule from './use-component';
 
 
 /**

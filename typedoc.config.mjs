@@ -1,11 +1,11 @@
 //@ts-check
 /** @type {Partial<import("typedoc").TypeDocOptions>} */
 const config = {
-	alwaysCreateEntryPointModule: false,
+	alwaysCreateEntryPointModule: true,
 	entryPoints: [ './docs-src/api'/* , './helpers' */ ],
 	out: 'docs',
 	// out: 'api-docs',
-	entryPointStrategy: 'expand',
+	entryPointStrategy: 'resolve',
 	plugin: [
 		// 'typedoc-plugin-markdown',
 		// '@shipgirl/typedoc-plugin-versions',
@@ -81,9 +81,6 @@ const config = {
 	// defaultCategory: "Others",
 	categoryOrder: ["Base Tools", 'Advanced Tools', 'External Classes', 'Types', 'Helpers', "*"],
 	sort: [
-		// "source-order",
-		// "alphabetical",
-		// "alphabetical-ignoring-documents",
 		// "enum-value-ascending",
 		// "enum-value-descending",
 		// "enum-member-source-order",
@@ -92,11 +89,14 @@ const config = {
 		// "visibility",
 		// "required-first",
 		// "kind",
-		"external-last",
-		// "documents-first",
-		"documents-last",
+		// "external-last",
+		"documents-first",
+		"alphabetical-ignoring-documents",
+		"source-order",
+		// "alphabetical",
+		// "documents-last",
 	],
-	// sortEntryPoints: false,
+	sortEntryPoints: true,
 	kindSortOrder: [
 		"Reference",
 		"Project",
