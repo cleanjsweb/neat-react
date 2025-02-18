@@ -1,7 +1,6 @@
 
 /**
  * @module Helpers
- * @mergeModuleWith <project>.API
  */
 
 export * from './mount-state';

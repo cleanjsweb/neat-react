@@ -30,7 +30,7 @@ const Button = (props) => {
 }
 ```
 
-As noted in the [introductory page](../why.md), you may consider writing a custom hook to simplify working with these state values.
+As noted in the [introductory page](../why.root.md), you may consider writing a custom hook to simplify working with these state values.
 ```jsx
 const useButtonState = (props) => {
 	const [label, setLabel] = useState('Click me');

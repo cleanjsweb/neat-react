@@ -1,17 +1,10 @@
 ---
 title: Discussion
 group: Guides
-children:
-    - ./why.md
-    - ./clean-state/index.md
-    - ./methods/index.md
-    - ./logic/index.md
-    - ./instance/index.md
-    - ./class-component/index.md
 ---
 
 # Oore Guides
-- [Why Oore](./why.md)
+- [Why Oore](./why.root.md)
 - [Clean State](./clean-state/index.md)
     - [Merged State](./clean-state/merged-state/index.md)
 - [useMethods](./methods/index.md)

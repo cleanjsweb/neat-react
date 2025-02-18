@@ -23,11 +23,9 @@
   "scripts": {
     "prebuild": "rimraf ./build",
     "build": "tsc && tsc-alias",
-    "build:docs": "npm run build:api-docs && npm run build:website",
     "serve-docs": "serve docs",
     "postbuild": "copyfiles tsconfig.json build",
-    "build:api-docs": "typedoc --options typedoc.api-config.mjs",
-    "build:website": "typedoc --options typedoc.website-config.mjs",
+    "build:docs": "typedoc",
     "_": "",
     "prepublishOnly": "npm run build",
     "publish:patch": "npm version patch && npm publish",
