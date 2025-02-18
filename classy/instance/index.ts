@@ -18,9 +18,6 @@ type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
  * a simpler alternative to the imperative approach with `useEffect` and/or `useMemo`.
  * 
  * @see https://github.com/cleanjsweb/neat-react#lifecycle-useinstance
- * 
- * @_category External Classes
- * @group ComponentInstance
  */
 export class ComponentInstance<TProps extends TPropsBase = null>
 		extends ComponentLogic<TProps> {
@@ -82,6 +79,21 @@ export class ComponentInstance<TProps extends TPropsBase = null>
 };
 
 /**
+ * @summary
+ * Enables full separation of concerns between a React components template
+ * and all of the logic that drives it.
+ * 
+ * Returns an instance that fully represents a logical instance
+ * of a rendered React component, with the exception of the JSX template itself.
+ * 
+ * This means the all of your components logic and lifecycle handlers
+ * can be externalized from the function component itself,
+ * and defined in a separate class. 
+ * 
+ * @remarks
+ * The provided class should be a subclass of {@link ComponentInstance}.
+ * 
+ * @privateRemarks
  * To ensure successful type checking, the second parameter must be written with spread syntax.
  * Likely because of the `exactOptionalPropertyTypes` config option turned on,
  * and `UseInstance` using an empty tuple in its rest parameter type, attempting to simply
@@ -89,8 +101,6 @@ export class ComponentInstance<TProps extends TPropsBase = null>
  * But directly working with the rest array bypasses the problem. Also note that the issue persists even when
  * the second param is given `{}` as a default follow to account for the empty tuple case. TypeScript
  * just wants us to use the rest parameter explicitly by force.
- * 
- * @_category Advanced Tools
  */
 export const useInstance: UseInstance = (...args: UIParams): UIReturn => {
 	const [Component, props = {}] = args;

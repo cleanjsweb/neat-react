@@ -30,8 +30,6 @@ export type TCleanState<TState extends TStateData> = (
  * 
  * This is useful to isolated the type of your actual state data without
  * any of the reserved keys provided by the Clean State utility.
- * 
- * @_category Types
  */
 export type ExtractCleanStateData<
 	YourCleanState extends CleanStateBase<{}>
@@ -47,6 +45,11 @@ export type TInitialState<
 	? TState
 	: Initializer;
 
+
+/**
+ * @typeParam TInit - An initial state object, or a function that
+ * returns the initial state object.
+ */
 export type TUseCleanState = <TInit extends StateInit>(
 	_initialState: TInit,
 	...props: TInit extends (...args: infer TProps extends any[]) => (infer TState extends object)

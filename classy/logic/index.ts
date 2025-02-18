@@ -13,8 +13,6 @@ import { useCleanState } from '@/base/state';
  * 
  * It differs from the type of the actual props object
  * in that it accepts null for components that don't take any props.
- * 
- * @_category Types
  */
 export type TPropsBase = NonPrimitive | null;
 

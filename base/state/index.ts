@@ -1,6 +1,5 @@
 
 /**
- * Basic exported utilities.
  * @module CleanState
  */
 

@@ -3,22 +3,14 @@
  * @module API
  */
 
-import { useCleanState } from '@/base/state';
+export { useCleanState } from '@/base/state';
 
-import { useMethods } from '@/base/methods';
+export { useMethods } from '@/base/methods';
 
-import { useLogic } from '@/classy/logic';
-import { useInstance } from '@/classy/instance';
-import { ClassComponent } from '@/classy/class';
+export { useLogic } from '@/classy/logic';
+export { useInstance } from '@/classy/instance';
+export { ClassComponent } from '@/classy/class';
 
-
-export {
-	useCleanState,
-	useMethods,
-	useLogic,
-	useInstance,
-	ClassComponent,
-};
 
 /** @namespace */
 export * as BaseClasses from './base-classes';
