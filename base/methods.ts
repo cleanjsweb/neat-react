@@ -106,17 +106,17 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 
 			const oldInstance = instanceRef.current;
 			const hmrPreserveKeys = [
-				...(latestInstance._hmrPreserveKeys ?? []),
-				'state', 'props', 'hooks',
+				...latestInstance._hmrPreserveKeys,
+				'state', 'props',
 			];
 
 			hmrPreserveKeys.forEach((_key) => {
-				const key = _key as keyof typeof latestInstance;
+				const key = _key as (typeof hmrPreserveKeys)[number];
 				// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
 				latestInstance[key] = oldInstance[key];
 			});
 
-			latestInstance._onHmrUpdate(oldInstance);
+			latestInstance._onHmrUpdate?.(oldInstance);
 
 			Reflect.ownKeys(oldInstance).forEach((_key) => {
 				const key = _key as keyof typeof oldInstance;

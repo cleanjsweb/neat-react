@@ -118,7 +118,7 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 				latestInstance[key] = oldInstance[key];
 			});
 
-			latestInstance._onHmrUpdate(oldInstance);
+			latestInstance._onHmrUpdate?.(oldInstance);
 			instanceRef.current = latestInstance;
 
 			Reflect.ownKeys(oldInstance).forEach((_key) => {
