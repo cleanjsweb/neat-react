@@ -73,7 +73,7 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
 	useHooks = (): object | void => {};
 
 	_hmrPreserveKeys: Array<keyof this | (string & {})> = [];
-	declare _onHmrUpdate: <
+	declare _onHmrUpdate?: <
 		TInstance extends this
 	>(oldInstance: TInstance) => void;
 };

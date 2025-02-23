@@ -31,7 +31,7 @@ export class ComponentMethods<
 	declare readonly state: TState extends TStateData ? TCleanState<TState> : null;
 
 	_hmrPreserveKeys: Array<keyof this | (string & {})> = [];
-	declare _onHmrUpdate: <
+	declare _onHmrUpdate?: <
 		TInstance extends this
 	>(oldInstance: TInstance) => void;
 };
