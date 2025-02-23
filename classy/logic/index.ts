@@ -76,7 +76,10 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
 	declare readonly __hotReplace: <
 		TInstance extends this
 	>(newInstance: TInstance) => void;
+
 	declare hmrPreserveKeys: Array<keyof this | (string & {})>;
+	/** Internal Method. DO NOT USE. Will be undefined in production. */
+	declare readonly hmrWillUpdate: this['__hotReplace'];
 };
 
 
