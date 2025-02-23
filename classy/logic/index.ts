@@ -3,6 +3,7 @@ import type { ULParams, ULReturn, UseLogic } from './types/hook';
 
 import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
+import { useRerender } from '@/helpers';
 
 
 /**
@@ -70,6 +71,12 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
 	 * your component class.
 	 */
 	useHooks = (): object | void => {};
+
+	/** Internal Method. DO NOT USE. Will be undefined in production. */
+	declare readonly __hotReplace: <
+		TInstance extends this
+	>(newInstance: TInstance) => void;
+	declare hmrPreserveKeys: Array<keyof this | (string & {})>;
 };
 
 
@@ -78,23 +85,28 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
  * encapsulates hook calls with the special {@link ComponentLogic.useHooks | `useHooks`} method.
  * 
  * The class argument must be a subclass of {@link ComponentLogic}.
- * 
- * @group ComponentLogic
- * @_category Advanced Tools
  */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
 
-	const self = useRef(useMemo(() => {
+	const instanceRef = useRef(useMemo(() => {
 		return new Logic();
-	}, [])).current;
+	}, []));
 
-	/** A proxy variable to allow typechecking of the assignment to `self.props` despite the need for "readonly" error suppression. */
+	const self = instanceRef.current;
+
+	/**
+	 * A proxy variable to allow typechecking of the assignment
+	 * to a readonly property,
+	 * despite the need for "readonly" error suppression.
+	 */
 	let _propsProxy_: typeof self.props;
-	/** A proxy variable to allow typechecking of the assignment to `self.state` despite the need for "readonly" error suppression. */
+	/** @see {@link _propsProxy_} */
 	let _stateProxy_: typeof self.state;
-	/** A proxy variable to allow typechecking of the assignment to `self.hooks` despite the need for "readonly" error suppression. */
+	/** @see {@link _propsProxy_} */
 	let _hooksProxy_: typeof self.hooks;
+	/** @see {@link _propsProxy_} */
+	let _hotReplaceProxy_: typeof self.__hotReplace;
 
 	// @ts-expect-error
 	self.props = (
@@ -110,6 +122,23 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	self.hooks = (
 		_hooksProxy_ = self.useHooks() ?? {}
 	);
+
+	if (process.env.NODE_ENV === 'development') {
+		self.hmrPreserveKeys = [
+			...(self.hmrPreserveKeys ?? []),
+			'state', 'props', 'hooks',
+		];
+
+		const rerender = useRerender();
+
+		// @ts-expect-error
+		self.__hotReplace = (
+			_hotReplaceProxy_ = (newInstance: typeof self) => {
+				instanceRef.current = newInstance;
+				rerender();
+			}
+		);
+	}
 
 	return self;
 };

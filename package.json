@@ -18,7 +18,8 @@
   "exports": {
     ".": "./build/classy/index.js",
     "./base": "./build/base/index.js",
-    "./helpers": "./build/helpers/index.js"
+    "./helpers": "./build/helpers/index.js",
+    "./all": "./build/index.js"
   },
   "scripts": {
     "prebuild": "rimraf ./build",
@@ -63,6 +64,7 @@
     "@babel/preset-typescript": "^7.26.0",
     "@types/node": "20.14.10",
     "@types/react": "^16",
+    "@types/webpack-env": "^1.18.8",
     "babel-preset-react-app": "^10.0.1",
     "copyfiles": "^2.4.1",
     "eslint": "^9.15.0",
@@ -72,15 +74,13 @@
     "rimraf": "^6.0.1",
     "serve": "^14.2.4",
     "tsc-alias": "1.8.10",
-    "typedoc-plugin-markdown": "^4.4.1",
-    "typedoc-plugin-coverage": "^3.4.1",
-    "typedoc-plugin-mdn-links": "^4.0.13",
     "typedoc": "latest",
+    "typedoc-plugin-coverage": "^3.4.1",
+    "typedoc-plugin-markdown": "^4.4.1",
+    "typedoc-plugin-mdn-links": "^4.0.13",
     "typescript": "^5.6.2"
   },
   "peerDependencies": {
     "react": ">=16"
-  },
-  "dependencies": {
   }
 }

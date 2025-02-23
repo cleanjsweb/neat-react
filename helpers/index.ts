@@ -8,6 +8,10 @@ export * from './mount-state';
 export * from './rerender';
 export * from './use-component';
 
+export * from './hmr';
+
+export * from './type-guards';
+
 
 /**
  * An empty function.
