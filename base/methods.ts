@@ -4,6 +4,7 @@
 
 
 // JSDoc references
+import { useRerender } from '@/helpers';
 import type { useCleanState } from './state';
 
 // Types
@@ -88,7 +89,7 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 	const instanceRef = useRef(latestInstance);
 
 	if (process.env.NODE_ENV === 'development') {
-		// const rerender = useRerender();
+		const rerender = useRerender();
 
 		useEffect(() => {
 			if (instanceRef.current === latestInstance) return;
@@ -116,8 +117,15 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 			});
 
 			latestInstance._onHmrUpdate(oldInstance);
+
+			Reflect.ownKeys(oldInstance).forEach((_key) => {
+				const key = _key as keyof typeof oldInstance;
+				delete oldInstance[key];
+			});
+			Object.setPrototypeOf(oldInstance, latestInstance);
+
 			instanceRef.current = latestInstance;
-			// rerender();
+			rerender();
 		});
 	}
 

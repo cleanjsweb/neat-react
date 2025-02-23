@@ -95,8 +95,6 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const instanceRef = useRef(latestInstance);
 
 	if (process.env.NODE_ENV === 'development') {
-		// const rerender = useRerender();
-
 		if (instanceRef.current !== latestInstance) {
 			console.log([
 				'HMR-updated component class detected.',
@@ -122,7 +120,12 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 
 			latestInstance._onHmrUpdate(oldInstance);
 			instanceRef.current = latestInstance;
-			// rerender();
+
+			Reflect.ownKeys(oldInstance).forEach((_key) => {
+				const key = _key as keyof typeof oldInstance;
+				delete oldInstance[key];
+			});
+			Object.setPrototypeOf(oldInstance, latestInstance);
 		}
 	}
 
