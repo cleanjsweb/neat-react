@@ -101,8 +101,8 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 				'Note that this mechanism only works in the `development` environment during HMR.',
 				'In production, the class argument will be ignored after the first render.\n\n',
 				'If this wasn\'t an HMR update, you should refactor your code to make sure',
-				'all clean-react hooks receive the same class object on every render.'
-			].join( ));
+				'all clean-react hooks receive the same class argument on every render.'
+			].join(' '));
 
 			const oldInstance = instanceRef.current;
 			const hmrPreserveKeys = [
