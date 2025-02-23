@@ -8,6 +8,8 @@ type UseMountCallbacks = <
 	TInstance extends ComponentInstance
 >(instance: TInstance) => void;
 
+
+/** @internal */
 export const useMountCallbacks: UseMountCallbacks = (instance) => {
 	const isMounted = useMountState();
 

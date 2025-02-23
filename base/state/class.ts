@@ -3,7 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
 import { ICleanStateClass, ICleanStateConstructor, PutState } from './class-types';
 
-
+/** @internal */
 export class CleanStateBase<TState extends Record<string, any>> {
 	readonly reservedKeys: string[];
 	readonly valueKeys: string[];
@@ -62,20 +62,14 @@ export class CleanStateBase<TState extends Record<string, any>> {
 		this.valueKeys.forEach((key) => {
 			// @todo Make state updates accessible immediately. Use state.staged to access the scheduled updates.
 			let setter: Dispatch<SetStateAction<any>>;
-			// @todo Support SetStateAction callback signature in state.put(...);
+
 			[this._values_[key], setter] = retrieveState(this.initialState[key as keyof TState]);
 
 			this._setters_[key as keyof TState] = ((valueOrCallback) => {
 				// this._staged_[key] = value;
 				setter(valueOrCallback);
 			});
-		})
-
-		/* Object.entries<TUseStateArray<TState>>(stateAndSetters).forEach(([key, responseFromUseState]) => {
-			[this._values_[key], this._setters_[key]] = responseFromUseState;
-		}); */
-
-		// return this;
+		});
 	};
 
 	get put(): PutState<TState> {
@@ -92,4 +86,5 @@ export class CleanStateBase<TState extends Record<string, any>> {
 	};
 };
 
+/** @internal */
 export const CleanState = CleanStateBase as unknown as ICleanStateConstructor & ICleanStateClass;

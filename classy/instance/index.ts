@@ -4,15 +4,12 @@ import { useEffect } from 'react';
 
 import { ComponentLogic,  type TPropsBase,  useLogic } from '@/classy/logic';
 import { useMountCallbacks } from './mount-callbacks';
+import { noOp } from '@/helpers';
 
 // @todo Use rollup. Insert globals.ts reference tag to all d.ts output files.
 
 
 type AsyncAllowedEffectCallback = () => Awaitable<IVoidFunction>;
-
-
-/** An empty function. It returns (void) without performing any operations. */
-export const noOp = () => {};
 
 
 /**
@@ -81,7 +78,22 @@ export class ComponentInstance<TProps extends TPropsBase = null>
 	cleanUp: IVoidFunction = () => {};
 };
 
-/*
+/**
+ * @summary
+ * Enables full separation of concerns between a React components template
+ * and all of the logic that drives it.
+ * 
+ * Returns an instance that fully represents a logical instance
+ * of a rendered React component, with the exception of the JSX template itself.
+ * 
+ * This means the all of your components logic and lifecycle handlers
+ * can be externalized from the function component itself,
+ * and defined in a separate class. 
+ * 
+ * @remarks
+ * The provided class should be a subclass of {@link ComponentInstance}.
+ * 
+ * @privateRemarks
  * To ensure successful type checking, the second parameter must be written with spread syntax.
  * Likely because of the `exactOptionalPropertyTypes` config option turned on,
  * and `UseInstance` using an empty tuple in its rest parameter type, attempting to simply

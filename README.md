@@ -55,7 +55,7 @@ const Button = (props) => {
 
 > **Note:** Each top-level key in your initial state object gets a separate call to `React.useState`, and `state.put[key]()` is a proxy for the setter function returned from `useState`. So using this hook is fundamentally the same as calling `useState` directly for each value. What `useCleanState` provides is a way to unify those values and a convenient API for updating them.
 
-[Read the `useCleanState` docs]() for more details.
+[Read the `useCleanState` docs](https://cleanjsweb.github.io/neat-react) for more details.
 
 ### Methods
 The `useMethods` hook lets you manage the closures that your component uses in a separate class, keeping the body of the component clean and easier to read. With `useMethods`, your functions are not recreated on every render. Yet, every method of your component is guaranteed to always have access to the latest props and state without the need for a dependencty array.

@@ -3,15 +3,20 @@ import type { ULParams, ULReturn, UseLogic } from './types/hook';
 
 import { useMemo, useRef } from 'react';
 import { useCleanState } from '@/base/state';
+import { useRerender } from '@/helpers';
 
 
-///////////////////////////////////
-
-
+/**
+ * The base type for the props type argument.
+ * This is not the type the `props` property itself.
+ * It merely defines the type constraint for the type argument
+ * passed when extending any of the advanced external classes.
+ * 
+ * It differs from the type of the actual props object
+ * in that it accepts null for components that don't take any props.
+ */
 export type TPropsBase = NonPrimitive | null;
 
-
-//////////////////////////////////
 
 
 /**
@@ -26,8 +31,10 @@ export type TPropsBase = NonPrimitive | null;
  * 
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  * 
+ * @typeParam TProps - {@include ./types/tprops.md}
+ * 
  * @group ComponentLogic
- * @category Classes
+ * @_category External Classes
  */
 export class ComponentLogic<TProps extends TPropsBase = null> {
 	/**
@@ -64,6 +71,11 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
 	 * your component class.
 	 */
 	useHooks = (): object | void => {};
+
+	_hmrPreserveKeys: Array<keyof this | (string & {})> = [];
+	declare _onHmrUpdate: <
+		TInstance extends this
+	>(oldInstance: TInstance) => void;
 };
 
 
@@ -72,37 +84,77 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
  * encapsulates hook calls with the special {@link ComponentLogic.useHooks | `useHooks`} method.
  * 
  * The class argument must be a subclass of {@link ComponentLogic}.
- * 
- * @group ComponentLogic
- * @category Hooks
  */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
 
-	const self = useRef(useMemo(() => {
-		return new Logic();
-	}, [])).current;
+	// In production, we only use the latestInstance the first time, and it's ignored every other time.
+	// This means changing the class at runtime will have no effect in production.
+	// latestInstance is only extracted into a separate variable for use in dev mode during HMR.
+	const latestInstance = useMemo(() => new Logic(), [Logic]);
+	const instanceRef = useRef(latestInstance);
 
-	/** A proxy variable to allow typechecking of the assignment to `self.props` despite the need for "readonly" error suppression. */
-	let _propsProxy_: typeof self.props;
-	/** A proxy variable to allow typechecking of the assignment to `self.state` despite the need for "readonly" error suppression. */
-	let _stateProxy_: typeof self.state;
-	/** A proxy variable to allow typechecking of the assignment to `self.hooks` despite the need for "readonly" error suppression. */
-	let _hooksProxy_: typeof self.hooks;
+	if (process.env.NODE_ENV === 'development') {
+		if (instanceRef.current !== latestInstance) {
+			console.log([
+				'HMR-updated component class detected.',
+				'Creating a new instance with the updated class.',
+				'All stateful values will be copied over.\n\n',
+				'Note that this mechanism only works in the `development` environment during HMR.',
+				'In production, the class argument will be ignored after the first render.\n\n',
+				'If this wasn\'t an HMR update, you should refactor your code to make sure',
+				'all clean-react hooks receive the same class object on every render.'
+			].join( ));
+
+			const oldInstance = instanceRef.current;
+			const hmrPreserveKeys = [
+				...latestInstance._hmrPreserveKeys,
+				'state', 'props', 'hooks',
+			];
+
+			hmrPreserveKeys.forEach((_key) => {
+				const key = _key as keyof typeof latestInstance;
+				// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
+				latestInstance[key] = oldInstance[key];
+			});
+
+			latestInstance._onHmrUpdate(oldInstance);
+			instanceRef.current = latestInstance;
+
+			Reflect.ownKeys(oldInstance).forEach((_key) => {
+				const key = _key as keyof typeof oldInstance;
+				delete oldInstance[key];
+			});
+			Object.setPrototypeOf(oldInstance, latestInstance);
+		}
+	}
+
+	const self = instanceRef.current;
+
+	/**
+	 * A proxy variable to allow typechecking of the assignment
+	 * to a readonly property,
+	 * despite the need for "readonly" error suppression.
+	 */
+	let _propsProxy: typeof self.props;
+	/** @see {@link _propsProxy} */
+	let _stateProxy: typeof self.state;
+	/** @see {@link _propsProxy} */
+	let _hooksProxy: typeof self.hooks;
 
 	// @ts-expect-error
 	self.props = (
-		_propsProxy_ = props
+		_propsProxy = props
 	);
 
 	// @ts-expect-error
 	self.state = (
-		_stateProxy_ = useCleanState(self.getInitialState, props)
+		_stateProxy = useCleanState(self.getInitialState, props)
 	);
 
 	// @ts-expect-error
 	self.hooks = (
-		_hooksProxy_ = self.useHooks() ?? {}
+		_hooksProxy = self.useHooks() ?? {}
 	);
 
 	return self;

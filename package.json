@@ -1,6 +1,6 @@
 {
   "name": "@cleanweb/react",
-  "version": "2.1.1-beta.0",
+  "version": "2.1.1-beta.1",
   "description": "A suite of helpers for writing cleaner React function components.",
   "engines": {
     "node": ">=18"
@@ -18,13 +18,15 @@
   "exports": {
     ".": "./build/classy/index.js",
     "./base": "./build/base/index.js",
-    "./helpers": "./build/helpers/index.js"
+    "./helpers": "./build/helpers/index.js",
+    "./all": "./build/index.js"
   },
   "scripts": {
     "prebuild": "rimraf ./build",
     "build": "tsc && tsc-alias",
-    "build:docs": "npx typedoc",
+    "serve-docs": "serve docs",
     "postbuild": "copyfiles tsconfig.json build",
+    "build:docs": "typedoc",
     "_": "",
     "prepublishOnly": "npm run build",
     "publish:patch": "npm version patch && npm publish",
@@ -62,6 +64,7 @@
     "@babel/preset-typescript": "^7.26.0",
     "@types/node": "20.14.10",
     "@types/react": "^16",
+    "@types/webpack-env": "^1.18.8",
     "babel-preset-react-app": "^10.0.1",
     "copyfiles": "^2.4.1",
     "eslint": "^9.15.0",
@@ -69,15 +72,15 @@
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.12.0",
     "rimraf": "^6.0.1",
+    "serve": "^14.2.4",
     "tsc-alias": "1.8.10",
+    "typedoc": "latest",
+    "typedoc-plugin-coverage": "^3.4.1",
     "typedoc-plugin-markdown": "^4.4.1",
+    "typedoc-plugin-mdn-links": "^4.0.13",
     "typescript": "^5.6.2"
   },
   "peerDependencies": {
     "react": ">=16"
-  },
-  "dependencies": {
-    "typedoc-plugin-coverage": "^3.4.1",
-    "typedoc-plugin-mdn-links": "^4.0.13"
   }
 }

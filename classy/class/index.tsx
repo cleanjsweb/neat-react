@@ -11,8 +11,17 @@ import { TPropsBase } from '../logic';
 
 
 /**
- * A superset of {@link ComponentInstance} that allows defining your
+ * @summary
+ * A modern class component for React that is fully compatible with
+ * React Hooks and all of React's latest features.
+ * 
+ * It is a superset of {@link ComponentInstance} that allows defining your
  * component's JSX template directly inside the class.
+ * 
+ * @remarks
+ * In essence, this is a class wrapper around an underlying function component.
+ * It acts as syntactic sugar, allowing you to create a regular function
+ * component, while writing in an object-oriented format.
  * 
  * This is designed to closely resemble the old {@link React.Component} class,
  * making it easier to migrate older class components to the newer hooks-based system
