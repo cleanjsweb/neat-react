@@ -72,14 +72,10 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
 	 */
 	useHooks = (): object | void => {};
 
-	/** Internal Method. DO NOT USE. Will be undefined in production. */
-	declare readonly __hotReplace: <
+	_hmrPreserveKeys: Array<keyof this | (string & {})> = [];
+	declare _onHmrUpdate: <
 		TInstance extends this
-	>(newInstance: TInstance) => void;
-
-	declare hmrPreserveKeys: Array<keyof this | (string & {})>;
-	/** Internal Method. DO NOT USE. Will be undefined in production. */
-	declare readonly hmrWillUpdate: this['__hotReplace'];
+	>(oldInstance: TInstance) => void;
 };
 
 
@@ -92,9 +88,43 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;
 
-	const instanceRef = useRef(useMemo(() => {
-		return new Logic();
-	}, []));
+	// In production, we only use the latestInstance the first time, and it's ignored every other time.
+	// This means changing the class at runtime will have no effect in production.
+	// latestInstance is only extracted into a separate variable for use in dev mode during HMR.
+	const latestInstance = useMemo(() => new Logic(), [Logic]);
+	const instanceRef = useRef(latestInstance);
+
+	if (process.env.NODE_ENV === 'development') {
+		// const rerender = useRerender();
+
+		if (instanceRef.current !== latestInstance) {
+			console.log([
+				'HMR-updated component class detected.',
+				'Creating a new instance with the updated class.',
+				'All stateful values will be copied over.\n\n',
+				'Note that this mechanism only works in the `development` environment during HMR.',
+				'In production, the class argument will be ignored after the first render.\n\n',
+				'If this wasn\'t an HMR update, you should refactor your code to make sure',
+				'all clean-react hooks receive the same class object on every render.'
+			].join( ));
+
+			const oldInstance = instanceRef.current;
+			const hmrPreserveKeys = [
+				...latestInstance._hmrPreserveKeys,
+				'state', 'props', 'hooks',
+			];
+
+			hmrPreserveKeys.forEach((_key) => {
+				const key = _key as keyof typeof latestInstance;
+				// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
+				latestInstance[key] = oldInstance[key];
+			});
+
+			latestInstance._onHmrUpdate(oldInstance);
+			instanceRef.current = latestInstance;
+			// rerender();
+		}
+	}
 
 	const self = instanceRef.current;
 
@@ -103,45 +133,26 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	 * to a readonly property,
 	 * despite the need for "readonly" error suppression.
 	 */
-	let _propsProxy_: typeof self.props;
-	/** @see {@link _propsProxy_} */
-	let _stateProxy_: typeof self.state;
-	/** @see {@link _propsProxy_} */
-	let _hooksProxy_: typeof self.hooks;
-	/** @see {@link _propsProxy_} */
-	let _hotReplaceProxy_: typeof self.__hotReplace;
+	let _propsProxy: typeof self.props;
+	/** @see {@link _propsProxy} */
+	let _stateProxy: typeof self.state;
+	/** @see {@link _propsProxy} */
+	let _hooksProxy: typeof self.hooks;
 
 	// @ts-expect-error
 	self.props = (
-		_propsProxy_ = props
+		_propsProxy = props
 	);
 
 	// @ts-expect-error
 	self.state = (
-		_stateProxy_ = useCleanState(self.getInitialState, props)
+		_stateProxy = useCleanState(self.getInitialState, props)
 	);
 
 	// @ts-expect-error
 	self.hooks = (
-		_hooksProxy_ = self.useHooks() ?? {}
+		_hooksProxy = self.useHooks() ?? {}
 	);
-
-	if (process.env.NODE_ENV === 'development') {
-		self.hmrPreserveKeys = [
-			...(self.hmrPreserveKeys ?? []),
-			'state', 'props', 'hooks',
-		];
-
-		const rerender = useRerender();
-
-		// @ts-expect-error
-		self.__hotReplace = (
-			_hotReplaceProxy_ = (newInstance: typeof self) => {
-				instanceRef.current = newInstance;
-				rerender();
-			}
-		);
-	}
 
 	return self;
 };
