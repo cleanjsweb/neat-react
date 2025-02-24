@@ -25,7 +25,7 @@
     "prebuild": "rimraf ./build",
     "build": "tsc && tsc-alias",
     "serve-docs": "serve docs",
-    "postbuild": "copyfiles tsconfig.json build",
+    "postbuild": "copyfiles tsconfig.json build && npm run build:docs",
     "build:docs": "typedoc",
     "_": "",
     "prepublishOnly": "npm run build",
