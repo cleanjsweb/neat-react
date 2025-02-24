@@ -84,6 +84,8 @@ export class ComponentLogic<TProps extends TPropsBase = null> {
  * encapsulates hook calls with the special {@link ComponentLogic.useHooks | `useHooks`} method.
  * 
  * The class argument must be a subclass of {@link ComponentLogic}.
+ * 
+ * @see https://cleanjsweb.github.io/neat-react/functions/API.useLogic.html
  */
 export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	const [Logic, props = {}] = args;

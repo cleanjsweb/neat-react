@@ -8,7 +8,13 @@ group: Guides
 
 
 ## useLogic
-This hook combines the functionality of `useCleanState` and `useMethods`, making it easier to use both of them together. It also introduces a new special method, allowing you to truly extract all of your components logic from the main function body. The method in question is called `useHooks`, and allows you to call react hooks from the Methods class instead of the function component's body. With this addition, you can fully have separation of concerns, with the main component function being just a template, and all of the logic that supports said template neatly grouped as methods within a Logic class. Here's an example.
+[`useLogic` API](https://cleanjsweb.github.io/neat-react/functions/API.useLogic.html) for more details.
+
+This hook combines the functionality of `useCleanState` and `useMethods`, and also introduces a new special method, allowing you to truly extract all of your components logic from the main function body.
+
+The method in question is called `useHooks`, and allows you to call react hooks from the Methods class instead of the function component's body. With this addition, you can fully have separation of concerns, with the main component function being just a template, and all of the logic that supports that template neatly grouped as methods within a Logic class.
+
+Here's an example.
 
 ```jsx
 class ButtonLogic {

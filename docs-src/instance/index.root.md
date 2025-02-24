@@ -1,10 +1,8 @@
 ---
 title: Instance Hook
-group: Guides
+# group: Guides
 # category Discussion
 ---
-
-
 
 ## useInstance
 With `useLogic`, most of the issues we identified with function components are addressed. The component is cleaner and the functions are more predictable. But one limitation remains.
@@ -19,7 +17,9 @@ Say you wanted some code to run _before_ a component is first mounted, for examp
 
 With a function component, you may at first glance turn to `useEffect` and spend some time tinkering with it to see if there is a call signature that would achieve this. It may take some time for you to realize this cannot be done with `useEffect` at all. Instead, calling `useMemo` with an empty dependency array should produce the desired effect. This can be very unintuative considering the stated purpose of `useMemo` and the fact that your "before mount" logic probably doesn't even return a value in the first place, so the thought of using a memoization hook may never have crossed your mind, as there was no value to memoize.
 
-Figuring these things out at the point of writing the component is one thing, but the component also likely has to be maintained long term, and even if you are very familiar with these function component patterns, it may still take you a minute of looking at a long list of hook calls to figure out which lifecycle event a given hook call is really trying to achieve. Which `useMemo` call is really meant to memoize a value and which is just a hacky workaround to hook into some lifecycle event? What if a single `useMemo` call achieves both functions, and you mistakenly remove the hook because the value is no longer needed, without realising this side-effect was also being relied on? You might be attempting to trace the execution path of a component to better understand its behaviour at different points in its lifecycle. Instead of discreet methods for each stage, you might have to track down multiple distinct `useEffect` calls that all run at the same stage but are written many lines apart in the body of the component function.
+Figuring these things out at the point of writing the component is one thing, but the component also likely has to be maintained long term, and even if you are very familiar with these function component patterns, it may still take you a minute of looking at a long list of hook calls to figure out which lifecycle event a given hook call is really trying to achieve. Which `useMemo` call is really meant to memoize a value and which is just a hacky workaround to hook into some lifecycle event? What if a single `useMemo` call achieves both functions, and you mistakenly remove the hook because the value is no longer needed, without realising this side-effect was also being relied on?
+
+You might be attempting to trace the execution path of a component to better understand its behaviour at different points in its lifecycle. Instead of discreet methods for each stage, you might have to track down multiple distinct `useEffect` calls that all run at the same stage but are written many lines apart in the body of the component function.
 
 The imperative approach for working with lifecycle in function components makes for some very unintuitive components, and at the very least adds a notable cognitive overhead to reading and writing larger components. Creating a declarative mechanism for hooking into the lifecycle of function components without having to simply switch to a class component would be a great improvement. And this is what `useInstance` achieves. Here is what it looks like:
 
@@ -98,11 +98,12 @@ const Button = (props) => {
 }
 ```
 
-See the API documentation for each lifecycle method to learn more about how it works.
+See the [API documentation](https://cleanjsweb.github.io/neat-react/classes/API.BaseClasses.ComponentInstance.html) for each lifecycle method to learn more about how it works.
 
 With the addition of the lifecycle methods, the component logic class starts to look very much like a `React.Component` component class. It can now be thought of as a complete representation of the behaviours associated with a given component template. Each instance of this class fully represents an instance of the function component in the DOM—state,
 props, and all—hence the name. `useInstance` allows your function component to consume a logical instance of itself, and operate simply as a template that transforms a self contained object with state and behaviours into a DOM subtree with UI and event listeners.
 
 At this point, you might jokingly say, "we've basically recreated class components". We pretty much have, with one significant advantage. At its core, your component is still a function component, and can seamlessly benefit from any optimizations, improvements, or new features that React adds to function components. Its the best of both worlds. Stay on the new system, and carry over all of the advantages from the old one. The declarative lifecycle API, the ergonomics of working with state, and the cleaner structure and separation of concerns. `useInstance` gives you all of this in a neat and simple package.
 
-Now, if we're going to work our way back to writing components as classes, why not just go all the way? Well, actually, [we can](./../class-component/index).
+Now, if we're going to work our way back to writing components as classes, why not just go all the way?
+Well, actually, [we can](https://cleanjsweb.github.io/neat-react/documents/Class_Component.html).

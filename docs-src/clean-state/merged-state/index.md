@@ -1,11 +1,9 @@
 ---
 title: Merged State
-group: Guides
+# group: Guides
 # category Discussion
 ---
 
+*Nothing here yet...*
 
-| @function        | @description | @params | @returns|
-|__________________|______________|_________|_________|
-| `useMergedState` |              |         |         |
-
+[API](https://cleanjsweb.github.io/neat-react/functions/API.References.CleanState.MergedState.useMergedState.html).

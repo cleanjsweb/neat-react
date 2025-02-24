@@ -6,14 +6,14 @@ import { TUseCleanState, TCleanState, TInitialState } from './hook-types';
 
 
 /**
- * @summary
  * Creates a state object, which includes the provided values,
  * as well as helper methods for updating those values and automatically
  * rerendering your component's UI to reflect said updates.
  * 
- * @remarks
- * Uses {@link React.useState} under the hook, with a separate call
+ * Uses {@link React.useState} under the hood, with a separate call
  * to `useState` for each top-level key in the provided object.
+ * 
+ * Discussion: [When to use `cleanState`](https://cleanjsweb.github.io/neat-react/documents/Clean_State.html).
  */
 export const useCleanState: TUseCleanState = (_initialState, ...props) => {
 	type TState = TInitialState<typeof _initialState>;

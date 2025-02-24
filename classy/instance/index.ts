@@ -79,7 +79,6 @@ export class ComponentInstance<TProps extends TPropsBase = null>
 };
 
 /**
- * @summary
  * Enables full separation of concerns between a React components template
  * and all of the logic that drives it.
  * 
@@ -90,7 +89,6 @@ export class ComponentInstance<TProps extends TPropsBase = null>
  * can be externalized from the function component itself,
  * and defined in a separate class. 
  * 
- * @remarks
  * The provided class should be a subclass of {@link ComponentInstance}.
  * 
  * @privateRemarks

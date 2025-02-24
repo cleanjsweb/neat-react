@@ -1,6 +1,6 @@
 ---
 title: Methods Hook
-group: Guides
+# group: Guides
 # category Discussion
 ---
 
@@ -8,11 +8,7 @@ group: Guides
 # `useMethods`
 Returns an instance of a class which holds methods for use in your component. Methods on this instance are guaranteed to always have access to the latest props and state via `this.props` and `this.state` respectively.
 
-
-| @param       | @description | @params | @returns |
-|--------------|--------------|---------|----------|
-| `useMethods` |              |         |          |
-
+[API](https://cleanjsweb.github.io/neat-react/functions/API.useMethods.html).
 
 ## useMethods
 When thinking about cleaning up function components, another concern is the closure functions that require up-to-date access to state variables and props, and thus cannot simply be defined outside the component. Consider the following example.

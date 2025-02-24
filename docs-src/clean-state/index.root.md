@@ -1,19 +1,14 @@
 ---
 title: Clean State
-group: Documents
+# group: Documents
 # category Guides
 children:
     - ./merged-state/index.md
 ---
 
-
-| @function       | @description | @params | @returns|
-|_________________|______________|_________|_________|
-| `useCleanState` |              |         |         |
-
-
-
 # Cleaner State Management for React Function Components
+[API](https://cleanjsweb.github.io/neat-react/functions/API.useCleanState.html).
+
 Say you have a component with some state like this:
 
 ```jsx

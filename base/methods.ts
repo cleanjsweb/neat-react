@@ -67,11 +67,9 @@ type UMReturn = ComponentMethods<object, object>;
 
 
 /**
- * @summary
  * Returns an instance of the provided class,
  * with the state and props arguments added as instance members.
  * 
- * @remarks
  * `state` should be an instance of `CleanState` created with {@link useCleanState}.
  */
 const useMethods: UseMethods = (...args: UMParams): UMReturn => {

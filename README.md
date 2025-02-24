@@ -55,7 +55,7 @@ const Button = (props) => {
 
 > **Note:** Each top-level key in your initial state object gets a separate call to `React.useState`, and `state.put[key]()` is a proxy for the setter function returned from `useState`. So using this hook is fundamentally the same as calling `useState` directly for each value. What `useCleanState` provides is a way to unify those values and a convenient API for updating them.
 
-[Read the `useCleanState` docs](https://cleanjsweb.github.io/neat-react) for more details.
+[Read the `useCleanState` API docs](https://cleanjsweb.github.io/neat-react/functions/API.useCleanState.html) for more details.
 
 ### Methods
 The `useMethods` hook lets you manage the closures that your component uses in a separate class, keeping the body of the component clean and easier to read. With `useMethods`, your functions are not recreated on every render. Yet, every method of your component is guaranteed to always have access to the latest props and state without the need for a dependencty array.
@@ -110,10 +110,14 @@ const Button = (props) => {
 }
 ```
 
-[Read the `useMethods` docs]() for more details.
+[Read the `useMethods` API docs](https://cleanjsweb.github.io/neat-react/functions/API.useMethods.html) for more details.
+
+<small>Discussion: [Reasoning behind `useMethods`](https://cleanjsweb.github.io/neat-react/documents/Methods_Hook.html).</small>
 
 ### Logic
-The `useLogic` hook is an expansion of `useMethods`, with the aim of being a more holistic solution. It combines the functionality of `useCleanState` and `useMethods`. In addition, it allows you to externalize _all_ of your component's logic, not just closures and state. Essentially, this means being able to call hooks from within the class, rather than having to do so within the component body.
+The `useLogic` hook is an expansion of [`useMethods`](#methods), with the aim of being a more holistic solution. It combines the functionality of [`useCleanState`](#clean-state) and [`useMethods`](#methods).
+
+In addition, it allows you to externalize _all_ of your component's logic, not just closures and state. Essentially, this means being able to call hooks from within the class, rather than having to do so within the component body.
 
 ```jsx
 class ButtonLogic {
@@ -164,10 +168,13 @@ const Button = (props) => {
 }
 ```
 
-[Read the `useLogic` docs]() for more details.
+[Read the `useLogic` docs](https://cleanjsweb.github.io/neat-react/documents/Logic_Hook.html).
+
 
 ### Lifecycle (`useInstance`)
-The `useInstance` hook provides a simple approach for working with your components lifecycle. It includes all the features of [`useLogic`](#logic), and adds special lifecycle methods. This gives you a declarative way to run certain code at specific stages of your component's life time. You will likely find this to be less error prone and much easier to reason about than the imperative approach of using React's hooks directly.
+The `useInstance` hook provides a simple approach for working with your component's lifecycle. It includes all the features of [`useLogic`](#logic), and adds special lifecycle methods.
+
+This gives you a declarative way to run certain code at specific stages of your component's life time. You will likely find this to be less error prone and much easier to reason about than the imperative approach of using React's hooks directly.
 
 ```jsx
 /** Button Component Class. */
@@ -250,7 +257,10 @@ const Button = (props) => {
 }
 ```
 
-[Read the `useInstance` docs]() for more details.
+[Read the `useInstance` API docs](https://cleanjsweb.github.io/neat-react/functions/API.useInstance.html) for more details.
+
+<small>For a lengthier discussion on the reasoning behind the `useInstance` hook, see the [`useInstance` discussion doc](https://cleanjsweb.github.io/neat-react/documents/Instance_Hook.html).
+
 
 ### Class Component
 With `useInstance`, pretty much every aspect of your component is now part of the class, except for the JSX template. The `ClassComponent` class takes that final step and provides a fully integrated class-based React component.
@@ -304,10 +314,13 @@ export default Button.RC;
 // Or render directly with `<Button.RC />`.
 ```
 
-Every class derived from the base `ClassComponent` is not itself a React component. Instead, it has a static `extract()` method (also aliased as `FC()` for "Function Component") which returns a function component that can be rendered like any other React component. Each instance of this function component mounted in the React tree creates it's own separate instance of your `ClassComponent` class. To make it easier to use the class component directly, you should create a static property that holds the function component returned by `extract`. The recommended convention is to use the name `RC` (for "React Component"). Such a class can then easily be rendered as JSX by writing `<MyComponent.RC />`.
+Every class derived from the base `ClassComponent` is not itself a React component. Instead, it has a static `extract()` method (also aliased as `FC()` for "Function Component") which returns a function component that can be rendered like any other React component. Each instance of this function component mounted in the React tree creates it's own separate instance of your `ClassComponent` class.
 
-[Read the `ClassComponent` docs]() for more details.
+To make it easier to use the class component directly, you should create a static property that holds the function component returned by `extract`. The recommended convention is to use the name `RC` (for "React Component"). Such a class can then easily be rendered as JSX by writing `<MyComponent.RC />`.
 
+[Read the `ClassComponent` API docs](https://cleanjsweb.github.io/neat-react/classes/API.ClassComponent.html) for more details.
+
+<small>For a discussion on how this works, and a comparison with React's older `React.Component` class, see the [`ClassComponent` discussion doc](https://cleanjsweb.github.io/neat-react/documents/Class_Component.html).</small>
 
 ### Other Exports
 
@@ -315,8 +328,6 @@ Every class derived from the base `ClassComponent` is not itself a React compone
 If you simply want to use hooks in your `React.Component` class without having to rewrite anything, this package also exports a `<Use>` component that helps you achieve this easily. Here's how to use it.
 
 ```jsx
-import { useGlobalStore } from '@/hooks/store';
-
 class Button extends React.Component {
 	syncGlobalStore = ([store, updateStore]) => {
 		if (this.state.userId !== store.userId) {
