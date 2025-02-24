@@ -6,7 +6,8 @@ import type { ComponentLogic, TPropsBase } from '..';
 **************************************/
 
 
-type ULClassParam = typeof ComponentLogic<NonNullable<TPropsBase>>;
+// type ULClassParam = typeof ComponentLogic<NonNullable<TPropsBase>>;
+type ULClassParam = typeof ComponentLogic<NonNullable<any>>;
 type ULProplessClassParam = typeof ComponentLogic<null>;
 
 export type UseLogic = {

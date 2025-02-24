@@ -4,8 +4,6 @@ import { CleanStateBase } from './class';
 /**
  * Base type for an `initialState` object.
  * It is a regular object type, with some reserved keys excluded.
- *
- * @_category Types
  */
 export type TStateData = object & {
 	[Key in keyof CleanStateBase<{}>]?: never;
@@ -16,8 +14,6 @@ export type TStateData = object & {
  * object of type `TState`.
  * 
  * @typeParam TState - The type of your `initialState` object.
- * 
- * @_category Types
  */
 export type TCleanState<TState extends TStateData> = (
 	CleanStateBase<TState>

@@ -32,9 +32,6 @@ export type TPropsBase = NonPrimitive | null;
  * Call the {@link useLogic} hook inside your function component to instantiate the class.
  * 
  * @typeParam TProps - {@include ./types/tprops.md}
- * 
- * @group ComponentLogic
- * @_category External Classes
  */
 export class ComponentLogic<TProps extends TPropsBase = null> {
 	/**
