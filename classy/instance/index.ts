@@ -97,7 +97,7 @@ export class ComponentInstance<TProps extends TPropsBase = null>
 	 * {@link https://react.dev/reference/react/useState#storing-information-from-previous-renders | See the React docs for more details}.
 	 */
 	beforeRender: () => object | void = () => {};
-0
+
 	/**
 	 * Runs **_after_** every render cycle, including the first.
 	 * 
