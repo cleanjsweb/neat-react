@@ -34,29 +34,34 @@ export class ClassComponent<
 	 * Analogous to {@link React.Component.render}. A function that returns
 	 * your component's JSX template.
 	 * 
-	 * You should place most logic that would usually go here
-	 * in {@link ComponentInstance.beforeRender | `beforeRender`} instead.
-	 * This helps to separate concerns and keep the template itself clean.
-	 * 
 	 * ******
 	 * 
 	 * Ideally the template method should only be concerned with defining the HTML/JSX structure of
-	 * your component's UI. This may include destructuring nested instance members
-	 * into more easily accessible local variables, or some simple transformation of data from props/state
-	 * into a more appropriate format for display.
+	 * your component's UI.
+	 * 
+	 * If you need to transform some data for display,
+	 * do so in [beforeRender]({@link ComponentInstance.beforeRender}),
+	 * and return an object with transformed data that can be rendered directly.
+	 * 
+	 * The returned object will be passed to your template method
+	 * as a `context` object.
 	 * 
 	 * ******
 	 * 
-	 * @example <caption>Using a template function that returns JSX.</caption>
+	 * @example Using a template function that returns JSX.
 	 * 
 	 * ```tsx
-	 * template = () => {
-	 *     const { title } = this.props;
-	 * 
+	 * beforeRender = () => {
+	 *     return {
+	 *         title: `My Site | ${this.props.title}`,
+	 *     };
+	 * }
+	 * template = (ctx) => {
 	 *     return (
 	 *         <h1>
-	 *             {this.props.title}
+	 *             {ctx.title}
 	 *         </h1>
+	 *         <p>{this.props.description}</p>
 	 *     );
 	 * }
 	 * ```

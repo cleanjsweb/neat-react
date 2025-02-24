@@ -45,7 +45,41 @@ export class ComponentInstance<TProps extends TPropsBase = null>
 	 */
 	onMount: AsyncAllowedEffectCallback = () => noOp;
 
+	/** @see {@link templateContext} */
 	declare private _templateContext: ReturnType<this['beforeRender']>;
+
+	/**
+	 * Holds the object returned by {@link beforeRender}.
+	 * 
+	 * This is useful when you need to render some state or props
+	 * in a transformed format. Put the transformation logic
+	 * in {@link beforeRender} to the keep the function component
+	 * template clean.
+	 * 
+	 * ******
+	 * 
+	 * @example Using templateContext.
+	 * 
+	 * ```tsx
+	 * class MyComponentLogic extends ComponentInstance {
+	 *     beforeRender = () => {
+	 *         const title = `My Site | ${this.props.title}`;
+	 *         return { title };
+	 *     }
+	 * }
+	 * const MyComponent = (props) => {
+	 *     const self = useInstance(MyComponentLogic, props);
+	 *     const { template: ctx, state } = self;
+	 * 
+	 *     return (
+	 *         <h1>
+	 *             {ctx.title}
+	 *         </h1>
+	 *         <p>{props.description}</p>
+	 *     );
+	 * }
+	 * ```
+	 */
 	get templateContext() {
 		return this._templateContext;
 	}
@@ -54,11 +88,16 @@ export class ComponentInstance<TProps extends TPropsBase = null>
 	 * Runs _before_ every render cycle, including the first.
 	 * Useful for logic that is involved in determining what to render.
 	 * 
+	 * This is the ideal place to transform data for display.
+	 * Return the transformed data in an object, and the object will
+	 * availble as [`self.templateContext`]({@link templateContext})
+	 * for use in your JSX template.
+	 * 
 	 * PS: You can conditionally update state from here, but with certain caveats.
 	 * {@link https://react.dev/reference/react/useState#storing-information-from-previous-renders | See the React docs for more details}.
 	 */
 	beforeRender: () => object | void = () => {};
-
+0
 	/**
 	 * Runs **_after_** every render cycle, including the first.
 	 * 
