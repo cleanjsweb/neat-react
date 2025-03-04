@@ -30,7 +30,82 @@ export class ComponentMethods<
 	declare readonly props: TProps;
 	declare readonly state: TState extends TStateData ? TCleanState<TState> : null;
 
-	_hmrPreserveKeys: Array<keyof this | (string & {})> = [];
+	/**
+	 * Specify custom class members to be copied over whenever the class is
+	 * reinstantiated during hot module replacement.
+	 * 
+	 * Oore handles HMR by recreating the class instance
+	 * with the updated code whenever there is a file change.
+	 * Your component is then rerendered so that event handlers
+	 * now point to the new functions.
+	 * 
+	 * For this to work well, your component's state needs to be preserved,
+	 * so it is copied over from the old instance, to the newly created one.
+	 * This includes `state`, `props` by default, but you can
+	 * extend it to include more properties if there are values your component expects
+	 * to be persistent.
+	 * 
+	 * In most case, any values you wish to preserve should be created `React.useRef`.
+	 * ```
+	 * // In useHooks method:
+	 * this.inputId = useRef(inputId);
+	 * // And access anywhere with:
+	 * this.inputId.current;
+	 * ```
+	 * If you use a ref in this way, React will preserve it for you, and there will be no need
+	 * to use `_hmrPreserveKeys`.
+	 * 
+	 * `_hmrPreserveKeys` is only relevant in development and has not effect in production environment.
+	 * Accordingly, you should only update this array when environment is development, so
+	 * that it can be tree-shaken during production builds.
+	 * 
+	 * @example Specify additional properties to be considered stateful,
+	 * in addition to `state`, `props`, and `hooks`.
+	 * ```ts
+	 * MyComponentMethods extends ComponentMethods {
+	 *     // Some class member definitions...
+	 * 
+	 *     constructor() {
+	 *         if (process.env.NODE_ENV === 'development') {
+	 *             this._hmrPreserveKeys.push('inputId', 'unsubscribeCallback');
+	 *         }
+	 *     }
+	 * 
+	 *     // Method definitions...
+	 * }
+	 * With the above example, whenever HMR occurs, `this.inputId` and `this.unsubscribeCallback`
+	 * will maintain there existing values, while everything else will be recreated. Meanwhile,
+	 * because the code is written in an environment condition, it should be easy to strip it from the
+	 * production build to avoid shipping dead code.
+	 */
+	_hmrPreserveKeys: Array<keyof this | (string & {})> = []; // @todo Keep undefined. Update to empty array after instantiation in dev env.
+
+	/**
+	 * Handle complex update logic whenever your component instance is updated through HMR.
+	 * The function is called on the new instance, and it receives the old instance as the only argument.
+	 * So you can access data from the old instance, and reinitialize any processes on the new instance as needed.
+	 * 
+	 * 
+	 * `_onHmrUpdate` is only relevant in development and has not effect in production environment.
+	 * Accordingly, you should only assign this function when environment is development, so
+	 * that it can be tree-shaken during production builds.
+	 * 
+	 * @example
+	 * ```ts
+	 * MyComponentMethods extends ComponentMethods {
+	 *     // Some class member definitions...
+	 * 
+	 *     constructor() {
+	 *         if (process.env.NODE_ENV === 'development') {
+	 *             this._onHmrUpdate = () => {
+	 *                 // Your custom hmr logic here.
+	 *             };
+	 *         }
+	 *     }
+	 * 
+	 *     // Method definitions...
+	 * }
+	 */
 	declare _onHmrUpdate?: <
 		TInstance extends this
 	>(oldInstance: TInstance) => void;
@@ -103,13 +178,9 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 			].join(' '));
 
 			const oldInstance = instanceRef.current;
-			const hmrPreserveKeys = [
-				...latestInstance._hmrPreserveKeys,
-				'state', 'props',
-			];
 
-			hmrPreserveKeys.forEach((_key) => {
-				const key = _key as (typeof hmrPreserveKeys)[number];
+			latestInstance._hmrPreserveKeys.forEach((_key) => {
+				const key = _key as (typeof latestInstance._hmrPreserveKeys)[number];
 				// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
 				latestInstance[key] = oldInstance[key];
 			});
