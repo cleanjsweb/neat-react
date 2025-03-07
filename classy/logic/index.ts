@@ -166,68 +166,41 @@ export const useLogic: UseLogic = (...args: ULParams): ULReturn => {
 	// This means changing the class at runtime will have no effect in production.
 	// latestInstance is only extracted into a separate variable for use in dev mode during HMR.
 	const latestInstance = useMemo(() => new Logic(), [Logic]);
+	// const latestInstance = useMemo(() => new Logic(), []);
 	const instanceRef = useRef(latestInstance);
 
-	if (process.env.NODE_ENV === 'development') {
-		if (instanceRef.current !== latestInstance) {
-			console.log([
-				'HMR-updated component class detected.',
-				'Creating a new instance with the updated class.',
-				'All stateful values will be copied over.\n\n',
-				'Note that this mechanism only works in the `development` environment during HMR.',
-				'In production, the class argument will be ignored after the first render.\n\n',
-				'If this wasn\'t an HMR update, you should refactor your code to make sure',
-				'all clean-react hooks receive the same class argument on every render.'
-			].join(' '));
+	const refreshState = () => {
+		// @ts-expect-error
+		instanceRef.current.props = props;
+		// @ts-expect-error
+		instanceRef.current.state = useCleanState(instanceRef.current.getInitialState, props);
+		// @ts-expect-error
+		instanceRef.current.hooks = instanceRef.current.useHooks() ?? {};
+	};
 
-			const oldInstance = instanceRef.current;
+	if (process.env.NODE_ENV === 'development' && instanceRef.current !== latestInstance) {
+		const oldInstance = instanceRef.current;
 
-			latestInstance._hmrPreserveKeys.forEach((_key) => {
-				const key = _key as keyof typeof latestInstance;
-				// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
-				latestInstance[key] = oldInstance[key];
-			});
+		latestInstance._hmrPreserveKeys.forEach((_key) => {
+			const key = _key as keyof typeof latestInstance;
+			// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
+			latestInstance[key] = oldInstance[key];
+		});
 
-			latestInstance._onHmrUpdate?.(oldInstance);
-			instanceRef.current = latestInstance;
+		Reflect.ownKeys(oldInstance).forEach((_key) => {
+			const key = _key as keyof typeof oldInstance;
+			delete oldInstance[key];
+		});
+		Object.setPrototypeOf(oldInstance, latestInstance);
 
-			Reflect.ownKeys(oldInstance).forEach((_key) => {
-				const key = _key as keyof typeof oldInstance;
-				delete oldInstance[key];
-			});
-			Object.setPrototypeOf(oldInstance, latestInstance);
-		}
+		instanceRef.current = latestInstance;
+		refreshState();
+		latestInstance._onHmrUpdate?.(oldInstance);
 	}
 
-	const self = instanceRef.current;
+	else refreshState();
 
-	/**
-	 * A proxy variable to allow typechecking of the assignment
-	 * to a readonly property,
-	 * despite the need for "readonly" error suppression.
-	 */
-	let _propsProxy: typeof self.props;
-	/** @see {@link _propsProxy} */
-	let _stateProxy: typeof self.state;
-	/** @see {@link _propsProxy} */
-	let _hooksProxy: typeof self.hooks;
-
-	// @ts-expect-error
-	self.props = (
-		_propsProxy = props
-	);
-
-	// @ts-expect-error
-	self.state = (
-		_stateProxy = useCleanState(self.getInitialState, props)
-	);
-
-	// @ts-expect-error
-	self.hooks = (
-		_hooksProxy = self.useHooks() ?? {}
-	);
-
-	return self;
+	return instanceRef.current;;
 };
 
 

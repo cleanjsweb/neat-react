@@ -161,65 +161,37 @@ const useMethods: UseMethods = (...args: UMParams): UMReturn => {
 	const latestInstance = useMemo(() => new Methods(), [Methods]);
 	const instanceRef = useRef(latestInstance);
 
-	if (process.env.NODE_ENV === 'development') {
-		const rerender = useRerender();
-
-		useEffect(() => {
-			if (instanceRef.current === latestInstance) return;
-
-			console.log([
-				'HMR-updated component class detected.',
-				'Creating a new instance with the updated class.',
-				'All stateful values will be copied over.\n\n',
-				'Note that this mechanism only works in the `development` environment during HMR.',
-				'In production, the class argument will be ignored after the first render.\n\n',
-				'If this wasn\'t an HMR update, you should refactor your code to make sure',
-				'all clean-react hooks receive the same class argument on every render.'
-			].join(' '));
-
-			const oldInstance = instanceRef.current;
-
-			latestInstance._hmrPreserveKeys.forEach((_key) => {
-				const key = _key as (typeof latestInstance._hmrPreserveKeys)[number];
-				// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
-				latestInstance[key] = oldInstance[key];
-			});
-
-			latestInstance._onHmrUpdate?.(oldInstance);
-
-			Reflect.ownKeys(oldInstance).forEach((_key) => {
-				const key = _key as keyof typeof oldInstance;
-				delete oldInstance[key];
-			});
-			Object.setPrototypeOf(oldInstance, latestInstance);
-
-			instanceRef.current = latestInstance;
-			rerender();
-		});
+	const refreshState = () => {
+		// @ts-expect-error
+		instanceRef.current.props = props;
+	
+		// @ts-expect-error
+		if (state) instanceRef.current.state = state;
 	}
 
-	const methods = instanceRef.current;
+	if (process.env.NODE_ENV === 'development' && instanceRef.current !== latestInstance) {
+		const oldInstance = instanceRef.current;
 
-	/**
-	 * A proxy variable to allow typechecking of the assignment
-	 * to a readonly property,
-	 * despite the need for "readonly" error suppression.
-	 */
-	let _propsProxy: typeof methods.props;
-	/** @see {@link _propsProxy} */
-	let _stateProxy: typeof methods.state;
+		latestInstance._hmrPreserveKeys.forEach((_key) => {
+			const key = _key as (typeof latestInstance._hmrPreserveKeys)[number];
+			// @ts-expect-error We're assigning to readonly properties. Also, Typescript doesn't know that the type of the left and right side will always match, due to the dynamic access.
+			latestInstance[key] = oldInstance[key];
+		});
 
-	// @ts-expect-error
-	methods.props = (
-		_propsProxy = props
-	);
+		Reflect.ownKeys(oldInstance).forEach((_key) => {
+			const key = _key as keyof typeof oldInstance;
+			delete oldInstance[key];
+		});
+		Object.setPrototypeOf(oldInstance, latestInstance);
 
-	// @ts-expect-error
-	if (state) methods.state = (
-		_stateProxy = state
-	);
+		instanceRef.current = latestInstance;
+		refreshState();
+		latestInstance._onHmrUpdate?.(oldInstance);
+	}
 
-	return methods;
+	else refreshState();
+
+	return instanceRef.current;
 };
 
 export  { useMethods };
