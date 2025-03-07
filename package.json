@@ -1,6 +1,6 @@
 {
   "name": "@cleanweb/react",
-  "version": "2.1.5",
+  "version": "2.1.6-beta.0",
   "description": "A suite of helpers for writing cleaner React function components.",
   "engines": {
     "node": ">=18"
